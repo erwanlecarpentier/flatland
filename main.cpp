@@ -10,9 +10,13 @@
 #include <vector>
 
 #include <utils.hpp>
+#include <parameters.hpp>
+#include <environment.hpp>
 
 void run() {
-    std::cout << "Hello world!\n";
+    parameters p("config/main.cfg");
+    environment e(p);
+    e.print_grid();
 }
 
 /**
