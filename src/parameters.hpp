@@ -6,18 +6,17 @@
 #include <sstream>
 #include <exceptions.hpp>
 
-const int MAX_CHARS_PER_LINE = 512;
-const int MAX_GRID_WIDTH = 200;
-
 /**
  * @brief Simulation parameters
  *
  * Parameters container for a simulation
  */
-struct parameters {
+class parameters {
+public:
     bool IS_CONTINUOUS;
     std::vector<std::vector<int>> GRID_WORLD;
     std::vector<double> INITIAL_STATE;
+    unsigned POLICY_SELECTOR;
 
     /**
      * @brief Simulation parameters 'default' constructor
@@ -44,7 +43,8 @@ struct parameters {
         if(cfg.lookupValue("is_continuous",IS_CONTINUOUS)
         && cfg.lookupValue("grid_path",grid_path)
         && cfg.lookupValue("initial_state_row",sr)
-        && cfg.lookupValue("initial_state_col",sc)) {
+        && cfg.lookupValue("initial_state_col",sc)
+        && cfg.lookupValue("policy_selector",POLICY_SELECTOR)) {
             GRID_WORLD = parse_grid(grid_path);
             INITIAL_STATE = std::vector<double> {sr,sc};
         }

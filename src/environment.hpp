@@ -1,7 +1,8 @@
 #ifndef ENVIRONMENT_HPP_
 #define ENVIRONMENT_HPP_
 
-struct environment {
+class environment {
+public:
     bool is_continuous;
     std::vector<std::vector<int>> grid_world;
 
@@ -9,8 +10,9 @@ struct environment {
      * @brief Default constructor
      *
      * Default constructor initialising the parameters via a 'parameters' object.
+     * @param {const parameters &} p; parameters
      */
-    environment(parameters p) {
+    environment(const parameters &p) {
         is_continuous = p.IS_CONTINUOUS;
         if(is_continuous) {
             std::cout << "TODO: implement continuous world" << std::endl;

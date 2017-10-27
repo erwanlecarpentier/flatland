@@ -4,11 +4,12 @@
 /**
  * @brief Random policy
  */
-struct random_policy {
+class random_policy {
+public:
     /**
      * @brief Policy operator
      *
-     *
+     * TODO
      */
 	void operator()(std::vector<double> &s, std::vector<double> &a) {
         (void) s;
