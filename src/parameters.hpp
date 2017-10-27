@@ -17,6 +17,7 @@ const int MAX_GRID_WIDTH = 200;
 struct parameters {
     bool IS_CONTINUOUS;
     std::vector<std::vector<int>> GRID_WORLD;
+    std::vector<double> INITIAL_STATE;
 
     /**
      * @brief Simulation parameters 'default' constructor
@@ -39,9 +40,13 @@ struct parameters {
         libconfig::Config cfg;
         cfg.readFile(cfg_path);
         std::string grid_path;
+        double sr = 0., sc = 0.;
         if(cfg.lookupValue("is_continuous",IS_CONTINUOUS)
-        && cfg.lookupValue("grid_path",grid_path)) {
+        && cfg.lookupValue("grid_path",grid_path)
+        && cfg.lookupValue("initial_state_row",sr)
+        && cfg.lookupValue("initial_state_col",sc)) {
             GRID_WORLD = parse_grid(grid_path);
+            INITIAL_STATE = std::vector<double> {sr,sc};
         }
         else { // Error in config file
             throw wrong_syntax_configuration_file_exception();
@@ -52,7 +57,7 @@ struct parameters {
      * @brief Parse grid
      *
      * Parse a grid and turn it into a 'std::vector<std::vector<int>>' object.
-     * @warning Used separator must be ','.
+     * @warning Integer within the config file must be separated with a blanck.
      * @param {const std::string &} grid_path; path of the grid configuration file
      * @return Return a discrete grid world
      */
@@ -60,14 +65,13 @@ struct parameters {
         std::vector<std::vector<int>> gw;
         std::ifstream fi;
         fi.open(grid_path);
-        if (!fi.good()){ // throw exception if file not found
+        if(!fi.good()) { // throw exception if file not found
             throw wrong_grid_path();
         }
         for(std::string line; std::getline(fi, line); ) {
             gw.emplace_back(std::vector<int>{});
             int read;
-            char comma;
-            for(std::stringstream iss(line); (iss >> read) && (gw.back().push_back(read), iss >> comma) && (comma == ','); );
+            for(std::stringstream iss(line); iss >> read; gw.back().push_back(read));
         }
         return gw;
     }

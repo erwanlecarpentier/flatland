@@ -12,10 +12,13 @@
 #include <utils.hpp>
 #include <parameters.hpp>
 #include <environment.hpp>
+#include <agent.hpp>
 
 void run() {
-    parameters p("config/main.cfg");
-    environment e(p);
+    parameters p("config/main.cfg"); // read parameters
+    environment e(p); // create environment
+    agent a(p); // create agent
+    printv(a.state);
     e.print_grid();
 }
 
