@@ -13,6 +13,7 @@
 #include <parameters.hpp>
 #include <environment.hpp>
 #include <agent.hpp>
+#include <display.hpp>
 #include <random_policy.hpp>
 
 template <class PLC>
@@ -21,11 +22,7 @@ void run(const parameters &p, bool print) {
     environment e(p);
     agent<PLC> a(p);
     if(print) {
-        e.print_grid();
-        printv(a.state);
-    }
-    for(auto &elt : a.policy.action_space) {
-        printv(elt);
+        print_grid_with_agent(e,a.state);
     }
     /*
     while(!e.is_terminal(a.state)) {

@@ -104,19 +104,6 @@ public:
             }
         }
     }
-
-    /**
-     * @brief Print grid
-     *
-     * Print the grid world as a standard output.
-     * Environment must be discrete.
-     */
-    void print_grid() {
-        assert(!is_continuous);
-        for(auto & row : grid_world) {
-            printv(row);
-        }
-    }
 };
 
 #endif // ENVIRONMENT_HPP_
