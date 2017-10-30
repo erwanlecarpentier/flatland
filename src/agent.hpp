@@ -31,7 +31,6 @@ public:
     {
         state_p = state;
         action = std::vector<double> {0.,0.};
-        //policy.set_parameters(p);
     }
 
     /**

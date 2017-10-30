@@ -20,6 +20,9 @@ public :
     node *parent; ///< Pointer to the parent node
     std::vector<node> children; ///< Vector of nodes children
 
+    /**
+     * @brief Empty constructor
+     */
     node(){}
 
     /**

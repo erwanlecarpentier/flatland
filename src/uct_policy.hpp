@@ -28,21 +28,6 @@ public:
     }
 
     /**
-     * @brief Set parameters
-     *
-     * Set the parameters of the policy.
-     * @param {const parameters &} p; parameters
-     */
-    /*
-    void set_parameters(const parameters &p) {
-        action_space = p.ACTION_SPACE;
-        //TODO
-        //budget
-        expd_counter = 0;
-    }
-    */
-
-    /**
      * @brief Reduced action space
      *
      * Compute the action space available at the given state.
