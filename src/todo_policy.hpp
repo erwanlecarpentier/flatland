@@ -11,6 +11,16 @@ public:
     std::vector<std::vector<double>> action_space; ///< Full action space
 
     /**
+     * @brief Constructor
+     *
+     * Constructu using the given parameters
+     * @param {const parameters &} p; parameters
+     */
+    todo_policy(const parameters &p) {
+        action_space = p.ACTION_SPACE;
+    }
+
+    /**
      * @brief Reduced action space
      *
      * Compute the action space available at the given state.
@@ -59,16 +69,6 @@ public:
         const std::vector<double> & s_p)
     {
         //TODO
-    }
-
-    /**
-     * @brief Set action space
-     *
-     * Set the action space attribute as the input action space.
-     * @param {const std::vector<std::vector<double>>} as; given action space to be copied
-     */
-    void set_action_space(const std::vector<std::vector<double>> as) {
-        action_space = as;
     }
 };
 

@@ -9,7 +9,38 @@
  */
 class uct_policy {
 public:
+    node root_node; ///< Root node of the tree
+    unsigned budget; ///< Algorithm budget (number of expanded nodes)
+    unsigned expd_counter; ///< Counter of the number of expanded nodes
     std::vector<std::vector<double>> action_space; ///< Full action space
+
+    /**
+     * @brief Constructor
+     *
+     * Constructu using the given parameters
+     * @param {const parameters &} p; parameters
+     */
+    uct_policy(const parameters &p) {
+        action_space = p.ACTION_SPACE;
+        //TODO
+        //budget
+        expd_counter = 0;
+    }
+
+    /**
+     * @brief Set parameters
+     *
+     * Set the parameters of the policy.
+     * @param {const parameters &} p; parameters
+     */
+    /*
+    void set_parameters(const parameters &p) {
+        action_space = p.ACTION_SPACE;
+        //TODO
+        //budget
+        expd_counter = 0;
+    }
+    */
 
     /**
      * @brief Reduced action space
@@ -34,6 +65,25 @@ public:
     }
 
     /**
+     * @brief Build UCT tree
+     *
+     * Build a tree wrt vanilla UCT algorithm.
+     * The tree is kept in memory.
+     * @param {const std::vector<double> &} s; current state of the agent
+     */
+    void build_uct_tree(const std::vector<double> &s) {
+        root_node.clear_node();
+        root_node.set_state(s);
+        expd_counter = 0;
+        for(unsigned i=0; i<budget; ++i) {
+            //node *ptr = tree_policy(root_node);
+            //double total_return = default_policy(ptr);
+            //backup(total_return,ptr);
+            ++expd_counter;
+        }
+    }
+
+    /**
      * @brief Policy operator
      *
      * Policy operator for the undertaken action at given state.
@@ -43,7 +93,8 @@ public:
      * @return Return the undertaken action at s.
      */
 	std::vector<double> operator()(const std::vector<double> &s, environment &en) {
-        //TODO
+        build_uct_tree(s);
+        //return get_recommended_action(root_node);
 	}
 
     /**

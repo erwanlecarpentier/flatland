@@ -14,28 +14,30 @@ private :
     std::vector<double> state; ///<Unique labelling state for a root node
     std::vector<double> incoming_action; ///< Action of the parent node that led to this node
     std::vector<std::vector<double>> states; ///< Sampled states for a standard node
-    std::vector<std::vector<double>> actions; ///< Possible actions at this node (bandit arms)
+    std::vector<std::vector<double>> action_space; ///< Available actions at this node (bandit arms)
 
 public :
     node *parent; ///< Pointer to the parent node
     std::vector<node> children; ///< Vector of nodes children
+
+    node(){}
 
     /**
      * @brief Root node constructor
      *
      * Usually the first node to be created. The provided action space is a vector containing
      * all the actions and is shuffled at the nodes creation.
-     * @param {std::vector<std::vector<double>>} action_space; copied then shuffled in
+     * @param {std::vector<std::vector<double>>} _action_space; copied then shuffled in
      * actions of the node (bandit arms)
      */
     node(
         std::vector<double> _state,
-        std::vector<std::vector<double>> action_space) :
+        std::vector<std::vector<double>> _action_space) :
         state(_state)
     {
         root = true;
-        actions = action_space;
-        shuffle(actions);
+        action_space = _action_space;
+        shuffle(action_space);
         visits_count = 0;
     }
 
@@ -43,14 +45,14 @@ public :
      * @brief Standard node constructor
      *
      * Used during the expansion of the tree.
-     * @param {std::vector<std::vector<double>>} action_space; copied then shuffled in
+     * @param {std::vector<std::vector<double>>} _action_space; copied then shuffled in
      * actions of the node (bandit arms)
      */
     node(
         node * _parent,
         std::vector<double> _incoming_action,
         std::vector<double> _new_state,
-        std::vector<std::vector<double>> action_space) :
+        std::vector<std::vector<double>> _action_space) :
         incoming_action(_incoming_action),
         parent(_parent)
     {
@@ -58,8 +60,8 @@ public :
         value = 0.;
         visits_count = 0;
         states.push_back(_new_state);
-        actions = action_space;
-        shuffle(actions);
+        action_space = _action_space;
+        shuffle(action_space);
     }
 
     /**
@@ -137,20 +139,20 @@ public :
 
     /** @brief Get a copy of the actions vector */
     std::vector<std::vector<double>> get_actions() const {
-        return actions;
+        return action_space;
     }
 
     /** @brief Get one action of the node given its indice in the actions vector */
-    std::vector<double> get_action_at(unsigned indice) const {return actions.at(indice);}
+    std::vector<double> get_action_at(unsigned indice) const {return action_space.at(indice);}
 
     /** @brief Get the next expansion action among the available actions */
     std::vector<double> get_next_expansion_action() const {
-        return actions.at(children.size());
+        return action_space.at(children.size());
     }
 
     /** @brief Get the number of actions (arms of the bandit) */
     unsigned get_nb_of_actions() const {
-        return actions.size();
+        return action_space.size();
     }
 
     /** @brief Is fully expanded @return Return true if the node is fully expanded */
@@ -171,7 +173,7 @@ public :
      * @param {std::vector<double> &} new_state; first sampled state of the new child
      */
     void create_child(std::vector<double> &inc_ac, std::vector<double> &new_state) {
-        children.emplace_back(node(this,inc_ac,new_state,actions));
+        children.emplace_back(node(this,inc_ac,new_state,action_space));
     }
 
     /**
@@ -180,7 +182,7 @@ public :
      * Copy the given state to the nodes state. Node should be root.
      * @param {std::vector<double> &} s; copied state
      */
-    void set_state(std::vector<double> &s) {
+    void set_state(const std::vector<double> &s) {
         assert(root);
         state = s;
     }
@@ -226,7 +228,7 @@ public :
      */
     void move_to_child(unsigned indice, std::vector<double> &new_state) {
         assert(is_root());
-        actions = children[indice].get_actions();
+        action_space = children[indice].get_actions();
         states = children[indice].get_states();
         auto tmp = std::move(children[indice].children); // Temporary variable to prevent from overwriting
         for(auto &elt : tmp) {
