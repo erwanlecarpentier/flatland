@@ -2,6 +2,7 @@
 #define UCT_POLICY_HPP_
 
 #include <environment.hpp>
+#include <node.hpp>
 
 /**
  * @brief UCT policy
