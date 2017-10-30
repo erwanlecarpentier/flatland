@@ -18,19 +18,19 @@
 
 template <class PLC>
 void run(const parameters &p, bool print) {
-    environment e(p);
-    agent<PLC> a(p);
-    if(print) {
-        print_grid_with_agent<PLC>(e,a);
-    }
-    while(!e.is_terminal(a.state)) {
-        a.apply_policy();
-        e.transition<PLC>(a);
-        a.process_reward();
+    environment en(p);
+    agent<PLC> ag(p);
+    while(!en.is_terminal(ag.state)) {
+        ag.apply_policy(en);
+        en.transition(ag.state,ag.action,ag.reward,ag.state_p);
+        ag.process_reward();
         if(print) {
-            print_grid_with_agent<PLC>(e,a);
+            print_grid_with_agent<PLC>(en,ag);
         }
-        a.step();
+        ag.step();
+    }
+    if(print) {
+        print_grid_with_agent<PLC>(en,ag);
     }
 }
 

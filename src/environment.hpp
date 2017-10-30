@@ -1,8 +1,6 @@
 #ifndef ENVIRONMENT_HPP_
 #define ENVIRONMENT_HPP_
 
-#include <agent.hpp>
-
 class environment {
 public:
     bool is_continuous;
@@ -35,6 +33,29 @@ public:
         return grid_world.at(s.at(0)).at(s.at(1));
     }
 
+    /**
+     * @brief Action validity test & next state computation
+     *
+     * Return true if the action is valid and compute the next state reached by this action.
+     * @param {std::vector<double> &} s; state
+     * @param {std::vector<double> &} a; action
+     * @param {std::vector<double> &} s_p; next state
+     * @return Return true if the action is valid at the given state.
+     */
+    bool is_action_valid_at(
+        std::vector<double> &s,
+        std::vector<double> &a,
+        std::vector<double> &s_p)
+    {
+        s_p.push_back(s.at(0) + a.at(0));
+        s_p.push_back(s.at(1) + a.at(1));
+        assert(s_p.size() == 2);
+        if(grid_world_value(s_p) == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     /**
      * @brief State transition
@@ -52,15 +73,12 @@ public:
         assert(s.size() == 2);
         assert(a.size() == 2);
         std::vector<double> s_p;
-        s_p.push_back(s.at(0) + a.at(0));
-        s_p.push_back(s.at(1) + a.at(1));
-        if(grid_world_value(s_p) == -1) { // frontier
-            return s;
-        } else { // admissible state
+        if(is_action_valid_at(s,a,s_p)) { // admissible state
             return s_p;
+        } else { // frontier
+            return s;
         }
     }
-
 
     /**
      * @brief Reward function
@@ -85,18 +103,23 @@ public:
         }
     }
 
-
     /**
      * @brief Transition operator
      *
-     * Transition operator, apply a transition to an agent i.e. compute its resulting state
-     * and reward based on its state-action attributes.
-     * @param {agent &} ag; agent
+     * Transition operator, compute the resulting state and reward wrt a state and an action.
+     * @param {std::vector<double> &} s; state
+     * @param {std::vector<double> &} a; action
+     * @param {double} r; reward
+     * @param {std::vector<double> &} s_p; next state
      */
-    template <class PLC>
-    void transition(agent<PLC> &ag) {
-        ag.state_p = state_transition(ag.state,ag.action);
-        ag.reward = reward_function(ag.state,ag.action,ag.state_p);
+    void transition(
+        std::vector<double> &s,
+        std::vector<double> &a,
+        double & r,
+        std::vector<double> &s_p)
+    {
+        s_p = state_transition(s,a);
+        r = reward_function(s,a,s_p);
     }
 
     /**

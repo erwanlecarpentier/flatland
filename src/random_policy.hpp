@@ -1,22 +1,49 @@
 #ifndef RANDOM_POLICY_HPP_
 #define RANDOM_POLICY_HPP_
 
+#include <environment.hpp>
+
 /**
  * @brief Random policy
  */
 class random_policy {
 public:
     std::vector<std::vector<double>> action_space;
+
+    /**
+     * @brief Reduced action space
+     *
+     * Compute the action space available at the given state.
+     * @param {std::vector<double &} s; state
+     * @param {environment &} en; environment
+     * @return Return the reduced action space.
+     */
+    std::vector<std::vector<double>> reduced_action_space(
+        std::vector<double> &s,
+        environment &en)
+    {
+        std::vector<std::vector<double>> ras;
+        for(auto &a : action_space) {
+            std::vector<double> s_p;
+            if(en.is_action_valid_at(s,a,s_p)) {
+                ras.push_back(a);
+            }
+        }
+        return ras;
+    }
+
     /**
      * @brief Policy operator
      *
      * Policy operator for the undertaken action at given state.
      * @param {std::vector<double> &} s; given state
+     * @param {environment &} en; reference to the real environment for action space
+     * reduction (function of the state)
      * @return Return the undertaken action at s.
      */
-	std::vector<double> operator()(std::vector<double> &s) {
+	std::vector<double> operator()(std::vector<double> &s, environment &en) {
         (void) s;
-        return rand_element(action_space);
+        return rand_element(reduced_action_space(s,en));
 	}
 
     /**
