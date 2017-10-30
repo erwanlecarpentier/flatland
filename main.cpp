@@ -15,6 +15,7 @@
 #include <agent.hpp>
 #include <display.hpp>
 #include <random_policy.hpp>
+#include <uct_policy.hpp>
 
 template <class PLC>
 void run(const parameters &p, bool print) {
@@ -36,8 +37,8 @@ void run(const parameters &p, bool print) {
 
 void run_switch(const parameters &p, bool print) {
     switch(p.POLICY_SELECTOR) {
-        case 0: { // TODO
-            //run<todo_policy>(p,print);
+        case 0: { // UCT policy
+            run<uct_policy>(p,print);
             break;
         }
         default: { // random policy

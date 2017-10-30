@@ -1,12 +1,12 @@
-#ifndef RANDOM_POLICY_HPP_
-#define RANDOM_POLICY_HPP_
+#ifndef TODO_POLICY_HPP_
+#define TODO_POLICY_HPP_
 
 #include <environment.hpp>
 
 /**
- * @brief Random policy
+ * @brief TODO policy
  */
-class random_policy {
+class todo_policy {
 public:
     std::vector<std::vector<double>> action_space; ///< Full action space
 
@@ -42,8 +42,7 @@ public:
      * @return Return the undertaken action at s.
      */
 	std::vector<double> operator()(const std::vector<double> &s, environment &en) {
-        (void) s;
-        return rand_element(reduced_action_space(s,en));
+        //TODO
 	}
 
     /**
@@ -59,10 +58,7 @@ public:
         const std::vector<double> & a,
         const std::vector<double> & s_p)
     {
-        // Random policy does not learn.
-        (void) s;
-        (void) a;
-        (void) s_p;
+        //TODO
     }
 
     /**
@@ -76,4 +72,4 @@ public:
     }
 };
 
-#endif // RANDOM_POLICY_HPP_
+#endif // TODO_POLICY_HPP_
