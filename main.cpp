@@ -18,23 +18,20 @@
 
 template <class PLC>
 void run(const parameters &p, bool print) {
-    std::cout << "Run" << std::endl; //TRM
     environment e(p);
     agent<PLC> a(p);
     if(print) {
-        print_grid_with_agent(e,a.state);
+        print_grid_with_agent<PLC>(e,a);
     }
-    /*
     while(!e.is_terminal(a.state)) {
         a.apply_policy();
         e.transition<PLC>(a);
         a.process_reward();
-        a.step();
         if(print) {
-            printv(a.state);
+            print_grid_with_agent<PLC>(e,a);
         }
+        a.step();
     }
-    */
 }
 
 void run_switch(const parameters &p, bool print) {
@@ -55,7 +52,6 @@ void run_switch(const parameters &p, bool print) {
 int main() {
     try {
         srand(time(NULL));
-        std::cout << "About to run" << std::endl; //TRM
         run_switch(parameters("config/main.cfg"),true);
     }
     catch(const std::exception &e) {

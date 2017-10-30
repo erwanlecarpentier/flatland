@@ -33,6 +33,9 @@ public:
         std::vector<double> & s_p)
     {
         // Random policy does not learn.
+        (void) s;
+        (void) a;
+        (void) s_p;
     }
 
     /**

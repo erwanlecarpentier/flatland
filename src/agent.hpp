@@ -23,6 +23,8 @@ public:
      * @param {const parameters &} p; parameters
      */
     agent(const parameters &p) : state(p.INITIAL_STATE) {
+        state_p = state;
+        action = std::vector<double> {0.,0.};
         policy.set_action_space(p.ACTION_SPACE);
     }
 

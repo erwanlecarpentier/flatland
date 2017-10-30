@@ -49,7 +49,16 @@ public:
         std::vector<double> &s,
         std::vector<double> &a)
     {
-        //TODO
+        assert(s.size() == 2);
+        assert(a.size() == 2);
+        std::vector<double> s_p;
+        s_p.push_back(s.at(0) + a.at(0));
+        s_p.push_back(s.at(1) + a.at(1));
+        if(grid_world_value(s_p) == -1) { // frontier
+            return s;
+        } else { // admissible state
+            return s_p;
+        }
     }
 
 
@@ -67,7 +76,13 @@ public:
         std::vector<double> &a,
         std::vector<double> &s_p)
     {
-        //TODO
+        (void) s;
+        (void) a;
+        if(grid_world_value(s_p) == 1) {
+            return 1.;
+        } else {
+            return 0.;
+        }
     }
 
 
