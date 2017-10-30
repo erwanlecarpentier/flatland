@@ -1,6 +1,8 @@
 #ifndef ENVIRONMENT_HPP_
 #define ENVIRONMENT_HPP_
 
+#include <agent.hpp>
+
 class environment {
 public:
     bool is_continuous;
@@ -31,6 +33,55 @@ public:
     int grid_world_value(const std::vector<double> &s) {
         assert(s.size() == 2);
         return grid_world.at(s.at(0)).at(s.at(1));
+    }
+
+
+    /**
+     * @brief State transition
+     *
+     * State transition function, compute the resulting state from the application of the
+     * given action at the given state.
+     * @param {std::vector<double> &} s; state
+     * @param {std::vector<double> &} a; action
+     * @return Return the resulting state.
+     */
+    std::vector<double> state_transition(
+        std::vector<double> &s,
+        std::vector<double> &a)
+    {
+        //TODO
+    }
+
+
+    /**
+     * @brief Reward function
+     *
+     * Reward function, compute the resulting reward from the transition (s,a,s_p).
+     * @param {std::vector<double> &} s; state
+     * @param {std::vector<double> &} a; action
+     * @param {std::vector<double> &} s_p; next state
+     * @return Return the resulting reward.
+     */
+    double reward_function(
+        std::vector<double> &s,
+        std::vector<double> &a,
+        std::vector<double> &s_p)
+    {
+        //TODO
+    }
+
+
+    /**
+     * @brief Transition operator
+     *
+     * Transition operator, apply a transition to an agent i.e. compute its resulting state
+     * and reward based on its state-action attributes.
+     * @param {agent &} ag; agent
+     */
+    template <class PLC>
+    void transition(agent<PLC> &ag) {
+        ag.state_p = state_transition(ag.state,ag.action);
+        ag.reward = reward_function(ag.state,ag.action,ag.state_p);
     }
 
     /**

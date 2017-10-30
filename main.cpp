@@ -16,7 +16,7 @@
 #include <random_policy.hpp>
 
 template <class PLC>
-void run(bool print, const parameters &p) {
+void run(const parameters &p, bool print) {
     environment e(p);
     agent<PLC> a(p);
     if(print) {
@@ -24,17 +24,25 @@ void run(bool print, const parameters &p) {
         printv(a.state);
     }
     while(!e.is_terminal(a.state)) {
-        //TODO
-        //a.apply_policy();
+        a.apply_policy();
+        e.transition<PLC>(a);
+        a.process_reward();
+        a.step();
+        if(print) {
+            printv(a.state);
+        }
     }
 }
 
-void run_switch(const parameters &p)
-{
-    bool print = true;
-    switch(p.POLICY_SELECTOR)
-    {
-        case 0: run< random_policy >(print, p); break;
+void run_switch(const parameters &p, bool print) {
+    switch(p.POLICY_SELECTOR) {
+        case 0: { // Random policy
+            run<random_policy>(p,print);
+            break;
+        }
+        default: {
+            //TODO
+        }
     }
 }
 
@@ -44,7 +52,7 @@ void run_switch(const parameters &p)
 int main() {
     try {
         srand(time(NULL));
-        run_switch(parameters("config/main.cfg"));
+        run_switch(parameters("config/main.cfg"),true);
     }
     catch(const std::exception &e) {
         std::cerr<<"Error in main(): standard exception caught: "<<e.what()<<std::endl;
