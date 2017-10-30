@@ -21,10 +21,9 @@ public:
      * @param {const parameters &} p; parameters
      */
     uct_policy(const parameters &p) {
-        action_space = p.ACTION_SPACE;
-        //TODO
-        //budget
+        budget = p.TREE_SEARCH_BUDGET;
         expd_counter = 0;
+        action_space = p.ACTION_SPACE;
     }
 
     /**
