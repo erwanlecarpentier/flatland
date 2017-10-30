@@ -6,6 +6,7 @@
  */
 class random_policy {
 public:
+    std::vector<std::vector<double>> action_space;
     /**
      * @brief Policy operator
      *
@@ -15,16 +16,16 @@ public:
      */
 	std::vector<double> operator()(std::vector<double> &s) {
         (void) s;
-        return std::vector<double> {1.,0.};
+        return rand_element(action_space);
 	}
 
     /**
      * @brief Process reward
      *
      * Process the resulting reward from transition (s,a,s_p)
-     * @param {std::vector<double> &} s;
-     * @param {std::vector<double> &} a;
-     * @param {std::vector<double> &} s_p;
+     * @param {std::vector<double> &} s; state
+     * @param {std::vector<double> &} a; action
+     * @param {std::vector<double> &} s_p; next state
      */
     void process_reward(
         std::vector<double> & s,
@@ -32,6 +33,16 @@ public:
         std::vector<double> & s_p)
     {
         // Random policy does not learn.
+    }
+
+    /**
+     * @brief Set action space
+     *
+     * Set the action space attribute as the input action space.
+     * @param {std::vector<std::vector<double>>} as; given action space to be copied
+     */
+    void set_action_space(std::vector<std::vector<double>> as) {
+        action_space = as;
     }
 };
 

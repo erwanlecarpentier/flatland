@@ -22,7 +22,9 @@ public:
      * Default constructor initialising the parameters via a 'parameters' object.
      * @param {const parameters &} p; parameters
      */
-    agent(const parameters &p) : state(p.INITIAL_STATE) {}
+    agent(const parameters &p) : state(p.INITIAL_STATE) {
+        policy.set_action_space(p.ACTION_SPACE);
+    }
 
     /**
      * @brief Apply policy

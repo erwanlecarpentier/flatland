@@ -17,12 +17,17 @@
 
 template <class PLC>
 void run(const parameters &p, bool print) {
+    std::cout << "Run" << std::endl; //TRM
     environment e(p);
     agent<PLC> a(p);
     if(print) {
         e.print_grid();
         printv(a.state);
     }
+    for(auto &elt : a.policy.action_space) {
+        printv(elt);
+    }
+    /*
     while(!e.is_terminal(a.state)) {
         a.apply_policy();
         e.transition<PLC>(a);
@@ -32,16 +37,17 @@ void run(const parameters &p, bool print) {
             printv(a.state);
         }
     }
+    */
 }
 
 void run_switch(const parameters &p, bool print) {
     switch(p.POLICY_SELECTOR) {
-        case 0: { // Random policy
-            run<random_policy>(p,print);
+        case 0: { // TODO
+            //run<todo_policy>(p,print);
             break;
         }
-        default: {
-            //TODO
+        default: { // random policy
+            run<random_policy>(p,print);
         }
     }
 }
@@ -52,12 +58,13 @@ void run_switch(const parameters &p, bool print) {
 int main() {
     try {
         srand(time(NULL));
+        std::cout << "About to run" << std::endl; //TRM
         run_switch(parameters("config/main.cfg"),true);
     }
     catch(const std::exception &e) {
-        std::cerr<<"Error in main(): standard exception caught: "<<e.what()<<std::endl;
+        std::cerr << "Error in main(): standard exception caught: " << e.what() << std::endl;
     }
     catch(...) {
-        std::cerr<<"Error in main(): unknown exception caught"<<std::endl;
+        std::cerr << "Error in main(): unknown exception caught" << std::endl;
     }
 }

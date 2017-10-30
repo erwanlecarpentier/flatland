@@ -25,7 +25,21 @@ struct wrong_grid_path : std::exception {
     virtual ~wrong_grid_path() noexcept {}
 
     virtual const char * what() const noexcept override {
-        return "in config file: wring grid path.\n";
+        return "in config file: wrong grid path.\n";
+    }
+};
+
+/**
+ * @brief Wrong action names
+ *
+ * Exception for action names configuration file exception.
+ */
+struct action_names_configuration_file_exception : std::exception {
+    explicit action_names_configuration_file_exception() noexcept {}
+    virtual ~action_names_configuration_file_exception() noexcept {}
+
+    virtual const char * what() const noexcept override {
+        return "in config file: wrong action names.\n";
     }
 };
 

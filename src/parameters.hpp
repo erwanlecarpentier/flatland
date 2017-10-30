@@ -17,6 +17,7 @@ public:
     std::vector<std::vector<int>> GRID_WORLD;
     std::vector<double> INITIAL_STATE;
     unsigned POLICY_SELECTOR;
+    std::vector<std::vector<double>> ACTION_SPACE;
 
     /**
      * @brief Simulation parameters 'default' constructor
@@ -40,13 +41,29 @@ public:
         cfg.readFile(cfg_path);
         std::string grid_path;
         double sr = 0., sc = 0.;
+        unsigned nbac= 0;
         if(cfg.lookupValue("is_continuous",IS_CONTINUOUS)
         && cfg.lookupValue("grid_path",grid_path)
         && cfg.lookupValue("initial_state_row",sr)
         && cfg.lookupValue("initial_state_col",sc)
-        && cfg.lookupValue("policy_selector",POLICY_SELECTOR)) {
+        && cfg.lookupValue("policy_selector",POLICY_SELECTOR)
+        && cfg.lookupValue("nb_actions",nbac)) {
             GRID_WORLD = parse_grid(grid_path);
             INITIAL_STATE = std::vector<double> {sr,sc};
+            for(unsigned i=0; i<nbac; ++i) { // actions parsing
+                std::string rname = "a";
+                rname += std::to_string(i);
+                std::string cname = rname;
+                rname += std::to_string(0);
+                cname += std::to_string(1);
+                double rval = 0., cval = 0.;
+                if(cfg.lookupValue(rname,rval)
+                && cfg.lookupValue(cname,cval)) {
+                    ACTION_SPACE.emplace_back(std::vector<double>{rval,cval});
+                } else { // Error in action names syntax
+                    throw action_names_configuration_file_exception();
+                }
+            }
         }
         else { // Error in config file
             throw wrong_syntax_configuration_file_exception();
