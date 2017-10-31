@@ -8,7 +8,7 @@
 /**
  * @brief UCT policy
  */
-class uct_policy {
+class uct {
 public:
     node root_node; ///< Root node of the tree
     double uct_cst; ///< UCT constant within UCT formula
@@ -28,7 +28,7 @@ public:
      * @param {environment *} en; pointer to the environment, used for action space reduction,
      * termination criterion and generative model
      */
-    uct_policy(const parameters &p, environment *en) :
+    uct(const parameters &p, environment *en) :
         envt(en),
         rndplc(p,en)
     {

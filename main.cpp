@@ -16,6 +16,7 @@
 #include <display.hpp>
 #include <policy/random.hpp>
 #include <policy/uct.hpp>
+#include <policy/oluct.hpp>
 
 /**
  * @brief Run
@@ -49,7 +50,11 @@ void run(const parameters &p, bool print) {
 void run_switch(const parameters &p, bool print) {
     switch(p.POLICY_SELECTOR) {
         case 0: { // UCT policy
-            run<uct_policy>(p,print);
+            run<uct>(p,print);
+            break;
+        }
+        case 1: { // OLUCT policy
+            run<oluct>(p,print);
             break;
         }
         default: { // random policy
