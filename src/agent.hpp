@@ -37,11 +37,9 @@ public:
      * @brief Apply policy
      *
      * Modify the action attribute wrt the state attribute and the chosen policy.
-     * @param {environment &} en; reference to the real environment for action space
-     * reduction (function of the state)
      */
-    void apply_policy(environment &en) {
-        action = policy(state,en);
+    void apply_policy() {
+        action = policy(state);
     }
 
     /**
