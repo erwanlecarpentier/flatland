@@ -85,6 +85,11 @@ public :
         children.clear();
     }
 
+    /** @brief Set as root */
+    void set_as_root() {
+        root = true;
+    }
+
     /** @brief Get the number of children */
     unsigned get_nb_children() const {
         return children.size();
@@ -128,6 +133,20 @@ public :
         return states.back();
     }
 
+    /**
+     * @brief Get state or last sampled state
+     *
+     * Get either the unique labelling state if node is root, or the last sampled state
+     * if non-root.
+     */
+    std::vector<double> get_state_or_last() const {
+        if(is_root()) {
+            return get_state();
+        } else {
+            return get_last_sampled_state();
+        }
+    }
+
     /** @brief Get the incoming action of the node (non-root node) */
     std::vector<double> get_incoming_action() const {
         assert(!root);
@@ -151,7 +170,9 @@ public :
     }
 
     /** @brief Get one action of the node given its indice in the actions vector */
-    std::vector<double> get_action_at(unsigned indice) const {return action_space.at(indice);}
+    std::vector<double> get_action_at(unsigned indice) const {
+        return action_space.at(indice);
+    }
 
     /** @brief Get the next expansion action among the available actions */
     std::vector<double> get_next_expansion_action() const {
@@ -179,12 +200,14 @@ public :
      * Create a child based on the incoming action.
      * @param {std::vector<double> &} inc_ac; incoming action of the new child
      * @param {std::vector<double> &} state; first sampled state of the new child
+     * @param {std::vector<std::vector<double>>} as; action space
      */
     void create_child(
         std::vector<double> &inc_ac,
-        std::vector<double> &state)
+        std::vector<double> &state,
+        std::vector<std::vector<double>> as)
     {
-        children.emplace_back(node(this,inc_ac,state,action_space));
+        children.emplace_back(node(this,inc_ac,state,as));
     }
 
     /**

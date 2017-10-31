@@ -57,7 +57,7 @@ public:
         && cfg.lookupValue("nb_actions",nbac)
         && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)
         && cfg.lookupValue("uct_cst",UCT_CST)
-        && cfg.lookupValue("discont_factor",DISCOUNT_FACTOR)
+        && cfg.lookupValue("discount_factor",DISCOUNT_FACTOR)
         && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)) {
             GRID_WORLD = parse_grid(grid_path);
             INITIAL_STATE = std::vector<double> {sr,sc};

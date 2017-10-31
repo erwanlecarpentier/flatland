@@ -25,8 +25,13 @@ public:
      *
      * Make use of the input parameters.
      * @param {const parameters &} p; parameters
+     * @param {environment *} en; pointer to the environment, used for action space reduction,
+     * termination criterion and generative model
      */
-    uct_policy(const parameters &p) : rndplc(p) {
+    uct_policy(const parameters &p, environment *en) :
+        envt(en),
+        rndplc(p,en)
+    {
         budget = p.TREE_SEARCH_BUDGET;
         expd_counter = 0;
         action_space = p.ACTION_SPACE;
@@ -42,9 +47,10 @@ public:
      * Used for action space reduction, termination criterion and generative model.
      * @param {environment *} en; input environment
      */
+    /* TRM
     void set_model(environment * en) {
         envt = en;
-    }
+    }*/
 
     /**
      * @brief Reduced action space
@@ -96,12 +102,14 @@ public:
     void sample_new_state(node * v) {
         assert(!v->is_root());
         std::vector<double> a = v->get_incoming_action();
-        std::vector<double> s;
+        std::vector<double> s = (v->parent)->get_state_or_last();
+        /* TRM
         if((v->parent)->is_root()) {
             s = (v->parent)->get_state();
         } else {
             s = (v->parent)->get_last_sampled_state();
         }
+        */
         std::vector<double> s_p;
         envt->state_transition(s,a,s_p);
         v->add_to_states(s_p);
@@ -116,15 +124,21 @@ public:
      */
     node * expand(node &v) {
         std::vector<double> nodes_action = v.get_next_expansion_action();
-        std::vector<double> nodes_state;
+        std::vector<double> nodes_state = v.get_state_or_last();
+        /*
         if(v.is_root()) {
             nodes_state = v.get_state();
         } else {
             nodes_state = v.get_last_sampled_state();
         }
+        */
         std::vector<double> new_state;
         envt->state_transition(nodes_state,nodes_action,new_state);
-        v.create_child(nodes_action,new_state);
+        v.create_child(
+            nodes_action,
+            new_state,
+            action_space //TODO: warning - stochastic case
+        );
         return v.get_last_child();
     }
 
@@ -211,7 +225,7 @@ public:
         ptr->add_to_value(total_return);
         total_return *= discount_factor; // apply the discount for the parent node
         total_return += envt->reward_function( // add the reward of the transition
-            ptr->parent->get_last_sampled_state(),
+            ptr->parent->get_state_or_last(),
             ptr->get_incoming_action(),
             ptr->get_last_sampled_state()
         );
@@ -229,6 +243,7 @@ public:
      */
     void build_uct_tree(const std::vector<double> &s) {
         root_node.clear_node();
+        root_node.set_as_root();
         root_node.set_state(s);
         root_node.set_action_space(reduced_action_space(s));
         expd_counter = 0;
@@ -293,7 +308,7 @@ public:
         const std::vector<double> & a,
         const std::vector<double> & s_p)
     {
-        // UCT policy does not learn.
+        /* Vanilla UCT policy does not learn. */
         (void) s;
         (void) a;
         (void) s_p;

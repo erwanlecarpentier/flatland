@@ -23,10 +23,13 @@ public:
      *
      * Default constructor initialising the parameters via a 'parameters' object.
      * @param {const parameters &} p; parameters
+     * @param {environment *} en; pointer to the environment, used for action space reduction /
+     * termination criterion / generative model
      */
     agent(
-        const parameters &p) :
-        policy(p),
+        const parameters &p,
+        environment *en) :
+        policy(p,en),
         state(p.INITIAL_STATE)
     {
         state_p = state;

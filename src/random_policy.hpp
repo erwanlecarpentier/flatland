@@ -16,20 +16,10 @@ public:
      *
      * Constructu using the given parameters
      * @param {const parameters &} p; parameters
+     * @param {environment *} en; pointer to the environment, used for action space reduction
      */
-    random_policy(const parameters &p) {
+    random_policy(const parameters &p, environment *en) : envt(en) {
         action_space = p.ACTION_SPACE;
-    }
-
-    /**
-     * @brief Set model
-     *
-     * Take an environment pointer and set it as a model.
-     * Used for action space reduction.
-     * @param {environment *} en; input environment
-     */
-    void set_model(environment * en) {
-        envt = en;
     }
 
     /**
