@@ -8,7 +8,6 @@
  */
 class random_policy {
 public:
-    //std::vector<std::vector<double>> action_space; ///< Full action space //TRM
     environment * envt; ///< Pointer to an environment, used for action space reduction
 
     /**
@@ -21,26 +20,6 @@ public:
     random_policy(const parameters &p, environment *en) : envt(en) {
         (void) p; // No parameters in random policy
     }
-
-    /**
-     * @brief Reduced action space
-     *
-     * Compute the action space available at the given state.
-     * @param {const std::vector<double &} s; state
-     * @return Return the reduced action space.
-     */
-    /* TRM
-    std::vector<std::vector<double>> reduced_action_space(const std::vector<double> &s) {
-        std::vector<std::vector<double>> ras;
-        for(auto &a : action_space) {
-            std::vector<double> s_p;
-            if(envt->state_transition(s,a,s_p)) {
-                ras.push_back(a);
-            }
-        }
-        return ras;
-    }
-    */
 
     /**
      * @brief Policy operator

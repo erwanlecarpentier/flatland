@@ -16,7 +16,6 @@ public:
     unsigned horizon; ///< Horizon for default policy
     unsigned budget; ///< Algorithm budget (number of expanded nodes)
     unsigned expd_counter; ///< Counter of the number of expanded nodes
-    //std::vector<std::vector<double>> action_space; ///< Full action space //TRM
     environment * envt; ///< Pointer to an environment, used for action space reduction, termination criterion and generative model
     random_policy rndplc; ///< Random policy used as a default policy
 
@@ -35,31 +34,10 @@ public:
     {
         budget = p.TREE_SEARCH_BUDGET;
         expd_counter = 0;
-        //action_space = p.ACTION_SPACE; //TRM
         uct_cst = p.UCT_CST;
         discount_factor = p.DISCOUNT_FACTOR;
         horizon = p.DEFAULT_POLICY_HORIZON;
     }
-
-    /**
-     * @brief Reduced action space
-     *
-     * Compute the action space available at the given state.
-     * @param {const std::vector<double &} s; state
-     * @return Return the reduced action space.
-     */
-    /* TRM
-    std::vector<std::vector<double>> reduced_action_space(const std::vector<double> &s) {
-        std::vector<std::vector<double>> ras;
-        for(auto &a : action_space) {
-            std::vector<double> s_p;
-            if(envt->state_transition(s,a,s_p)) {
-                ras.push_back(a);
-            }
-        }
-        return ras;
-    }
-    */
 
     /**
      * @brief Terminal node test
@@ -289,18 +267,6 @@ public:
         (void) a;
         (void) s_p;
     }
-
-    /**
-     * @brief Set action space
-     *
-     * Set the action space attribute as the input action space.
-     * @param {const std::vector<std::vector<double>>} as; given action space to be copied
-     */
-    /* TRM
-    void set_action_space(const std::vector<std::vector<double>> as) {
-        action_space = as;
-    }
-    */
 };
 
 #endif // UCT_POLICY_HPP_
