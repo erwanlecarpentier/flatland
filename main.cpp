@@ -21,6 +21,13 @@ template <class PLC>
 void run(const parameters &p, bool print) {
     environment en(p);
     agent<PLC> ag(p);
+    switch(p.MODEL_SELECTOR) {
+        case 0 : { // real model
+            //ag.policy.set_model(&en);
+            break;
+        }
+        default : {} // no model
+    }
     while(!en.is_terminal(ag.state)) {
         ag.apply_policy(en);
         en.transition(ag.state,ag.action,ag.reward,ag.state_p);

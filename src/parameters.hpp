@@ -17,6 +17,7 @@ public:
     std::vector<std::vector<int>> GRID_WORLD;
     std::vector<double> INITIAL_STATE;
     unsigned POLICY_SELECTOR;
+    unsigned MODEL_SELECTOR;
     std::vector<std::vector<double>> ACTION_SPACE;
     unsigned TREE_SEARCH_BUDGET; ///< Budget for tree-search algorithms
 
@@ -48,6 +49,7 @@ public:
         && cfg.lookupValue("initial_state_row",sr)
         && cfg.lookupValue("initial_state_col",sc)
         && cfg.lookupValue("policy_selector",POLICY_SELECTOR)
+        && cfg.lookupValue("model_selector",MODEL_SELECTOR)
         && cfg.lookupValue("nb_actions",nbac)
         && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)) {
             GRID_WORLD = parse_grid(grid_path);
