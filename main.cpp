@@ -14,8 +14,8 @@
 #include <environment.hpp>
 #include <agent.hpp>
 #include <display.hpp>
-#include <random_policy.hpp>
-#include <uct_policy.hpp>
+#include <policy/random.hpp>
+#include <policy/uct.hpp>
 
 /**
  * @brief Run

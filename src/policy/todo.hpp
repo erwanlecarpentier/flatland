@@ -9,14 +9,16 @@
 class todo_policy {
 public:
     std::vector<std::vector<double>> action_space; ///< Full action space
+    environment * envt; ///< Pointer to an environment, used for action space reduction
 
     /**
      * @brief Constructor
      *
      * Constructu using the given parameters
      * @param {const parameters &} p; parameters
+     * @param {environment *} en; pointer to the environment, used for action space reduction
      */
-    todo_policy(const parameters &p) {
+    todo_policy(const parameters &p, environment *en) {
         action_space = p.ACTION_SPACE;
     }
 
@@ -25,17 +27,13 @@ public:
      *
      * Compute the action space available at the given state.
      * @param {const std::vector<double &} s; state
-     * @param {environment &} en; environment
      * @return Return the reduced action space.
      */
-    std::vector<std::vector<double>> reduced_action_space(
-        const std::vector<double> &s,
-        environment &en)
-    {
+    std::vector<std::vector<double>> reduced_action_space(const std::vector<double> &s) {
         std::vector<std::vector<double>> ras;
         for(auto &a : action_space) {
             std::vector<double> s_p;
-            if(en.state_transition(s,a,s_p)) {
+            if(envt->state_transition(s,a,s_p)) {
                 ras.push_back(a);
             }
         }
@@ -47,11 +45,9 @@ public:
      *
      * Policy operator for the undertaken action at given state.
      * @param {const std::vector<double> &} s; given state
-     * @param {environment &} en; reference to the real environment for action space
-     * reduction (function of the state)
      * @return Return the undertaken action at s.
      */
-	std::vector<double> operator()(const std::vector<double> &s, environment &en) {
+	std::vector<double> operator()(const std::vector<double> &s) {
         //TODO
 	}
 

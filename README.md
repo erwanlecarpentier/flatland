@@ -10,7 +10,7 @@ parameters.
 Use the configuration files in the ./config/ repository in order to set the
 simulation parameters.
 
-In order to introduce a new policy, modify the ./src/todo_policy.hpp file,
+In order to introduce a new policy, modify the ./src/policy/todo.hpp file,
 indeed, the policy classes are template classes that supposes a few methods to
 be implemented.
 

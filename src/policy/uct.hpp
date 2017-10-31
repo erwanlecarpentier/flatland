@@ -2,8 +2,8 @@
 #define UCT_POLICY_HPP_
 
 #include <environment.hpp>
-#include <node.hpp>
-#include <random_policy.hpp>
+#include <policy/node.hpp>
+#include <policy/random.hpp>
 
 /**
  * @brief UCT policy
