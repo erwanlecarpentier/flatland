@@ -29,6 +29,7 @@ public:
      * termination criterion and generative model
      */
     uct(const parameters &p, environment *en) :
+        root_node(std::vector<double>{0.,0.},p.ACTION_SPACE), // null state as default
         envt(en),
         rndplc(p,en)
     {

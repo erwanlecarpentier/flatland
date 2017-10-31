@@ -186,6 +186,7 @@ public :
 
     /** @brief Is fully expanded @return Return true if the node is fully expanded */
     bool is_fully_expanded() const {
+        assert(get_nb_of_actions() != 0);
         return (get_nb_children() == get_nb_of_actions());
     }
 
@@ -260,7 +261,7 @@ public :
      * @param {unsigned} indice; indice of the moved child
      * @param {std::vector<double> &} new_state; new labelling state
      */
-    void move_to_child(unsigned indice, std::vector<double> &new_state) {
+    void move_to_child(unsigned indice, const std::vector<double> &new_state) {
         assert(is_root());
         action_space = children[indice].get_action_space();
         states = children[indice].get_states();
