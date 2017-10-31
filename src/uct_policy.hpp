@@ -91,13 +91,6 @@ public:
         assert(!v->is_root());
         std::vector<double> a = v->get_incoming_action();
         std::vector<double> s = (v->parent)->get_state_or_last();
-        /* TRM
-        if((v->parent)->is_root()) {
-            s = (v->parent)->get_state();
-        } else {
-            s = (v->parent)->get_last_sampled_state();
-        }
-        */
         std::vector<double> s_p;
         envt->state_transition(s,a,s_p);
         v->add_to_states(s_p);
@@ -113,13 +106,6 @@ public:
     node * expand(node &v) {
         std::vector<double> nodes_action = v.get_next_expansion_action();
         std::vector<double> nodes_state = v.get_state_or_last();
-        /* TRM
-        if(v.is_root()) {
-            nodes_state = v.get_state();
-        } else {
-            nodes_state = v.get_last_sampled_state();
-        }
-        */
         std::vector<double> new_state;
         envt->state_transition(nodes_state,nodes_action,new_state);
         v.create_child(
