@@ -17,11 +17,18 @@
 #include <random_policy.hpp>
 #include <uct_policy.hpp>
 
+/**
+ * @brief Run
+ *
+ * Run a single simulation using the given parameters.
+ * @param {const parameters &} p; parameters of the simulation
+ * @param {bool} print; set to true for display
+ */
 template <class PLC>
 void run(const parameters &p, bool print) {
     environment en(p);
     agent<PLC> ag(p);
-    ag.policy.set_model(&en);
+    ag.policy.set_model(&en); // model used for action space reduction / termination criterion / transitions generation
     while(!en.is_terminal(ag.state)) {
         ag.apply_policy();
         en.transition(ag.state,ag.action,ag.reward,ag.state_p);

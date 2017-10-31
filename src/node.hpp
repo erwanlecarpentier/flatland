@@ -151,7 +151,7 @@ public :
     }
 
     /** @brief Get one action of the node given its indice in the actions vector */
-    std::vector<double> get_action_nb(unsigned indice) const {return action_space.at(indice);}
+    std::vector<double> get_action_at(unsigned indice) const {return action_space.at(indice);}
 
     /** @brief Get the next expansion action among the available actions */
     std::vector<double> get_next_expansion_action() const {

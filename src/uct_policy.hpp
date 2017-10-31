@@ -3,6 +3,7 @@
 
 #include <environment.hpp>
 #include <node.hpp>
+#include <random_policy.hpp>
 
 /**
  * @brief UCT policy
@@ -10,10 +11,14 @@
 class uct_policy {
 public:
     node root_node; ///< Root node of the tree
+    double uct_cst; ///< UCT constant within UCT formula
+    double discount_factor;
+    unsigned horizon; ///< Horizon for default policy
     unsigned budget; ///< Algorithm budget (number of expanded nodes)
     unsigned expd_counter; ///< Counter of the number of expanded nodes
     std::vector<std::vector<double>> action_space; ///< Full action space
     environment * envt; ///< Pointer to an environment, used for action space reduction, termination criterion and generative model
+    random_policy rndplc; ///< Random policy used as a default policy
 
     /**
      * @brief Constructor
@@ -21,10 +26,13 @@ public:
      * Make use of the input parameters.
      * @param {const parameters &} p; parameters
      */
-    uct_policy(const parameters &p) {
+    uct_policy(const parameters &p) : rndplc(p) {
         budget = p.TREE_SEARCH_BUDGET;
         expd_counter = 0;
         action_space = p.ACTION_SPACE;
+        uct_cst = p.UCT_CST;
+        discount_factor = p.DISCOUNT_FACTOR;
+        horizon = p.DEFAULT_POLICY_HORIZON;
     }
 
     /**
@@ -121,6 +129,26 @@ public:
     }
 
     /**
+     * @brief UCT child
+     *
+     * UCT selection method for the tree policy.
+     * @param {node &} v; parent node
+     * @return Return the selected child according to the UCT formula
+     */
+    node * uct_child(node &v) {
+        std::vector<double> uct_scores;
+        for(auto &elt : v.children) {
+            assert(elt.get_visits_count() != 0 && expd_counter > 0);
+            uct_scores.emplace_back(
+                elt.get_value() + 2 * uct_cst *
+                sqrt(log((double) expd_counter)/ ((double) elt.get_visits_count()))
+            );
+        }
+        unsigned ind = argmax(uct_scores);
+        return &v.children.at(ind);
+    }
+
+    /**
      * @brief Tree policy
      *
      * Apply the tree policy.
@@ -135,9 +163,60 @@ public:
         } else if(!v.is_fully_expanded()) { // expand node
             return expand(v);
         } else { // apply UCT tree policy
-            //node * v_p = uct_child(v);
-            //sample_new_state(v_p);
-            //return tree_policy(*v_p);
+            node * v_p = uct_child(v);
+            sample_new_state(v_p);
+            return tree_policy(*v_p);
+        }
+    }
+
+    /**
+     * @brief Default policy
+     *
+     * Compute the total return by running an episode with the default policy.
+     * The simulation starts from the last sampled state of the input node.
+     * @param {node *} ptr; pointer to the input node
+     */
+    double default_policy(node * ptr) {
+        std::vector<double> s = ptr->get_last_sampled_state();
+        if(is_node_terminal(*ptr)) {
+            std::vector<double> a = {0.,0.};
+            return envt->reward_function(s,a,s);
+        }
+        double total_return = 0.;
+        std::vector<double> a = rndplc(s);
+        for(unsigned t=0; t<horizon; ++t) {
+            std::vector<double> s_p;
+            envt->state_transition(s,a,s_p);
+            total_return += pow(discount_factor,(double)t) * envt->reward_function(s,a,s_p);
+            if(envt->is_terminal(s)) { // Termination criterion
+                break;
+            }
+            s = s_p;
+            a = rndplc(s);
+        }
+        return total_return;
+    }
+
+    /**
+     * @brief Backup method
+     *
+     * Increment all the visited nodes visits counters and update their values w.r.t. the
+     * given discounted return.
+     * This method is recursive.
+     * @param {double &} total_return; return to be backed up, iteratively discounted
+     * @param {node *} ptr; pointer to the node, first the leaf node, then to the parents
+     */
+    void backup(double &total_return, node * ptr) {
+        ptr->increment_visits_count();
+        ptr->add_to_value(total_return);
+        total_return *= discount_factor; // apply the discount for the parent node
+        total_return += envt->reward_function( // add the reward of the transition
+            ptr->parent->get_last_sampled_state(),
+            ptr->get_incoming_action(),
+            ptr->get_last_sampled_state()
+        );
+        if(!ptr->parent->is_root()) {
+            backup(total_return,ptr->parent);
         }
     }
 
@@ -155,10 +234,38 @@ public:
         expd_counter = 0;
         for(unsigned i=0; i<budget; ++i) {
             node *ptr = tree_policy(root_node);
-            //double total_return = default_policy(ptr);
-            //backup(total_return,ptr);
+            double total_return = default_policy(ptr);
+            backup(total_return,ptr);
             ++expd_counter;
         }
+    }
+
+    /**
+     * @brief Argmax of the score
+     *
+     * Get the indice of the child achieving the best score.
+     * @param {const node &} v; node of the tree
+     * @return Return the indice of the child achieving the best score.
+     */
+    unsigned argmax_score(const node &v) {
+        std::vector<double> values;
+        for(auto &ch: v.children) {
+            values.push_back(ch.get_value());
+        }
+        return argmax(values);
+    }
+
+    /**
+     * @brief Get the recommended action at a certain node
+     *
+     * This is the policy decision after the tree construction (recommended action).
+     * It gets the greedy action wrt the values of the subsequent nodes.
+     * @param {const node &} v; root node of the tree
+     * @return Return the action with the highest score (leading to the child with the higher
+     * value).
+     */
+    std::vector<double> get_recommended_action(const node &v) {
+        return v.get_action_at(argmax_score(v));
     }
 
     /**
@@ -170,7 +277,7 @@ public:
      */
 	std::vector<double> operator()(const std::vector<double> &s) {
         build_uct_tree(s);
-        //return get_recommended_action(root_node);
+        return get_recommended_action(root_node);
 	}
 
     /**

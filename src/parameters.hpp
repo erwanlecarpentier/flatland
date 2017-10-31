@@ -9,7 +9,8 @@
 /**
  * @brief Simulation parameters
  *
- * Parameters container for a simulation
+ * Parameters container for a simulation.
+ *
  */
 class parameters {
 public:
@@ -18,7 +19,10 @@ public:
     std::vector<double> INITIAL_STATE;
     unsigned POLICY_SELECTOR;
     std::vector<std::vector<double>> ACTION_SPACE;
-    unsigned TREE_SEARCH_BUDGET; ///< Budget for tree-search algorithms
+    unsigned TREE_SEARCH_BUDGET;
+    unsigned DEFAULT_POLICY_HORIZON;
+    double UCT_CST;
+    double DISCOUNT_FACTOR;
 
     /**
      * @brief Simulation parameters 'default' constructor
@@ -28,7 +32,9 @@ public:
      */
     parameters(double is_continuous = false) :
         IS_CONTINUOUS(is_continuous)
-    {}
+    {
+        //TODO: set some default parameters in this constructor
+    }
 
     /**
      * @brief Simulation parameters 'from-configuration-file' constructor
@@ -49,7 +55,10 @@ public:
         && cfg.lookupValue("initial_state_col",sc)
         && cfg.lookupValue("policy_selector",POLICY_SELECTOR)
         && cfg.lookupValue("nb_actions",nbac)
-        && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)) {
+        && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)
+        && cfg.lookupValue("uct_cst",UCT_CST)
+        && cfg.lookupValue("discont_factor",DISCOUNT_FACTOR)
+        && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)) {
             GRID_WORLD = parse_grid(grid_path);
             INITIAL_STATE = std::vector<double> {sr,sc};
             for(unsigned i=0; i<nbac; ++i) { // actions parsing
