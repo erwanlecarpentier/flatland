@@ -8,7 +8,6 @@
  */
 class todo_policy {
 public:
-    std::vector<std::vector<double>> action_space; ///< Full action space
     environment * envt; ///< Pointer to an environment, used for action space reduction
 
     /**
@@ -19,25 +18,7 @@ public:
      * @param {environment *} en; pointer to the environment, used for action space reduction
      */
     todo_policy(const parameters &p, environment *en) {
-        action_space = p.ACTION_SPACE;
-    }
-
-    /**
-     * @brief Reduced action space
-     *
-     * Compute the action space available at the given state.
-     * @param {const std::vector<double &} s; state
-     * @return Return the reduced action space.
-     */
-    std::vector<std::vector<double>> reduced_action_space(const std::vector<double> &s) {
-        std::vector<std::vector<double>> ras;
-        for(auto &a : action_space) {
-            std::vector<double> s_p;
-            if(envt->state_transition(s,a,s_p)) {
-                ras.push_back(a);
-            }
-        }
-        return ras;
+        /* TODO: set the parameters here */
     }
 
     /**
@@ -48,7 +29,7 @@ public:
      * @return Return the undertaken action at s.
      */
 	std::vector<double> operator()(const std::vector<double> &s) {
-        //TODO
+        /* TODO: define the policy here */
 	}
 
     /**
@@ -64,7 +45,7 @@ public:
         const std::vector<double> & a,
         const std::vector<double> & s_p)
     {
-        //TODO
+        /* TODO: define the reward use here */
     }
 };
 
