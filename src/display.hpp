@@ -29,9 +29,9 @@ void print_grid(const environment &en) {
 template <class PLC>
 void print_grid_with_agent(const environment &en, const agent<PLC> &ag) {
     assert(!en.is_continuous);
-    std::cout << "s: " << ag.state.at(0) << " " << ag.state.at(1) << " ";
-    std::cout << "a: " << ag.action.at(0) << " " << ag.action.at(1) << " ";
-    std::cout << "s_p: " << ag.state_p.at(0) << " " << ag.state_p.at(1) << std::endl;
+    std::cout << "s:" << ag.state.at(0) << " " << ag.state.at(1) << " ";
+    std::cout << "a:" << ag.action.at(0) << " " << ag.action.at(1) << " ";
+    std::cout << "s_p:" << ag.state_p.at(0) << " " << ag.state_p.at(1) << std::endl;
     unsigned rval = (unsigned) ag.state[0];
     unsigned cval = (unsigned) ag.state[1];
     for(unsigned i=0; i<en.grid_world.size(); ++i) {

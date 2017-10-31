@@ -41,18 +41,6 @@ public:
     }
 
     /**
-     * @brief Set model
-     *
-     * Take an environment pointer and set it as a model.
-     * Used for action space reduction, termination criterion and generative model.
-     * @param {environment *} en; input environment
-     */
-    /* TRM
-    void set_model(environment * en) {
-        envt = en;
-    }*/
-
-    /**
      * @brief Reduced action space
      *
      * Compute the action space available at the given state.
@@ -125,7 +113,7 @@ public:
     node * expand(node &v) {
         std::vector<double> nodes_action = v.get_next_expansion_action();
         std::vector<double> nodes_state = v.get_state_or_last();
-        /*
+        /* TRM
         if(v.is_root()) {
             nodes_state = v.get_state();
         } else {

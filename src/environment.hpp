@@ -54,6 +54,7 @@ public:
         s_p.push_back(s.at(0) + a.at(0));
         s_p.push_back(s.at(1) + a.at(1));
         if(grid_world_value(s_p) == -1) { // frontier
+            s_p = s;
             return false;
         } else { // admissible state
             return true;

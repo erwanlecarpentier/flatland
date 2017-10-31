@@ -28,16 +28,20 @@ template <class PLC>
 void run(const parameters &p, bool print) {
     environment en(p);
     agent<PLC> ag(p,&en);
+    unsigned t = 0; // time
     while(!en.is_terminal(ag.state)) {
         ag.apply_policy();
         en.transition(ag.state,ag.action,ag.reward,ag.state_p);
         ag.process_reward();
         if(print) {
+            std::cout << "t:" << t << " ";
             print_grid_with_agent<PLC>(en,ag);
         }
         ag.step();
+        ++t;
     }
     if(print) {
+        std::cout << "t:" << t << " ";
         print_grid_with_agent<PLC>(en,ag);
     }
 }
