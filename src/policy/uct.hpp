@@ -16,7 +16,7 @@ public:
     unsigned horizon; ///< Horizon for default policy
     unsigned budget; ///< Algorithm budget (number of expanded nodes)
     unsigned expd_counter; ///< Counter of the number of expanded nodes
-    std::vector<std::vector<double>> action_space; ///< Full action space
+    //std::vector<std::vector<double>> action_space; ///< Full action space //TRM
     environment * envt; ///< Pointer to an environment, used for action space reduction, termination criterion and generative model
     random_policy rndplc; ///< Random policy used as a default policy
 
@@ -35,7 +35,7 @@ public:
     {
         budget = p.TREE_SEARCH_BUDGET;
         expd_counter = 0;
-        action_space = p.ACTION_SPACE;
+        //action_space = p.ACTION_SPACE; //TRM
         uct_cst = p.UCT_CST;
         discount_factor = p.DISCOUNT_FACTOR;
         horizon = p.DEFAULT_POLICY_HORIZON;
@@ -48,6 +48,7 @@ public:
      * @param {const std::vector<double &} s; state
      * @return Return the reduced action space.
      */
+    /* TRM
     std::vector<std::vector<double>> reduced_action_space(const std::vector<double> &s) {
         std::vector<std::vector<double>> ras;
         for(auto &a : action_space) {
@@ -58,6 +59,7 @@ public:
         }
         return ras;
     }
+    */
 
     /**
      * @brief Terminal node test
@@ -112,7 +114,7 @@ public:
         v.create_child(
             nodes_action,
             new_state,
-            action_space //TODO: warning - stochastic case
+            envt->action_space //TODO: warning - stochastic case
         );
         return v.get_last_child();
     }
@@ -220,7 +222,7 @@ public:
         root_node.clear_node();
         root_node.set_as_root();
         root_node.set_state(s);
-        root_node.set_action_space(reduced_action_space(s));
+        root_node.set_action_space(envt->get_action_space(s));
         expd_counter = 0;
         for(unsigned i=0; i<budget; ++i) {
             node *ptr = tree_policy(root_node);
@@ -283,7 +285,6 @@ public:
         const std::vector<double> & a,
         const std::vector<double> & s_p)
     {
-        /* Vanilla UCT policy does not learn. */
         (void) s;
         (void) a;
         (void) s_p;
@@ -295,9 +296,11 @@ public:
      * Set the action space attribute as the input action space.
      * @param {const std::vector<std::vector<double>>} as; given action space to be copied
      */
+    /* TRM
     void set_action_space(const std::vector<std::vector<double>> as) {
         action_space = as;
     }
+    */
 };
 
 #endif // UCT_POLICY_HPP_
