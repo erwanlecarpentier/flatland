@@ -49,12 +49,10 @@ public:
         const std::vector<double> &a,
         std::vector<double> &s_p)
     {
-        assert(s.size() == 2);
-        assert(a.size() == 2);
+        assert(s.size() == 2 && a.size() == 2);
         s_p.clear();
         s_p.push_back(s.at(0) + a.at(0));
         s_p.push_back(s.at(1) + a.at(1));
-        assert(s_p.size() == 2);
         if(grid_world_value(s_p) == -1) { // frontier
             return false;
         } else { // admissible state

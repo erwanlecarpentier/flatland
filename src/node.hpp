@@ -45,7 +45,7 @@ public :
     }
 
     /**
-     * @brief Standard node constructor
+     * @brief Non-root node constructor
      *
      * Used during the expansion of the tree.
      * @param {std::vector<std::vector<double>>} _action_space; copied then shuffled in
@@ -70,10 +70,10 @@ public :
     /**
      * @brief Clear method
      *
-     * Clear the value; the parent; the incoming action; the state/states; the visit count
+     * Clear the value, the parent, the incoming action, the state/states, the visit count
      * and the children vector of the node. Do not change the value of 'root' attribute,
-     * hence the status of the node. Do not clear actions vector, hence the available actions
-     * still remain in the same organisation order.
+     * hence the status of the node. Do not clear action space vector, hence the available
+     * actions still remain in the same organisation order.
      */
     void clear_node() {
         parent = nullptr;
@@ -140,13 +140,18 @@ public :
         return visits_count;
     }
 
+    /** @brief Set the action space */
+    void set_action_space(std::vector<std::vector<double>> as) {
+        action_space = as;
+    }
+
     /** @brief Get a copy of the actions vector */
-    std::vector<std::vector<double>> get_actions() const {
+    std::vector<std::vector<double>> get_action_space() const {
         return action_space;
     }
 
     /** @brief Get one action of the node given its indice in the actions vector */
-    std::vector<double> get_action_at(unsigned indice) const {return action_space.at(indice);}
+    std::vector<double> get_action_nb(unsigned indice) const {return action_space.at(indice);}
 
     /** @brief Get the next expansion action among the available actions */
     std::vector<double> get_next_expansion_action() const {
@@ -173,10 +178,13 @@ public :
      *
      * Create a child based on the incoming action.
      * @param {std::vector<double> &} inc_ac; incoming action of the new child
-     * @param {std::vector<double> &} new_state; first sampled state of the new child
+     * @param {std::vector<double> &} state; first sampled state of the new child
      */
-    void create_child(std::vector<double> &inc_ac, std::vector<double> &new_state) {
-        children.emplace_back(node(this,inc_ac,new_state,action_space));
+    void create_child(
+        std::vector<double> &inc_ac,
+        std::vector<double> &state)
+    {
+        children.emplace_back(node(this,inc_ac,state,action_space));
     }
 
     /**
@@ -231,7 +239,7 @@ public :
      */
     void move_to_child(unsigned indice, std::vector<double> &new_state) {
         assert(is_root());
-        action_space = children[indice].get_actions();
+        action_space = children[indice].get_action_space();
         states = children[indice].get_states();
         auto tmp = std::move(children[indice].children); // Temporary variable to prevent from overwriting
         for(auto &elt : tmp) {
