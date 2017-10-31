@@ -71,15 +71,6 @@ public:
      * @return Return the undertaken action at s.
      */
 	std::vector<double> operator()(const std::vector<double> &s) {
-        /*
-        if(pl.root_node.is_fully_expanded() // necessary condition
-        && decision_criterion(s)) { // Open Loop control
-            // nothing to do
-        } else { // Closed Loop control
-            pl.build_uct_tree(s);
-        }
-        std::vector<double> ra = pl.get_recommended_action(pl.root_node);
-        */
         if(!pl.root_node.is_fully_expanded() || !decision_criterion(s)) {
             pl.build_uct_tree(s);
         }
