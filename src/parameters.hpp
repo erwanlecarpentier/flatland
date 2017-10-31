@@ -15,6 +15,7 @@
 class parameters {
 public:
     bool IS_CONTINUOUS;
+    double MISSTEP_PROBABILITY;
     std::vector<std::vector<int>> GRID_WORLD;
     std::vector<double> INITIAL_STATE;
     unsigned POLICY_SELECTOR;
@@ -51,6 +52,7 @@ public:
         double sr = 0., sc = 0.;
         unsigned nbac= 0;
         if(cfg.lookupValue("is_continuous",IS_CONTINUOUS)
+        && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
         && cfg.lookupValue("grid_path",grid_path)
         && cfg.lookupValue("initial_state_row",sr)
         && cfg.lookupValue("initial_state_col",sc)
