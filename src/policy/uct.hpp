@@ -16,6 +16,7 @@ public:
     unsigned horizon; ///< Horizon for default policy
     unsigned budget; ///< Algorithm budget (number of expanded nodes)
     unsigned expd_counter; ///< Counter of the number of expanded nodes
+    unsigned nb_calls; ///< Number of calls to the generative model
     environment * envt; ///< Pointer to an environment, used for action space reduction, termination criterion and generative model
     random_policy rndplc; ///< Random policy used as a default policy
 
@@ -34,6 +35,7 @@ public:
     {
         budget = p.TREE_SEARCH_BUDGET;
         expd_counter = 0;
+        nb_calls = 0;
         uct_cst = p.UCT_CST;
         discount_factor = p.DISCOUNT_FACTOR;
         horizon = p.DEFAULT_POLICY_HORIZON;
@@ -62,6 +64,23 @@ public:
     }
 
     /**
+     * @brief Generative model
+     *
+     * Perform a call to the generative model.
+     * @param {const std::vector<double> &} s; state
+     * @param {std::vector<double>} a; copy of the action
+     * @param {std::vector<double> &} s_p; next state
+     */
+    void generative_model(
+        const std::vector<double> &s,
+        std::vector<double> a,
+        std::vector<double> &s_p)
+    {
+        envt->state_transition(s,a,s_p);
+        ++nb_calls;
+    }
+
+    /**
      * @brief State sampling
      *
      * Sample a new state w.r.t. to the incoming action and the parents state and add it to
@@ -73,7 +92,7 @@ public:
         std::vector<double> a = v->get_incoming_action();
         std::vector<double> s = (v->parent)->get_state_or_last();
         std::vector<double> s_p;
-        envt->state_transition(s,a,s_p);
+        generative_model(s,a,s_p);
         v->add_to_states(s_p);
     }
 
@@ -88,7 +107,7 @@ public:
         std::vector<double> nodes_action = v.get_next_expansion_action();
         std::vector<double> nodes_state = v.get_state_or_last();
         std::vector<double> new_state;
-        envt->state_transition(nodes_state,nodes_action,new_state);
+        generative_model(nodes_state,nodes_action,new_state);
         v.create_child(
             nodes_action,
             new_state,
@@ -155,7 +174,7 @@ public:
         std::vector<double> a = rndplc(s);
         for(unsigned t=0; t<horizon; ++t) {
             std::vector<double> s_p;
-            envt->state_transition(s,a,s_p);
+            generative_model(s,a,s_p);
             total_return += pow(discount_factor,(double)t) * envt->reward_function(s,a,s_p);
             if(envt->is_terminal(s)) { // Termination criterion
                 break;
@@ -266,6 +285,16 @@ public:
         (void) s;
         (void) a;
         (void) s_p;
+    }
+
+    /**
+     * @brief Get backup
+     *
+     * Get the backed-up values.
+     * @return Return a vector containing the values to be saved.
+     */
+    std::vector<double> get_backup() {
+        return std::vector<double>{nb_calls};
     }
 };
 
