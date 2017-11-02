@@ -48,8 +48,10 @@ void run(
         ag.process_reward();
         if(prnt) {
             std::cout << "t:" << t << " ";
+            std::cout << "s:" << ag.state.at(0) << " " << ag.state.at(1) << " ";
+            std::cout << "a:" << ag.action.at(0) << " " << ag.action.at(1) << " ";
+            std::cout << "s_p:" << ag.state_p.at(0) << " " << ag.state_p.at(1) << std::endl;
             en.print(ag.state);
-            //print_grid_with_agent<PLC>(en,ag);//TRM
         }
         ag.step();
         ++t;
@@ -59,7 +61,6 @@ void run(
     if(prnt) {
         std::cout << "t:" << t << " ";
         en.print(ag.state);
-        //print_grid_with_agent<PLC>(en,ag);//TRM
     }
     if(bckp) {
         std::vector<double> simbackup = {
