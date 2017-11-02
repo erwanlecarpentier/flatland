@@ -57,7 +57,7 @@ void run(
         ++t;
     }
     std::clock_t c_end = std::clock();
-    double time_elapsed_ms = 1000. * (c_end-c_start) / CLOCKS_PER_SEC;
+    double time_elapsed_ms = 1000. * (c_end - c_start) / CLOCKS_PER_SEC;
     if(prnt) {
         std::cout << "t:" << t << " ";
         std::cout << "s:" << ag.state.at(0) << " " << ag.state.at(1) << " ";
