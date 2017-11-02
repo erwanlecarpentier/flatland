@@ -47,6 +47,16 @@ public:
     {
         /* TODO: define the reward use here */
     }
+
+    /**
+     * @brief Get backup
+     *
+     * Get the backed-up values.
+     * @return Return a vector containing the values to be saved.
+     */
+    std::vector<double> get_backup() {
+        return std::vector<double>{};
+    }
 };
 
 #endif // TODO_POLICY_HPP_

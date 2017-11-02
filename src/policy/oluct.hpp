@@ -97,6 +97,16 @@ public:
         (void) a;
         (void) s_p;
     }
+
+    /**
+     * @brief Get backup
+     *
+     * Get the backed-up values.
+     * @return Return a vector containing the values to be saved.
+     */
+    std::vector<double> get_backup() {
+        return pl.get_backup();
+    }
 };
 
 #endif // OLUCT_POLICY_HPP_

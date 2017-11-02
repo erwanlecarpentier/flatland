@@ -294,7 +294,7 @@ public:
      * @return Return a vector containing the values to be saved.
      */
     std::vector<double> get_backup() {
-        return std::vector<double>{nb_calls};
+        return std::vector<double>{(double)nb_calls};
     }
 };
 
