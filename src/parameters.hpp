@@ -9,8 +9,7 @@
 /**
  * @brief Simulation parameters
  *
- * Parameters container for a simulation.
- *
+ * Contains all the simulations parameters.
  */
 class parameters {
 public:

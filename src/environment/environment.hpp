@@ -4,6 +4,11 @@
 #include <parameters.hpp>
 #include <utils.hpp>
 
+/**
+ * @brief Environment
+ *
+ * Environment template class.
+ */
 template<class WRLD>
 class environment {
 public:

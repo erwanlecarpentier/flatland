@@ -3,6 +3,12 @@
 
 #include <shape.hpp>
 
+/**
+ * @brief Continuous world
+ *
+ * Continuous world.
+ * Defined by its geometric elements and its size.
+ */
 class continuous_world {
 public:
     double xsize;

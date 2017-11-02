@@ -1,6 +1,11 @@
 #ifndef DISCRETE_WORLD_HPP_
 #define DISCRETE_WORLD_HPP_
 
+/**
+ * @brief Discrete world
+ *
+ * Discrete grid world
+ */
 class discrete_world {
 public:
     std::vector<std::vector<int>> grid_world; ///< discrete map for discrete world

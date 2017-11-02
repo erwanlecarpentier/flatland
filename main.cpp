@@ -95,11 +95,11 @@ void run_switch(
             break;
         }
         case 1: { // OLUCT policy
-            run<oluct,discrete_world>(p,prnt,bckp,backup_vector);
+            //run<oluct,discrete_world>(p,prnt,bckp,backup_vector);
             break;
         }
         default: { // random policy
-            run<random_policy,discrete_world>(p,prnt,bckp,backup_vector);
+            //run<random_policy,discrete_world>(p,prnt,bckp,backup_vector);
         }
     }
 }

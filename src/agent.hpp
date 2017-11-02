@@ -12,7 +12,7 @@ template<class PLC, class WRLD>
 class agent {
 public:
     typedef PLC PLC_type;
-    typedef WRLD WRLD_type;
+    //typedef WRLD WRLD_type;
     PLC policy;
     std::vector<double> state; ///< Current state of the agent
     std::vector<double> action; ///< Action selected by the policy
