@@ -2,17 +2,18 @@
 #define OLUCT_POLICY_HPP_
 
 #include <environment.hpp>
-#include <policy/uct.hpp>
+#include <uct.hpp>
 
 /**
  * @brief OLUCT policy
  */
+template <class WRLD>
 class oluct {
 public:
     std::vector<std::vector<double>> action_space; ///< Full action space
     unsigned decision_criterion_selector;
-    environment * envt; ///< Pointer to an environment, used for action space reduction
-    uct pl;
+    environment<WRLD> * envt; ///< Pointer to an environment, used for action space reduction
+    uct<WRLD> pl;
 
     /**
      * @brief Constructor
@@ -21,7 +22,7 @@ public:
      * @param {const parameters &} p; parameters
      * @param {environment *} en; pointer to the environment, used for action space reduction
      */
-    oluct(const parameters &p, environment *en) :
+    oluct(const parameters &p, environment<WRLD> *en) :
         pl(p,en)
     {
         action_space = p.ACTION_SPACE;

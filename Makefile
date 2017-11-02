@@ -1,5 +1,5 @@
 CCC=g++
-CCFLAGS=-std=c++11 -Wall -Wextra -I./src -O2 -g
+CCFLAGS=-std=c++11 -Wall -Wextra -I./src -I./src/environment -I./src/policy -O2 -g
 LDFLAGS=-lm -lconfig++
 EXEC=exe
 

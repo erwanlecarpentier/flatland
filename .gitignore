@@ -2,7 +2,7 @@ exe
 todo.txt
 *.sh
 
-outdated/
+src/outdated/
 data/*
 data/backup/
 

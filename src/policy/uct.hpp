@@ -2,12 +2,13 @@
 #define UCT_POLICY_HPP_
 
 #include <environment.hpp>
-#include <policy/node.hpp>
-#include <policy/random.hpp>
+#include <node.hpp>
+#include <random.hpp>
 
 /**
  * @brief UCT policy
  */
+template <class WRLD>
 class uct {
 public:
     node root_node; ///< Root node of the tree
@@ -17,8 +18,8 @@ public:
     unsigned budget; ///< Algorithm budget (number of expanded nodes)
     unsigned expd_counter; ///< Counter of the number of expanded nodes
     unsigned nb_calls; ///< Number of calls to the generative model
-    environment * envt; ///< Pointer to an environment, used for action space reduction, termination criterion and generative model
-    random_policy rndplc; ///< Random policy used as a default policy
+    environment<WRLD> * envt; ///< Pointer to an environment, used for action space reduction, termination criterion and generative model
+    random_policy<WRLD> rndplc; ///< Random policy used as a default policy
 
     /**
      * @brief Constructor
@@ -28,7 +29,7 @@ public:
      * @param {environment *} en; pointer to the environment, used for action space reduction,
      * termination criterion and generative model
      */
-    uct(const parameters &p, environment *en) :
+    uct(const parameters &p, environment<WRLD> *en) :
         root_node(std::vector<double>{0.,0.},p.ACTION_SPACE), // null state as default
         envt(en),
         rndplc(p,en)

@@ -14,7 +14,7 @@
  */
 class parameters {
 public:
-    bool IS_CONTINUOUS;
+    bool IS_WORLD_CONTINUOUS;
     double MISSTEP_PROBABILITY;
     std::vector<std::vector<int>> GRID_WORLD;
     std::vector<double> INITIAL_STATE;
@@ -32,8 +32,7 @@ public:
      * The parameters are set to the values defined in this constructor.
      * @deprecated
      */
-    parameters(double is_continuous = false) :
-        IS_CONTINUOUS(is_continuous)
+    parameters()
     {
         //TODO: set some default parameters in this constructor
     }
@@ -51,7 +50,7 @@ public:
         std::string grid_path;
         double sr = 0., sc = 0.;
         unsigned nbac= 0;
-        if(cfg.lookupValue("is_continuous",IS_CONTINUOUS)
+        if(cfg.lookupValue("is_world_continuous",IS_WORLD_CONTINUOUS)
         && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
         && cfg.lookupValue("grid_path",grid_path)
         && cfg.lookupValue("initial_state_row",sr)
@@ -63,7 +62,11 @@ public:
         && cfg.lookupValue("uct_cst",UCT_CST)
         && cfg.lookupValue("discount_factor",DISCOUNT_FACTOR)
         && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)) {
-            GRID_WORLD = parse_grid(grid_path);
+            if(IS_WORLD_CONTINUOUS) { // parse continuous world
+                //TODO
+            } else { // parse discrete world
+                GRID_WORLD = parse_grid(grid_path);
+            }
             INITIAL_STATE = std::vector<double> {sr,sc};
             for(unsigned i=0; i<nbac; ++i) { // actions parsing
                 std::string rname = "a";

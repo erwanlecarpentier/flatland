@@ -7,15 +7,17 @@
 #include <iostream>
 #include <memory>
 #include <random>
+#include <tuple>
 #include <vector>
 
 #include <agent.hpp>
-#include <display.hpp>
+#include <discrete_world.hpp>
+#include <continuous_world.hpp>
 #include <environment.hpp>
 #include <parameters.hpp>
-#include <policy/random.hpp>
-#include <policy/uct.hpp>
-#include <policy/oluct.hpp>
+#include <random.hpp>
+#include <uct.hpp>
+#include <oluct.hpp>
 #include <save.hpp>
 #include <utils.hpp>
 
@@ -29,15 +31,15 @@
  * @param {std::vector<std::vector<double>>} backup_vector; backup vector into which each
  * simulation records its backed up values
  */
-template <class PLC>
+template <class PLC, class WRLD>
 void run(
     const parameters &p,
     bool prnt,
     bool bckp,
     std::vector<std::vector<double>> &backup_vector)
 {
-    environment en(p);
-    agent<PLC> ag(p,&en);
+    environment<WRLD> en(p);
+    agent<PLC,WRLD> ag(p,&en);
     unsigned t = 0; // time
 	std::clock_t c_start = std::clock();
     while(!en.is_terminal(ag.state)) {
@@ -46,7 +48,8 @@ void run(
         ag.process_reward();
         if(prnt) {
             std::cout << "t:" << t << " ";
-            print_grid_with_agent<PLC>(en,ag);
+            en.print(ag.state);
+            //print_grid_with_agent<PLC>(en,ag);//TRM
         }
         ag.step();
         ++t;
@@ -55,7 +58,8 @@ void run(
     double time_elapsed_ms = 1000. * (c_end-c_start) / CLOCKS_PER_SEC;
     if(prnt) {
         std::cout << "t:" << t << " ";
-        print_grid_with_agent<PLC>(en,ag);
+        en.print(ag.state);
+        //print_grid_with_agent<PLC>(en,ag);//TRM
     }
     if(bckp) {
         std::vector<double> simbackup = {
@@ -87,15 +91,15 @@ void run_switch(
 {
     switch(p.POLICY_SELECTOR) {
         case 0: { // UCT policy
-            run<uct>(p,prnt,bckp,backup_vector);
+            run<uct,discrete_world>(p,prnt,bckp,backup_vector);
             break;
         }
         case 1: { // OLUCT policy
-            run<oluct>(p,prnt,bckp,backup_vector);
+            run<oluct,discrete_world>(p,prnt,bckp,backup_vector);
             break;
         }
         default: { // random policy
-            run<random_policy>(p,prnt,bckp,backup_vector);
+            run<random_policy,discrete_world>(p,prnt,bckp,backup_vector);
         }
     }
 }
@@ -135,13 +139,20 @@ void multi_run(
     }
 }
 
+void test() {
+    parameters p("config/main.cfg");
+    p.IS_WORLD_CONTINUOUS = true;
+    environment<continuous_world> e(p);
+}
+
 /**
  * @brief Main function
  */
 int main() {
     try {
         srand(time(NULL));
-        multi_run(1,"config/main.cfg","data/test.dat");
+        //multi_run(1,"config/main.cfg","data/test.dat");
+        test();
     }
     catch(const std::exception &e) {
         std::cerr << "Error in main(): standard exception caught: " << e.what() << std::endl;

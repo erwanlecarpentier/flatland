@@ -4,10 +4,14 @@
 #include <parameters.hpp>
 #include <utils.hpp>
 
+template<class WRLD>
 class environment {
 public:
+    typedef WRLD WRLD_type;
     bool is_continuous; ///< Is state space continuous
-    std::vector<std::vector<int>> grid_world; ///< discrete map for discrete world
+    WRLD world;
+    //continuous_world cworld; ///< continuous map for continuous world //TRM
+    //std::vector<std::vector<int>> grid_world; ///< discrete map for discrete world //TRM
     double misstep_probability; ///< Probability of misstep
     std::vector<std::vector<double>> action_space; ///< Full space of the actions available in the environment
 
@@ -17,39 +21,56 @@ public:
      * Default constructor initialising the parameters via a 'parameters' object.
      * @param {const parameters &} p; parameters
      */
-    environment(const parameters &p) {
+    environment(const parameters &p) : world(p) {
         action_space = p.ACTION_SPACE;
-        is_continuous = p.IS_CONTINUOUS;
+        //is_continuous = p.IS_CONTINUOUS; //TRM
         misstep_probability = p.MISSTEP_PROBABILITY;
-        if(is_continuous) {
+        /*
+        if(is_continuous) { //TRM
             std::cout << "TODO: implement continuous world" << std::endl;
         } else {
             grid_world = p.GRID_WORLD;
         }
+        */
     }
 
     /**
-     * @brief Grid world value
+     * @brief Print environment
      *
-     * Evaluate the grid world at the given state.
-     * @param {const std::vector<double> &} s; given state
-     * @return Return the value of the grid.
+     * Print the environment including the agent's position.
+     * @param {const std::vector<double> &} agent_position; position of the agent
      */
+    void print(const std::vector<double> &agent_position) {
+        world.print(agent_position);
+    }
+
+    /**
+     * @brief World value
+     *
+     * Evaluate the world at the given state.
+     * @param {const std::vector<double> &} s; given state
+     * @return Return the value of the world.
+     */
+    /* //TRM
     int grid_world_value(const std::vector<double> &s) {
         assert(s.size() == 2);
         return grid_world.at(s.at(0)).at(s.at(1));
+    }
+    */
+    int world_value_at(const std::vector<double> &s) {
+        assert(s.size() == 2);
+        return world.get_value_at(s);
     }
 
     /**
      * @brief Is state valid
      *
-     * Test if the state is valid (wall or not) within discrete grid world.
+     * Test if the state is valid (wall or not).
      * @param {const std::vector<double> &} s; given state
      * @return Return the value of the grid.
      */
     bool is_state_valid(const std::vector<double> &s) {
-        assert(!is_continuous);
-        return (grid_world_value(s) != -1);
+        return (world_value_at(s) != -1);
     }
 
     /**
@@ -86,7 +107,7 @@ public:
         std::vector<double> a,
         std::vector<double> &s_p)
     {
-        assert(s.size() == 2 && a.size() == 2 && !is_continuous); // continuous version not implemented yet
+        assert(s.size() == 2 && a.size() == 2);
         if(is_less_than(uniform_double(0.,1.),misstep_probability)) { // misstep
             a = rand_element(get_action_space(s));
         }
@@ -117,7 +138,7 @@ public:
     {
         (void) s;
         (void) a;
-        if(grid_world_value(s_p) == 1) {
+        if(world_value_at(s_p) == 1) {
             return 1.;
         } else {
             return 0.;
@@ -130,13 +151,13 @@ public:
      * Transition operator, compute the resulting state and reward wrt a state and an action.
      * @param {const std::vector<double> &} s; state
      * @param {const std::vector<double> &} a; action
-     * @param {double} r; reward
+     * @param {double &} r; reward
      * @param {std::vector<double> &} s_p; next state
      */
     void transition(
         const std::vector<double> &s,
         const std::vector<double> &a,
-        double & r,
+        double &r,
         std::vector<double> &s_p)
     {
         state_transition(s,a,s_p);
@@ -152,15 +173,10 @@ public:
      * @return Return true if the test is terminal, else false.
      */
     bool is_terminal(const std::vector<double> &s) {
-        if(is_continuous) {
-            std::cout << "TODO: implement continuous world" << std::endl;
+        if(world_value_at(s) == 1) {
             return true;
         } else {
-            if(grid_world_value(s) == 1) {
-                return true;
-            } else {
-                return false;
-            }
+            return false;
         }
     }
 };
