@@ -1,6 +1,9 @@
 #ifndef ENVIRONMENT_HPP_
 #define ENVIRONMENT_HPP_
 
+#include <parameters.hpp>
+#include <utils.hpp>
+
 class environment {
 public:
     bool is_continuous; ///< Is state space continuous

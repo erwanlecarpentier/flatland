@@ -61,8 +61,8 @@ void run(
         std::vector<double> simbackup = {
             (double) t, //score
             time_elapsed_ms // computational cost
-        }
-        agbackup = ag.policy.get_backup()
+        };
+        std::vector<double> agbackup = ag.policy.get_backup();
         simbackup.insert(simbackup.end(),agbackup.begin(),agbackup.end());
         backup_vector.push_back(simbackup);
     }
