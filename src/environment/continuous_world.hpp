@@ -46,7 +46,7 @@ public:
      * @param {const std::vector<double> &} agent_position; position of the agent
      */
     void print(const std::vector<double> &agent_position) {
-        (void) agent_position;
+        std::cout << "s: " << agent_position.at(0) << " " << agent_position.at(1) << std::endl;
         //TODO
     }
 };
