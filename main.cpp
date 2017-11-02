@@ -60,6 +60,9 @@ void run(
     double time_elapsed_ms = 1000. * (c_end-c_start) / CLOCKS_PER_SEC;
     if(prnt) {
         std::cout << "t:" << t << " ";
+        std::cout << "s:" << ag.state.at(0) << " " << ag.state.at(1) << " ";
+        std::cout << "a:" << ag.action.at(0) << " " << ag.action.at(1) << " ";
+        std::cout << "s_p:" << ag.state_p.at(0) << " " << ag.state_p.at(1) << std::endl;
         en.print(ag.state);
     }
     if(bckp) {
