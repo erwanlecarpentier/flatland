@@ -8,9 +8,7 @@ public:
     /**
      * @brief Constructor
      */
-    shape(std::tuple<double,double> _center) : center(_center) {
-        //TODO
-    }
+    shape(){}
 };
 
 #endif // SHAPE_HPP_

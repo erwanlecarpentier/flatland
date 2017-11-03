@@ -1,6 +1,8 @@
 #ifndef CONTINUOUS_WORLD_HPP_
 #define CONTINUOUS_WORLD_HPP_
 
+#include <circle.hpp>
+#include <rectangle.hpp>
 #include <shape.hpp>
 
 /**
@@ -22,8 +24,11 @@ public:
      * @param {const parameters &} p; parameters
      */
     continuous_world(const parameters &p) {
-    (void) p;
-        //TODO
+        (void) p;
+        xsize = 4.;
+        ysize = 4.;
+        elements.emplace_back(rectangle(std::tuple<double,double>{2.,2.},2.,1.));
+        elements.emplace_back(circle(std::tuple<double,double>{0.,2.},2.));
     }
 
     /**
@@ -40,7 +45,7 @@ public:
     }
 
     /**
-     * @brief Print grid with agent's position
+     * @brief Print environment
      *
      * Print the environment including the agent's position.
      * @param {const std::vector<double> &} agent_position; position of the agent
