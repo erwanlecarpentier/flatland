@@ -22,6 +22,17 @@
 #include <utils.hpp>
 
 /**
+ * @brief Print (t,s,a,s_p)
+ */
+template <class PLC, class WRLD>
+void print_tsasp(double t, const agent<PLC,WRLD> &ag) {
+    std::cout << "t:" << t << " ";
+    std::cout << "s:" << ag.state.at(0) << " " << ag.state.at(1) << " ";
+    std::cout << "a:" << ag.action.at(0) << " " << ag.action.at(1) << " ";
+    std::cout << "s_p:" << ag.state_p.at(0) << " " << ag.state_p.at(1) << std::endl;
+}
+
+/**
  * @brief Run
  *
  * Run a single simulation using the given parameters.
@@ -47,10 +58,7 @@ void run(
         en.transition(ag.state,ag.action,ag.reward,ag.state_p);
         ag.process_reward();
         if(prnt) {
-            std::cout << "t:" << t << " ";
-            std::cout << "s:" << ag.state.at(0) << " " << ag.state.at(1) << " ";
-            std::cout << "a:" << ag.action.at(0) << " " << ag.action.at(1) << " ";
-            std::cout << "s_p:" << ag.state_p.at(0) << " " << ag.state_p.at(1) << std::endl;
+            print_tsasp(t,ag);
             en.print(ag.state);
         }
         ag.step();
@@ -59,10 +67,7 @@ void run(
     std::clock_t c_end = std::clock();
     double time_elapsed_ms = 1000. * (c_end - c_start) / CLOCKS_PER_SEC;
     if(prnt) {
-        std::cout << "t:" << t << " ";
-        std::cout << "s:" << ag.state.at(0) << " " << ag.state.at(1) << " ";
-        std::cout << "a:" << ag.action.at(0) << " " << ag.action.at(1) << " ";
-        std::cout << "s_p:" << ag.state_p.at(0) << " " << ag.state_p.at(1) << std::endl;
+        print_tsasp(t,ag);
         en.print(ag.state);
     }
     if(bckp) {
@@ -77,10 +82,10 @@ void run(
 }
 
 /**
- * @brief Run switch, for policy choice
+ * @brief Run switch
  *
  * Run a single simulation using the given parameters.
- * Applies the switch between the different policies.
+ * Applies the switch between the different policies and environments.
  * @param {const parameters &} p; parameters of the simulation
  * @param {bool} prnt; set to true for display
  * @param {bool} bckp; set to true for backup
@@ -95,15 +100,27 @@ void run_switch(
 {
     switch(p.POLICY_SELECTOR) {
         case 0: { // UCT policy
-            run<uct<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
+            if(p.IS_WORLD_CONTINUOUS) {
+                run<uct<continuous_world>,continuous_world>(p,prnt,bckp,backup_vector);
+            } else {
+                run<uct<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
+            }
             break;
         }
         case 1: { // OLUCT policy
-            run<oluct<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
+            if(p.IS_WORLD_CONTINUOUS) {
+                run<oluct<continuous_world>,continuous_world>(p,prnt,bckp,backup_vector);
+            } else {
+                run<oluct<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
+            }
             break;
         }
         default: { // random policy
-            run<random_policy<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
+            if(p.IS_WORLD_CONTINUOUS) {
+                run<random_policy<continuous_world>,continuous_world>(p,prnt,bckp,backup_vector);
+            } else {
+                run<random_policy<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
+            }
         }
     }
 }
@@ -144,11 +161,9 @@ void multi_run(
 }
 
 void test() {
-    /*
     parameters p("config/main.cfg");
     p.IS_WORLD_CONTINUOUS = true;
     environment<continuous_world> e(p);
-    */
 }
 
 /**
@@ -157,8 +172,8 @@ void test() {
 int main() {
     try {
         srand(time(NULL));
-        multi_run(1,"config/main.cfg","data/test.dat");
-        //test();
+        //multi_run(1,"config/main.cfg","data/test.dat");
+        test();
     }
     catch(const std::exception &e) {
         std::cerr << "Error in main(): standard exception caught: " << e.what() << std::endl;
