@@ -8,7 +8,7 @@
  *
  * Agent template class.
  */
-template<class PLC, class WRLD>
+template <class PLC, class WRLD>
 class agent {
 public:
     typedef PLC PLC_type;

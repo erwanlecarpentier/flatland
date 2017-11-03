@@ -95,15 +95,15 @@ void run_switch(
 {
     switch(p.POLICY_SELECTOR) {
         case 0: { // UCT policy
-            run<uct,discrete_world>(p,prnt,bckp,backup_vector);
+            run<uct<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
             break;
         }
         case 1: { // OLUCT policy
-            //run<oluct,discrete_world>(p,prnt,bckp,backup_vector);
+            run<oluct<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
             break;
         }
         default: { // random policy
-            //run<random_policy,discrete_world>(p,prnt,bckp,backup_vector);
+            run<random_policy<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
         }
     }
 }
@@ -144,9 +144,11 @@ void multi_run(
 }
 
 void test() {
+    /*
     parameters p("config/main.cfg");
     p.IS_WORLD_CONTINUOUS = true;
     environment<continuous_world> e(p);
+    */
 }
 
 /**
@@ -155,8 +157,8 @@ void test() {
 int main() {
     try {
         srand(time(NULL));
-        //multi_run(1,"config/main.cfg","data/test.dat");
-        test();
+        multi_run(1,"config/main.cfg","data/test.dat");
+        //test();
     }
     catch(const std::exception &e) {
         std::cerr << "Error in main(): standard exception caught: " << e.what() << std::endl;

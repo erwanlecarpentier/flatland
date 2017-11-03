@@ -28,8 +28,8 @@ public:
      */
     environment(const parameters &p) : world(p) {
         action_space = p.ACTION_SPACE;
-        //is_continuous = p.IS_CONTINUOUS; //TRM
         misstep_probability = p.MISSTEP_PROBABILITY;
+        //is_continuous = p.IS_WORLD_CONTINUOUS; //TRM
         /*
         if(is_continuous) { //TRM
             std::cout << "TODO: implement continuous world" << std::endl;
