@@ -13,9 +13,10 @@
  */
 class continuous_world {
 public:
-    double xsize;
-    double ysize;
-    std::vector<shape> elements;
+    double xsize; ///< Horizontal dimension of the environment
+    double ysize; ///< Vertical dimension of the environment
+    std::vector<shape> elements; ///< Container of the wall elements of the world
+    std::vector<std::vector<double>> trajectory; ///< Matrix of the trajectory for plotting purpose
 
     /**
      * @brief Constructor
@@ -47,12 +48,14 @@ public:
     /**
      * @brief Print environment
      *
-     * Print the environment including the agent's position.
+     * Save the position in the trajectory matrix.
+     * At the end of the simulation, the matrix is saved in the trajectory file.
+     * No real time plot is implemented yet.
      * @param {const std::vector<double> &} agent_position; position of the agent
      */
     void print(const std::vector<double> &agent_position) {
         std::cout << "s: " << agent_position.at(0) << " " << agent_position.at(1) << std::endl;
-        //TODO
+        trajectory.push_back(agent_position);
     }
 };
 

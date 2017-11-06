@@ -164,6 +164,8 @@ void test() {
     parameters p("config/main.cfg");
     p.IS_WORLD_CONTINUOUS = true;
     environment<continuous_world> e(p);
+    std::vector<double> s = {1.,1.};
+    e.print(s);
 }
 
 /**
