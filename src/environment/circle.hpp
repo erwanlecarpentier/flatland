@@ -18,6 +18,8 @@ public:
         radius(_radius)
     { /* Nothing to do */}
 
+    circle() { /* Nothing to do */}
+
     /**
      * @brief Test if position is within the shape
      *

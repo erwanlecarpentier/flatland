@@ -24,7 +24,7 @@ public:
     virtual bool is_within(double x, double y) {
         (void) x;
         (void) y;
-        throw call_to_generic_shape_exception();
+        //throw call_to_generic_shape_exception();
         return false;
     }
 };

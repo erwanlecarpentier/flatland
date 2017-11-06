@@ -16,6 +16,7 @@ public:
     double xsize; ///< Horizontal dimension of the environment
     double ysize; ///< Vertical dimension of the environment
     std::vector<shape> elements; ///< Container of the wall elements of the world
+    circle goal;
     std::vector<std::vector<double>> trajectory; ///< Matrix of the trajectory for backup
 
     /**
@@ -24,8 +25,8 @@ public:
      * Constructor wrt the given parameters.
      * @param {parameters &} p; parameters
      */
-    continuous_world(parameters &p) {
-        p.parse_cworld(xsize,ysize,elements);
+    continuous_world(parameters &p){
+        p.parse_cworld(xsize,ysize,elements,goal);
     }
 
     /**
@@ -36,10 +37,13 @@ public:
      * @return Return the value of the world.
      */
     int get_value_at(const std::vector<double> &s) {
-        for(auto &sh : elements) {
+        for(auto &sh : elements) { // Wall checking is performed first
             if(sh.is_within(s.at(0), s.at(1))) {
                 return -1;
             }
+        }
+        if(goal.is_within(s.at(0), s.at(1))) { // Goal checking
+            return +1;
         }
         return 0;
     }

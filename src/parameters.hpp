@@ -90,12 +90,21 @@ public:
      * @param {double &} xsize;
      * @param {double &} ysize;
      * @param {std::vector<shape> &} elements;
+     * @param {circle &} goal;
      */
-    void parse_cworld(double &xsize, double &ysize, std::vector<shape> &elements) {
+    void parse_cworld(
+        double &xsize,
+        double &ysize,
+        std::vector<shape> &elements,
+        circle &goal)
+    {
         libconfig::Config cworld_cfg;
         cworld_cfg.readFile(CWORLD_PATH.c_str());
         if(cworld_cfg.lookupValue("xsize",xsize)
-        && cworld_cfg.lookupValue("ysize",ysize)) {
+        && cworld_cfg.lookupValue("ysize",ysize)
+        && cworld_cfg.lookupValue("xgoal",std::get<0>(goal.center))
+        && cworld_cfg.lookupValue("ygoal",std::get<1>(goal.center))
+        && cworld_cfg.lookupValue("rgoal",goal.radius)) {
             /* Nothing to do */
         } else {
             throw wrong_world_configuration_path();

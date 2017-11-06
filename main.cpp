@@ -33,7 +33,7 @@ void print_tsasp(double t, const agent<PLC,WRLD> &ag) {
 }
 
 /**
- * @brief Run
+ * @brief Single run
  *
  * Run a single simulation using the given parameters.
  * @param {parameters &} p; parameters of the simulation
@@ -43,7 +43,7 @@ void print_tsasp(double t, const agent<PLC,WRLD> &ag) {
  * simulation records its backed up values
  */
 template <class PLC, class WRLD>
-void run(
+void single_run(
     parameters &p,
     bool prnt,
     bool bckp,
@@ -101,32 +101,32 @@ void run_switch(
     switch(p.POLICY_SELECTOR) {
         case 0: { // UCT policy
             if(p.IS_WORLD_CONTINUOUS) {
-                run<uct<continuous_world>,continuous_world>(p,prnt,bckp,backup_vector);
+                single_run<uct<continuous_world>,continuous_world>(p,prnt,bckp,backup_vector);
             } else {
-                run<uct<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
+                single_run<uct<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
             }
             break;
         }
         case 1: { // OLUCT policy
             if(p.IS_WORLD_CONTINUOUS) {
-                run<oluct<continuous_world>,continuous_world>(p,prnt,bckp,backup_vector);
+                single_run<oluct<continuous_world>,continuous_world>(p,prnt,bckp,backup_vector);
             } else {
-                run<oluct<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
+                single_run<oluct<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
             }
             break;
         }
         default: { // random policy
             if(p.IS_WORLD_CONTINUOUS) {
-                run<random_policy<continuous_world>,continuous_world>(p,prnt,bckp,backup_vector);
+                single_run<random_policy<continuous_world>,continuous_world>(p,prnt,bckp,backup_vector);
             } else {
-                run<random_policy<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
+                single_run<random_policy<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
             }
         }
     }
 }
 
 /**
- * @brief Multi run
+ * @brief Run
  *
  * Perform multiple simulation run.
  * All the parameters are fetched in this method.
@@ -134,7 +134,7 @@ void run_switch(
  * @param {const char *} config_path; configuration path
  * @param {const char *} output_path; ouput path for backup
  */
-void multi_run(
+void run(
     unsigned nbsim,
     const char *config_path,
     const char *output_path)
@@ -174,8 +174,8 @@ void test() {
 int main() {
     try {
         srand(time(NULL));
-        //multi_run(1,"config/main.cfg","data/test.dat");
-        test();
+        run(1,"config/main.cfg","data/test.dat");
+        //test();
     }
     catch(const std::exception &e) {
         std::cerr << "Error in main(): standard exception caught: " << e.what() << std::endl;
