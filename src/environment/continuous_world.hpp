@@ -41,15 +41,20 @@ public:
      * @return Return the value of the world.
      */
     int get_value_at(const std::vector<double> &s) {
+        if(is_less_than(s[0],0.)
+        || is_less_than(s[1],0.)
+        || is_greater_than(s[0],xsize)
+        || is_greater_than(s[1],ysize)) { // Border checking
+            return -1;
+        }
         for(auto &sh : elements) { // Wall checking is performed first
-            if(sh.is_within(s.at(0), s.at(1))) {
+            if(sh.is_within(s[0], s[1])) {
                 return -1;
             }
         }
-        if(goal.is_within(s.at(0), s.at(1))) { // Goal checking
+        if(goal.is_within(s[0], s[1])) { // Goal checking
             return +1;
         }
-        //TODO add borders
         return 0;
     }
 
