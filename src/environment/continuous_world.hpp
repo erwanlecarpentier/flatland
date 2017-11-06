@@ -49,6 +49,7 @@ public:
         if(goal.is_within(s.at(0), s.at(1))) { // Goal checking
             return +1;
         }
+        //TODO add borders
         return 0;
     }
 
