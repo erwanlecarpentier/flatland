@@ -4,6 +4,7 @@
 #include <circle.hpp>
 #include <rectangle.hpp>
 #include <shape.hpp>
+#include <save.hpp>
 
 /**
  * @brief Continuous world
@@ -18,6 +19,7 @@ public:
     std::vector<shape> elements; ///< Container of the wall elements of the world
     circle goal;
     std::vector<std::vector<double>> trajectory; ///< Matrix of the trajectory for backup
+    std::string trajectory_output_path; ///< Output path for the trajectory
 
     /**
      * @brief Constructor
@@ -26,7 +28,9 @@ public:
      * @param {parameters &} p; parameters
      */
     continuous_world(parameters &p){
+        trajectory_output_path = p.TRAJECTORY_OUTPUT_PATH;
         p.parse_cworld(xsize,ysize,elements,goal);
+        initialize_backup(std::vector<std::string>{"x","y"},trajectory_output_path,",");
     }
 
     /**
@@ -57,8 +61,21 @@ public:
      * @param {const std::vector<double> &} agent_position; position of the agent
      */
     void print(const std::vector<double> &agent_position) {
-        std::cout << "s: " << agent_position.at(0) << " " << agent_position.at(1) << std::endl;
+        //std::cout << "s: " << agent_position.at(0) << " " << agent_position.at(1) << std::endl;
         trajectory.push_back(agent_position);
+    }
+
+    /**
+     * @brief Save trajectory
+     *
+     * Save the trajectory for plotting purpose.
+     */
+    void save_trajectory() {
+        std::cout << "traj: " << std::endl;//TRM
+        for(auto &elt : trajectory) {//TRM
+            printv(elt);
+        }
+        save_matrix(trajectory,trajectory_output_path,",",std::ofstream::app);
     }
 };
 

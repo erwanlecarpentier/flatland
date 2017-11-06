@@ -168,6 +168,15 @@ public:
             return false;
         }
     }
+
+    /**
+     * @brief Save trajectory
+     *
+     * Save the trajectory for plotting purpose with continuous world.
+     */
+    void save_trajectory() {
+        world.save_trajectory();
+    }
 };
 
 #endif // ENVIRONMENT_HPP_

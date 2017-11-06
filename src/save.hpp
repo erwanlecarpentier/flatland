@@ -8,11 +8,12 @@
  * @brief Save a vector
  *
  * Save a vector into a file, writing this vector on a single line using the given separator
- * and the given writing mode. Template method.
- * @param {const std::vector<T> &} v; the saved vector
- * @param {const std::string &} output_path; the output path (name of the file)
- * @param {const std::string &} separator; the used separator
- * @param {std::ofstream::openmode} mode; the mode: using 'std::ofstream::out' overrides the
+ * and the given writing mode.
+ * Template method.
+ * @param {const std::vector<T> &} v; saved vector
+ * @param {const std::string &} output_path; output path (name of the file)
+ * @param {const std::string &} separator; used separator
+ * @param {std::ofstream::openmode} mode; mode: using 'std::ofstream::out' overrides the
  * output file while using 'std::ofstream::app' appends the vector to the bottom of the file.
  * Default is overriding.
  */
@@ -36,14 +37,15 @@ void save_vector(
 }
 
 /**
- * @brief Save a matrix
+ * @brief Save a matrix (vector of vectors)
  *
  * Save a matrix into a file, writing subsequently each one of its line using the method
- * 'save_vector'. Template method.
- * @param {const std::vector<std::vector<T>> &} m; the saved matrix
- * @param {const std::string &} output_path; the output path (name of the file)
- * @param {const std::string &} separator; the used separator
- * @param {std::ofstream::openmode} mode; the mode: using 'std::ofstream::out' overrides the
+ * 'save_vector'.
+ * Template method.
+ * @param {const std::vector<std::vector<T>> &} m; saved matrix
+ * @param {const std::string &} output_path; output path (name of the file)
+ * @param {const std::string &} separator; used separator
+ * @param {std::ofstream::openmode} mode; mode: using 'std::ofstream::out' overrides the
  * output file while using 'std::ofstream::app' appends the vector to the bottom of the file.
  * Default is overriding.
  */
@@ -54,19 +56,21 @@ void save_matrix(
     const std::string &separator,
 	std::ofstream::openmode mode = std::ofstream::out)
 {
+    std::cout << "save matrix: " << output_path << std::endl;//TRM
     for(auto &line : m) {
+        printv(line);//TRM
         save_vector(line,output_path,separator,mode);
     }
 }
 
 /**
- * @brief Initialize the backup file
+ * @brief Initialize a backup file
  *
- * Overrides the name of the saved values at the given output path. This is the header used
- * for plotting.
- * @param {const std::vector<std::string> &} names; the names of the saved values
- * @param {const std::string &} output_path; the output path (name of the file)
- * @param {const std::string &} separator; the used separator
+ * Overrides the name of the saved values at the given output path.
+ * This is the header used for plotting.
+ * @param {const std::vector<std::string> &} names; names of the saved values
+ * @param {const std::string &} output_path; output path (name of the file)
+ * @param {const std::string &} separator; used separator
  */
 void initialize_backup(
     const std::vector<std::string> &names,

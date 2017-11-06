@@ -21,6 +21,7 @@ public:
     double MISSTEP_PROBABILITY;
     std::string GRID_PATH;
     std::string CWORLD_PATH;
+    std::string TRAJECTORY_OUTPUT_PATH;
     std::vector<double> INITIAL_STATE;
     unsigned POLICY_SELECTOR;
     unsigned DECISION_CRITERION_SELECTOR;
@@ -165,6 +166,7 @@ public:
         && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)) {
             if(IS_WORLD_CONTINUOUS) { // take path of continuous world
                 assert(cfg.lookupValue("cworld_path",CWORLD_PATH));
+                assert(cfg.lookupValue("trajectory_output_path",TRAJECTORY_OUTPUT_PATH));
             } else { // take path of discrete world
                 assert(cfg.lookupValue("grid_path",GRID_PATH));
             }

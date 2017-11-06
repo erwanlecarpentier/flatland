@@ -69,13 +69,14 @@ void single_run(
     if(prnt) {
         print_tsasp(t,ag);
         en.print(ag.state);
+        en.save_trajectory(); //
     }
     if(bckp) {
         std::vector<double> simbackup = {
             (double) t, //score
             time_elapsed_ms // computational cost
         };
-        std::vector<double> agbackup = ag.policy.get_backup();
+        std::vector<double> agbackup = ag.policy.get_backup(); // agent backup
         simbackup.insert(simbackup.end(),agbackup.begin(),agbackup.end());
         backup_vector.push_back(simbackup);
     }
@@ -152,20 +153,12 @@ void run(
     if(bckp) { // initialize backup names
         initialize_backup(names,output_path,sep);
     }
-    for(unsigned i=0; i<nbsim; ++i) {
+    for(unsigned i=0; i<nbsim; ++i) { // run nbsim different simulations
         run_switch(p,prnt,bckp,backup_vector);
     }
     if(bckp) { // save all
         save_matrix(backup_vector,output_path,sep,std::ofstream::app);
     }
-}
-
-void test() {
-    std::cout << "test:\n";
-    parameters p("config/main.cfg");
-    environment<continuous_world> e(p);
-    std::vector<double> s = {1.,1.};
-    e.print(s);
 }
 
 /**
@@ -175,7 +168,6 @@ int main() {
     try {
         srand(time(NULL));
         run(1,"config/main.cfg","data/test.dat");
-        //test();
     }
     catch(const std::exception &e) {
         std::cerr << "Error in main(): standard exception caught: " << e.what() << std::endl;

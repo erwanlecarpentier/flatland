@@ -55,6 +55,14 @@ public:
             std::cout << std::endl;
         }
     }
+
+    /**
+     * @brief Save trajectory
+     *
+     * Saving a trajectory is only implemented for continuous world for plotting purpose.
+     * Further, we could implement it for both environments.
+     */
+    void save_trajectory() {}
 };
 
 #endif // DISCRETE_WORLD_HPP_
