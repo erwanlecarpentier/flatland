@@ -19,7 +19,7 @@ class parameters {
 public:
     bool IS_WORLD_CONTINUOUS;
     double MISSTEP_PROBABILITY;
-    std::vector<std::vector<int>> GRID_WORLD;
+    std::string GRID_PATH;
     std::string CWORLD_PATH;
     std::vector<double> INITIAL_STATE;
     unsigned POLICY_SELECTOR;
@@ -38,7 +38,7 @@ public:
      */
     parameters()
     {
-        //TODO: set some default parameters in this constructor
+        /* TODO: set some default parameters in this constructor */
     }
 
     /**
@@ -66,22 +66,20 @@ public:
     /**
      * @brief Parse grid
      *
-     * Build the discrete world
-     * @param {libconfig::Config &} cfg; configuration
+     * Build the discrete world.
+     * @param {std::vector<std::vector<int>> &} grid; grid world
      */
-    void parse_grid(libconfig::Config &cfg) {
-        std::string grid_path;
-        assert(cfg.lookupValue("grid_path",grid_path));
-        GRID_WORLD.clear();
+    void parse_grid(std::vector<std::vector<int>> &grid) {
+        grid.clear();
         std::ifstream fi;
-        fi.open(grid_path);
+        fi.open(GRID_PATH);
         if(!fi.good()) { // throw exception if file not found
             throw wrong_world_configuration_path();
         }
         for(std::string line; std::getline(fi, line); ) {
-            GRID_WORLD.emplace_back(std::vector<int>{});
+            grid.emplace_back(std::vector<int>{});
             int read;
-            for(std::stringstream iss(line); iss >> read; GRID_WORLD.back().push_back(read));
+            for(std::stringstream iss(line); iss >> read; grid.back().push_back(read));
         }
     }
 
@@ -158,10 +156,8 @@ public:
         && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)) {
             if(IS_WORLD_CONTINUOUS) { // take path of continuous world
                 assert(cfg.lookupValue("cworld_path",CWORLD_PATH));
-                std::cout << "parsed path: " << CWORLD_PATH << std::endl;
-                //parse_cworld(cfg);
             } else { // take path of discrete world
-                //parse_grid(cfg);
+                assert(cfg.lookupValue("grid_path",GRID_PATH));
             }
             INITIAL_STATE = std::vector<double> {sr,sc};
             parse_actions(cfg);

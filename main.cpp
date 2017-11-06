@@ -175,8 +175,8 @@ void test() {
 int main() {
     try {
         srand(time(NULL));
-        //multi_run(1,"config/main.cfg","data/test.dat");
-        test();
+        multi_run(1,"config/main.cfg","data/test.dat");
+        //test();
     }
     catch(const std::exception &e) {
         std::cerr << "Error in main(): standard exception caught: " << e.what() << std::endl;

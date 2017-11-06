@@ -17,7 +17,7 @@ public:
      * @param {parameters &} p; parameters
      */
     discrete_world(parameters &p) {
-        grid_world = p.GRID_WORLD;
+        p.parse_grid(grid_world);
     }
 
     /**
