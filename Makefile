@@ -15,3 +15,6 @@ compile : main.cpp
 run :
 	./${EXEC}
 
+trajectory :
+	python3 plot/trajectory.py
+

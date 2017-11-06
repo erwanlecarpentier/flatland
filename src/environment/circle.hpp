@@ -10,15 +10,15 @@ public:
 
     /**
      * @brief Constructor
+     *
+     * Default values are arbitrary.
      */
     circle(
-        std::tuple<double,double> _center,
-        double _radius) :
+        std::tuple<double,double> _center = std::tuple<double,double>(0.,0.),
+        double _radius = 0.) :
         center(_center),
         radius(_radius)
     { /* Nothing to do */}
-
-    circle() { /* Nothing to do */}
 
     /**
      * @brief Test if position is within the shape
