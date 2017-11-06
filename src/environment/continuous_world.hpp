@@ -16,7 +16,7 @@ class continuous_world {
 public:
     double xsize; ///< Horizontal dimension of the environment
     double ysize; ///< Vertical dimension of the environment
-    std::vector<shape> elements; ///< Container of the wall elements of the world
+    std::vector<std::unique_ptr<shape>> elements; ///< Container of the wall elements of the world
     circle goal;
     std::vector<std::vector<double>> trajectory; ///< Matrix of the trajectory for backup
     std::string trajectory_output_path; ///< Output path for the trajectory
@@ -48,7 +48,7 @@ public:
             return -1;
         }
         for(auto &sh : elements) { // Wall checking is performed first
-            if(sh.is_within(s[0], s[1])) {
+            if(sh->is_within(s[0], s[1])) {
                 return -1;
             }
         }

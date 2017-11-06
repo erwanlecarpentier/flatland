@@ -90,13 +90,13 @@ public:
      * Build the continuous world attributes given as input.
      * @param {double &} xsize;
      * @param {double &} ysize;
-     * @param {std::vector<shape> &} elements;
+     * @param {std::vector<std::unique_ptr<shape>> &} elements;
      * @param {circle &} goal;
      */
     void parse_cworld(
         double &xsize,
         double &ysize,
-        std::vector<shape> &elements,
+        std::vector<std::unique_ptr<shape>> &elements,
         circle &goal)
     {
         libconfig::Config cworld_cfg;
@@ -124,7 +124,8 @@ public:
             && cworld_cfg.lookupValue(c1name,c1)
             && cworld_cfg.lookupValue(d0name,d0)
             && cworld_cfg.lookupValue(d1name,d1)) {
-                elements.emplace_back(rectangle(std::tuple<double,double>{c0,c1},d0,d1));
+                elements.emplace_back(std::unique_ptr<shape>(new rectangle(std::tuple<double,double>{c0,c1},d0,d1)));
+                //rectangle(std::tuple<double,double>{c0,c1},d0,d1)//TRM
             } else {
                 throw wrong_world_configuration_path();
             }
@@ -137,7 +138,8 @@ public:
             if(cworld_cfg.lookupValue(c0name,c0)
             && cworld_cfg.lookupValue(c1name,c1)
             && cworld_cfg.lookupValue(rdname,rd)) {
-                elements.emplace_back(circle(std::tuple<double,double>{c0,c1},rd));
+                elements.emplace_back(std::unique_ptr<shape>(new circle(std::tuple<double,double>{c0,c1},rd)));
+                //elements.emplace_back(circle(std::tuple<double,double>{c0,c1},rd));
             } else {
                 throw wrong_world_configuration_path();
             }
