@@ -38,9 +38,6 @@ public:
      * @param {const std::vector<double> &} agent_position; position of the agent
      */
     void print(const std::vector<double> &agent_position) {
-        //std::cout << "s:" << ag.state.at(0) << " " << ag.state.at(1) << " "; //TRM
-        //std::cout << "a:" << ag.action.at(0) << " " << ag.action.at(1) << " "; //TRM
-        //std::cout << "s_p:" << ag.state_p.at(0) << " " << ag.state_p.at(1) << std::endl; //TRM
         unsigned rval = (unsigned) agent_position[0];
         unsigned cval = (unsigned) agent_position[1];
         for(unsigned i=0; i<grid_world.size(); ++i) {

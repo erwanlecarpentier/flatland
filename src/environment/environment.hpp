@@ -15,8 +15,6 @@ public:
     typedef WRLD WRLD_type;
     bool is_continuous; ///< Is state space continuous
     WRLD world;
-    //continuous_world cworld; ///< continuous map for continuous world //TRM
-    //std::vector<std::vector<int>> grid_world; ///< discrete map for discrete world //TRM
     double misstep_probability; ///< Probability of misstep
     std::vector<std::vector<double>> action_space; ///< Full space of the actions available in the environment
 
@@ -29,14 +27,6 @@ public:
     environment(parameters &p) : world(p) {
         action_space = p.ACTION_SPACE;
         misstep_probability = p.MISSTEP_PROBABILITY;
-        //is_continuous = p.IS_WORLD_CONTINUOUS; //TRM
-        /*
-        if(is_continuous) { //TRM
-            std::cout << "TODO: implement continuous world" << std::endl;
-        } else {
-            grid_world = p.GRID_WORLD;
-        }
-        */
     }
 
     /**
@@ -56,12 +46,6 @@ public:
      * @param {const std::vector<double> &} s; given state
      * @return Return the value of the world.
      */
-    /* //TRM
-    int grid_world_value(const std::vector<double> &s) {
-        assert(s.size() == 2);
-        return grid_world.at(s.at(0)).at(s.at(1));
-    }
-    */
     int world_value_at(const std::vector<double> &s) {
         assert(s.size() == 2);
         return world.get_value_at(s);
