@@ -10,6 +10,8 @@
 #include <rectangle.hpp>
 #include <shape.hpp>
 
+constexpr double TO_RAD = 0.01745329251; ///< radians to degrees
+
 /**
  * @brief Simulation parameters
  *
@@ -49,17 +51,41 @@ public:
      * @param {libconfig::Config &} cfg; configuration
      */
     void parse_actions(libconfig::Config &cfg) {
-        unsigned nbac = 0;
+        unsigned nbac = 0, selector = 0;
         assert(cfg.lookupValue("nb_actions",nbac));
-        for(unsigned i=0; i<nbac; ++i) {
-            std::string rname = "a" + std::to_string(i) + "0";
-            std::string cname = "a" + std::to_string(i) + "1";
-            double rval = 0., cval = 0.;
-            if(cfg.lookupValue(rname,rval)
-            && cfg.lookupValue(cname,cval)) {
-                ACTION_SPACE.emplace_back(std::vector<double>{rval,cval});
-            } else { // Error in action names syntax
-                throw action_names_configuration_file_exception();
+        assert(cfg.lookupValue("action_definition_selector",selector));
+        switch(selector) {
+            case 1: { // Polar coordinates, turned to cartesian
+                for(unsigned i=0; i<nbac; ++i) {
+                    std::string mname = "a" + std::to_string(i) + "m";
+                    std::string aname = "a" + std::to_string(i) + "a";
+                    double mgn = 0., ang = 0.;
+                    if(cfg.lookupValue(mname,mgn)
+                    && cfg.lookupValue(aname,ang)) {
+                        ACTION_SPACE.emplace_back(
+                            std::vector<double>{
+                                mgn * cos(TO_RAD * ang),
+                                mgn * sin(TO_RAD * ang)
+                            }
+                        );
+                    } else { // Error in action names syntax
+                        throw action_names_configuration_file_exception();
+                    }
+                }
+                break;
+            }
+            default: { // Cartesian coordinates
+                for(unsigned i=0; i<nbac; ++i) {
+                    std::string rname = "a" + std::to_string(i) + "0";
+                    std::string cname = "a" + std::to_string(i) + "1";
+                    double rval = 0., cval = 0.;
+                    if(cfg.lookupValue(rname,rval)
+                    && cfg.lookupValue(cname,cval)) {
+                        ACTION_SPACE.emplace_back(std::vector<double>{rval,cval});
+                    } else { // Error in action names syntax
+                        throw action_names_configuration_file_exception();
+                    }
+                }
             }
         }
     }
