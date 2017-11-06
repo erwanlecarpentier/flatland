@@ -26,8 +26,6 @@ public:
      */
     continuous_world(parameters &p) {
         p.parse_cworld(xsize,ysize,elements);
-        std::cout << "dim: " << xsize << " " << ysize << std::endl; //TRM
-        std::cout << "nb elt: " << elements.size() << std::endl; //TRM
     }
 
     /**
@@ -38,11 +36,12 @@ public:
      * @return Return the value of the world.
      */
     int get_value_at(const std::vector<double> &s) {
-        (void) s;
         for(auto &sh : elements) {
-            sh.is_within(s.at(0), s.at(1));
+            if(sh.is_within(s.at(0), s.at(1))) {
+                return -1;
+            }
         }
-        return 42;
+        return 0;
     }
 
     /**
