@@ -16,7 +16,7 @@ public:
     double xsize; ///< Horizontal dimension of the environment
     double ysize; ///< Vertical dimension of the environment
     std::vector<shape> elements; ///< Container of the wall elements of the world
-    std::vector<std::vector<double>> trajectory; ///< Matrix of the trajectory for plotting purpose
+    std::vector<std::vector<double>> trajectory; ///< Matrix of the trajectory for backup
 
     /**
      * @brief Constructor
@@ -39,7 +39,9 @@ public:
      */
     int get_value_at(const std::vector<double> &s) {
         (void) s;
-        //TODO
+        for(auto &sh : elements) {
+            sh.is_within(s.at(0), s.at(1));
+        }
         return 42;
     }
 

@@ -163,7 +163,6 @@ void multi_run(
 void test() {
     std::cout << "test:\n";
     parameters p("config/main.cfg");
-    p.IS_WORLD_CONTINUOUS = true;
     environment<continuous_world> e(p);
     std::vector<double> s = {1.,1.};
     e.print(s);
@@ -175,8 +174,8 @@ void test() {
 int main() {
     try {
         srand(time(NULL));
-        multi_run(1,"config/main.cfg","data/test.dat");
-        //test();
+        //multi_run(1,"config/main.cfg","data/test.dat");
+        test();
     }
     catch(const std::exception &e) {
         std::cerr << "Error in main(): standard exception caught: " << e.what() << std::endl;

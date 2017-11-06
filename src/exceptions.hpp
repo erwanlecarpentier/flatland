@@ -43,4 +43,18 @@ struct action_names_configuration_file_exception : std::exception {
     }
 };
 
+/**
+ * @brief Call to generic shape
+ *
+ * Exception for call to generic shape object.
+ */
+struct call_to_generic_shape_exception : std::exception {
+    explicit call_to_generic_shape_exception() noexcept {}
+    virtual ~call_to_generic_shape_exception() noexcept {}
+
+    virtual const char * what() const noexcept override {
+        return "in config file: call to generic shape.\n";
+    }
+};
+
 #endif // EXCEPTIONS_HPP_
