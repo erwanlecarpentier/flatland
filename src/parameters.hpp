@@ -113,6 +113,7 @@ public:
         unsigned nbr = 0, nbc = 0;
         assert(cworld_cfg.lookupValue("nb_rectangles",nbr));
         assert(cworld_cfg.lookupValue("nb_circles",nbc));
+        elements.reserve(nbr + nbc);
         for(unsigned i=0; i<nbr; ++i) { // parse rectangles
             std::string c0name = "cr" + std::to_string(i) + "0";
             std::string c1name = "cr" + std::to_string(i) + "1";

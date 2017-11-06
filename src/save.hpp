@@ -56,9 +56,7 @@ void save_matrix(
     const std::string &separator,
 	std::ofstream::openmode mode = std::ofstream::out)
 {
-    std::cout << "save matrix: " << output_path << std::endl;//TRM
     for(auto &line : m) {
-        printv(line);//TRM
         save_vector(line,output_path,separator,mode);
     }
 }

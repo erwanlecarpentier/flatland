@@ -77,10 +77,6 @@ public:
      * Save the trajectory for plotting purpose.
      */
     void save_trajectory() {
-        std::cout << "traj: " << std::endl;//TRM
-        for(auto &elt : trajectory) {//TRM
-            printv(elt);
-        }
         save_matrix(trajectory,trajectory_output_path,",",std::ofstream::app);
     }
 };
