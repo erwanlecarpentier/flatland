@@ -14,9 +14,9 @@ public:
      * @brief Constructor
      *
      * Constructor wrt the given parameters.
-     * @param {const parameters &} p; parameters
+     * @param {parameters &} p; parameters
      */
-    discrete_world(const parameters &p) {
+    discrete_world(parameters &p) {
         grid_world = p.GRID_WORLD;
     }
 

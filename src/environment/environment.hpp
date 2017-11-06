@@ -24,9 +24,9 @@ public:
      * @brief Default constructor
      *
      * Default constructor initialising the parameters via a 'parameters' object.
-     * @param {const parameters &} p; parameters
+     * @param {parameters &} p; parameters
      */
-    environment(const parameters &p) : world(p) {
+    environment(parameters &p) : world(p) {
         action_space = p.ACTION_SPACE;
         misstep_probability = p.MISSTEP_PROBABILITY;
         //is_continuous = p.IS_WORLD_CONTINUOUS; //TRM

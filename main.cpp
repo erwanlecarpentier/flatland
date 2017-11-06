@@ -36,7 +36,7 @@ void print_tsasp(double t, const agent<PLC,WRLD> &ag) {
  * @brief Run
  *
  * Run a single simulation using the given parameters.
- * @param {const parameters &} p; parameters of the simulation
+ * @param {parameters &} p; parameters of the simulation
  * @param {bool} prnt; set to true for display
  * @param {bool} bckp; set to true for backup
  * @param {std::vector<std::vector<double>>} backup_vector; backup vector into which each
@@ -44,7 +44,7 @@ void print_tsasp(double t, const agent<PLC,WRLD> &ag) {
  */
 template <class PLC, class WRLD>
 void run(
-    const parameters &p,
+    parameters &p,
     bool prnt,
     bool bckp,
     std::vector<std::vector<double>> &backup_vector)
@@ -86,14 +86,14 @@ void run(
  *
  * Run a single simulation using the given parameters.
  * Applies the switch between the different policies and environments.
- * @param {const parameters &} p; parameters of the simulation
+ * @param {parameters &} p; parameters of the simulation
  * @param {bool} prnt; set to true for display
  * @param {bool} bckp; set to true for backup
  * @param {std::vector<std::vector<double>>} backup_vector; backup vector into which each
  * simulation records its backed up values
  */
 void run_switch(
-    const parameters &p,
+    parameters &p,
     bool prnt,
     bool bckp,
     std::vector<std::vector<double>> &backup_vector)
@@ -161,6 +161,7 @@ void multi_run(
 }
 
 void test() {
+    std::cout << "test:\n";
     parameters p("config/main.cfg");
     p.IS_WORLD_CONTINUOUS = true;
     environment<continuous_world> e(p);

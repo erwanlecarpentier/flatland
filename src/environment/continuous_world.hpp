@@ -22,14 +22,12 @@ public:
      * @brief Constructor
      *
      * Constructor wrt the given parameters.
-     * @param {const parameters &} p; parameters
+     * @param {parameters &} p; parameters
      */
-    continuous_world(const parameters &p) {
-        (void) p;
-        xsize = 4.;
-        ysize = 4.;
-        elements.emplace_back(rectangle(std::tuple<double,double>{2.,2.},2.,1.));
-        elements.emplace_back(circle(std::tuple<double,double>{0.,2.},2.));
+    continuous_world(parameters &p) {
+        p.parse_cworld(xsize,ysize,elements);
+        std::cout << "dim: " << xsize << " " << ysize << std::endl; //TRM
+        std::cout << "nb elt: " << elements.size() << std::endl; //TRM
     }
 
     /**

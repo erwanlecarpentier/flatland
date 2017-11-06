@@ -16,16 +16,16 @@ struct wrong_syntax_configuration_file_exception : std::exception {
 };
 
 /**
- * @brief Wrong grid path
+ * @brief Wrong world configuration path
  *
- * Exception for wrong grid path in configuration file.
+ * Exception for wrong world configuration path in configuration file.
  */
-struct wrong_grid_path : std::exception {
-    explicit wrong_grid_path() noexcept {}
-    virtual ~wrong_grid_path() noexcept {}
+struct wrong_world_configuration_path : std::exception {
+    explicit wrong_world_configuration_path() noexcept {}
+    virtual ~wrong_world_configuration_path() noexcept {}
 
     virtual const char * what() const noexcept override {
-        return "in config file: wrong grid path.\n";
+        return "in config file: wrong world configuration path.\n";
     }
 };
 

@@ -6,6 +6,10 @@
 #include <sstream>
 #include <exceptions.hpp>
 
+#include <circle.hpp>
+#include <rectangle.hpp>
+#include <shape.hpp>
+
 /**
  * @brief Simulation parameters
  *
@@ -16,6 +20,7 @@ public:
     bool IS_WORLD_CONTINUOUS;
     double MISSTEP_PROBABILITY;
     std::vector<std::vector<int>> GRID_WORLD;
+    std::string CWORLD_PATH;
     std::vector<double> INITIAL_STATE;
     unsigned POLICY_SELECTOR;
     unsigned DECISION_CRITERION_SELECTOR;
@@ -26,14 +31,108 @@ public:
     double DISCOUNT_FACTOR;
 
     /**
-     * @brief Simulation parameters 'default' constructor
+     * @brief Simulation parameters default constructor
      *
-     * The parameters are set to the values defined in this constructor.
+     * The parameters are set to the default values defined in this constructor.
      * @deprecated
      */
     parameters()
     {
         //TODO: set some default parameters in this constructor
+    }
+
+    /**
+     * @brief Parse actions
+     *
+     * Parse the actions given as parameters
+     * @param {libconfig::Config &} cfg; configuration
+     */
+    void parse_actions(libconfig::Config &cfg) {
+        unsigned nbac = 0;
+        assert(cfg.lookupValue("nb_actions",nbac));
+        for(unsigned i=0; i<nbac; ++i) {
+            std::string rname = "a" + std::to_string(i) + "0";
+            std::string cname = "a" + std::to_string(i) + "1";
+            double rval = 0., cval = 0.;
+            if(cfg.lookupValue(rname,rval)
+            && cfg.lookupValue(cname,cval)) {
+                ACTION_SPACE.emplace_back(std::vector<double>{rval,cval});
+            } else { // Error in action names syntax
+                throw action_names_configuration_file_exception();
+            }
+        }
+    }
+
+    /**
+     * @brief Parse grid
+     *
+     * Build the discrete world
+     * @param {libconfig::Config &} cfg; configuration
+     */
+    void parse_grid(libconfig::Config &cfg) {
+        std::string grid_path;
+        assert(cfg.lookupValue("grid_path",grid_path));
+        GRID_WORLD.clear();
+        std::ifstream fi;
+        fi.open(grid_path);
+        if(!fi.good()) { // throw exception if file not found
+            throw wrong_world_configuration_path();
+        }
+        for(std::string line; std::getline(fi, line); ) {
+            GRID_WORLD.emplace_back(std::vector<int>{});
+            int read;
+            for(std::stringstream iss(line); iss >> read; GRID_WORLD.back().push_back(read));
+        }
+    }
+
+    /**
+     * @brief Parse continuous world
+     *
+     * Build the continuous world attributes given as input.
+     * @param {double &} xsize;
+     * @param {double &} ysize;
+     * @param {std::vector<shape> &} elements;
+     */
+    void parse_cworld(double &xsize, double &ysize, std::vector<shape> &elements) {
+        libconfig::Config cworld_cfg;
+        cworld_cfg.readFile(CWORLD_PATH.c_str());
+        if(cworld_cfg.lookupValue("xsize",xsize)
+        && cworld_cfg.lookupValue("ysize",ysize)) {
+            /* Nothing to do */
+        } else {
+            throw wrong_world_configuration_path();
+        }
+        unsigned nbr = 0, nbc = 0;
+        assert(cworld_cfg.lookupValue("nb_rectangles",nbr));
+        assert(cworld_cfg.lookupValue("nb_circles",nbc));
+        for(unsigned i=0; i<nbr; ++i) { // parse rectangles
+            std::string c0name = "cr" + std::to_string(i) + "0";
+            std::string c1name = "cr" + std::to_string(i) + "1";
+            std::string d0name = "dr" + std::to_string(i) + "0";
+            std::string d1name = "dr" + std::to_string(i) + "1";
+            double c0 = 0., c1 = 0., d0 = 0., d1 = 0.;
+            if(cworld_cfg.lookupValue(c0name,c0)
+            && cworld_cfg.lookupValue(c1name,c1)
+            && cworld_cfg.lookupValue(d0name,d0)
+            && cworld_cfg.lookupValue(d1name,d1)) {
+                elements.emplace_back(rectangle(std::tuple<double,double>{c0,c1},d0,d1));
+            } else {
+                throw wrong_world_configuration_path();
+            }
+        }
+        for(unsigned i=0; i<nbc; ++i) { // parse circles
+            std::string c0name = "cc" + std::to_string(i) + "0";
+            std::string c1name = "cc" + std::to_string(i) + "1";
+            std::string rdname = "r"  + std::to_string(i);
+            double c0 = 0., c1 = 0., rd = 0.;
+            if(cworld_cfg.lookupValue(c0name,c0)
+            && cworld_cfg.lookupValue(c1name,c1)
+            && cworld_cfg.lookupValue(rdname,rd)) {
+                elements.emplace_back(circle(std::tuple<double,double>{c0,c1},rd));
+            } else {
+                throw wrong_world_configuration_path();
+            }
+        }
     }
 
     /**
@@ -46,68 +145,30 @@ public:
     parameters(const char *cfg_path) {
         libconfig::Config cfg;
         cfg.readFile(cfg_path);
-        std::string grid_path;
         double sr = 0., sc = 0.;
-        unsigned nbac= 0;
         if(cfg.lookupValue("is_world_continuous",IS_WORLD_CONTINUOUS)
         && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
-        && cfg.lookupValue("grid_path",grid_path)
         && cfg.lookupValue("initial_state_row",sr)
         && cfg.lookupValue("initial_state_col",sc)
         && cfg.lookupValue("policy_selector",POLICY_SELECTOR)
         && cfg.lookupValue("decision_criterion_selector",DECISION_CRITERION_SELECTOR)
-        && cfg.lookupValue("nb_actions",nbac)
         && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)
         && cfg.lookupValue("uct_cst",UCT_CST)
         && cfg.lookupValue("discount_factor",DISCOUNT_FACTOR)
         && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)) {
-            if(IS_WORLD_CONTINUOUS) { // parse continuous world
-                //TODO
-            } else { // parse discrete world
-                GRID_WORLD = parse_grid(grid_path);
+            if(IS_WORLD_CONTINUOUS) { // take path of continuous world
+                assert(cfg.lookupValue("cworld_path",CWORLD_PATH));
+                std::cout << "parsed path: " << CWORLD_PATH << std::endl;
+                //parse_cworld(cfg);
+            } else { // take path of discrete world
+                //parse_grid(cfg);
             }
             INITIAL_STATE = std::vector<double> {sr,sc};
-            for(unsigned i=0; i<nbac; ++i) { // actions parsing
-                std::string rname = "a";
-                rname += std::to_string(i);
-                std::string cname = rname;
-                rname += std::to_string(0);
-                cname += std::to_string(1);
-                double rval = 0., cval = 0.;
-                if(cfg.lookupValue(rname,rval)
-                && cfg.lookupValue(cname,cval)) {
-                    ACTION_SPACE.emplace_back(std::vector<double>{rval,cval});
-                } else { // Error in action names syntax
-                    throw action_names_configuration_file_exception();
-                }
-            }
+            parse_actions(cfg);
         }
         else { // Error in config file
             throw wrong_syntax_configuration_file_exception();
         }
-    }
-
-    /**
-     * @brief Parse grid
-     *
-     * Parse a grid and turn it into a 'std::vector<std::vector<int>>' object.
-     * @warning Integer within the config file must be separated with a blanck.
-     * @param {const std::string &} grid_path; path of the grid configuration file
-     * @return Return a discrete grid world
-     */
-    std::vector<std::vector<int>> parse_grid(const std::string &grid_path) {
-        std::vector<std::vector<int>> gw;
-        std::ifstream fi;
-        fi.open(grid_path);
-        if(!fi.good()) { // throw exception if file not found
-            throw wrong_grid_path();
-        }
-        for(std::string line; std::getline(fi, line); ) {
-            gw.emplace_back(std::vector<int>{});
-            int read;
-            for(std::stringstream iss(line); iss >> read; gw.back().push_back(read));
-        }
-        return gw;
     }
 };
 
