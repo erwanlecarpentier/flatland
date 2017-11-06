@@ -26,10 +26,10 @@ public:
      * @brief Policy operator
      *
      * Policy operator for the undertaken action at given state.
-     * @param {const std::vector<double> &} s; given state
+     * @param {const state &} s; given state
      * @return Return the undertaken action at s.
      */
-	std::vector<double> operator()(const std::vector<double> &s) {
+	std::vector<double> operator()(const state &s) {
         (void) s;
         return rand_element(envt->get_action_space(s));
 	}
@@ -38,14 +38,14 @@ public:
      * @brief Process reward
      *
      * Process the resulting reward from transition (s,a,s_p)
-     * @param {std::vector<double> &} s; state
+     * @param {state &} s; state
      * @param {std::vector<double> &} a; action
-     * @param {std::vector<double> &} s_p; next state
+     * @param {state &} s_p; next state
      */
     void process_reward(
-        const std::vector<double> & s,
+        const state & s,
         const std::vector<double> & a,
-        const std::vector<double> & s_p)
+        const state & s_p)
     {
         (void) s;
         (void) a;

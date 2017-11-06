@@ -30,7 +30,7 @@ public:
      * termination criterion and generative model
      */
     uct(const parameters &p, environment<WRLD> *en) :
-        root_node(std::vector<double>{0.,0.},p.ACTION_SPACE), // null state as default
+        root_node(state(),p.ACTION_SPACE), // null state as default
         envt(en),
         rndplc(p,en)
     {
@@ -68,14 +68,14 @@ public:
      * @brief Generative model
      *
      * Perform a call to the generative model.
-     * @param {const std::vector<double> &} s; state
+     * @param {const state &} s; state
      * @param {std::vector<double>} a; copy of the action
-     * @param {std::vector<double> &} s_p; next state
+     * @param {state &} s_p; next state
      */
     void generative_model(
-        const std::vector<double> &s,
+        const state &s,
         std::vector<double> a,
-        std::vector<double> &s_p)
+        state &s_p)
     {
         envt->state_transition(s,a,s_p);
         ++nb_calls;
@@ -91,8 +91,8 @@ public:
     void sample_new_state(node * v) {
         assert(!v->is_root());
         std::vector<double> a = v->get_incoming_action();
-        std::vector<double> s = (v->parent)->get_state_or_last();
-        std::vector<double> s_p;
+        state s = (v->parent)->get_state_or_last();
+        state s_p;
         generative_model(s,a,s_p);
         v->add_to_states(s_p);
     }
@@ -106,8 +106,8 @@ public:
      */
     node * expand(node &v) {
         std::vector<double> nodes_action = v.get_next_expansion_action();
-        std::vector<double> nodes_state = v.get_state_or_last();
-        std::vector<double> new_state;
+        state nodes_state = v.get_state_or_last();
+        state new_state;
         generative_model(nodes_state,nodes_action,new_state);
         v.create_child(
             nodes_action,
@@ -166,7 +166,7 @@ public:
      * @param {node *} ptr; pointer to the input node
      */
     double default_policy(node * ptr) {
-        std::vector<double> s = ptr->get_last_sampled_state();
+        state s = ptr->get_last_sampled_state();
         if(is_node_terminal(*ptr)) {
             std::vector<double> a = {0.,0.};
             return envt->reward_function(s,a,s);
@@ -174,7 +174,7 @@ public:
         double total_return = 0.;
         std::vector<double> a = rndplc(s);
         for(unsigned t=0; t<horizon; ++t) {
-            std::vector<double> s_p;
+            state s_p;
             generative_model(s,a,s_p);
             total_return += pow(discount_factor,(double)t) * envt->reward_function(s,a,s_p);
             if(envt->is_terminal(s)) { // Termination criterion
@@ -214,9 +214,9 @@ public:
      *
      * Build a tree wrt vanilla UCT algorithm.
      * The tree is kept in memory.
-     * @param {const std::vector<double> &} s; current state of the agent
+     * @param {const state &} s; current state of the agent
      */
-    void build_uct_tree(const std::vector<double> &s) {
+    void build_uct_tree(const state &s) {
         root_node.clear_node();
         root_node.set_as_root();
         root_node.set_state(s);
@@ -262,10 +262,10 @@ public:
      * @brief Policy operator
      *
      * Policy operator for the undertaken action at given state.
-     * @param {const std::vector<double> &} s; given state
+     * @param {const state &} s; given state
      * @return Return the undertaken action at s.
      */
-	std::vector<double> operator()(const std::vector<double> &s) {
+	std::vector<double> operator()(const state &s) {
         build_uct_tree(s);
         return get_recommended_action(root_node);
 	}
@@ -274,14 +274,14 @@ public:
      * @brief Process reward
      *
      * Process the resulting reward from transition (s,a,s_p)
-     * @param {std::vector<double> &} s; state
+     * @param {state &} s; state
      * @param {std::vector<double> &} a; action
-     * @param {std::vector<double> &} s_p; next state
+     * @param {state &} s_p; next state
      */
     void process_reward(
-        const std::vector<double> & s,
+        const state & s,
         const std::vector<double> & a,
-        const std::vector<double> & s_p)
+        const state & s_p)
     {
         (void) s;
         (void) a;

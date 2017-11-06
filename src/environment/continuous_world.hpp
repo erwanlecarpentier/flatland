@@ -37,22 +37,22 @@ public:
      * @brief World value
      *
      * Evaluate the world at the given state.
-     * @param {const std::vector<double> &} s; given state
+     * @param {const state &} s; given state
      * @return Return the value of the world.
      */
-    int get_value_at(const std::vector<double> &s) {
-        if(is_less_than(s[0],0.)
-        || is_less_than(s[1],0.)
-        || is_greater_than(s[0],xsize)
-        || is_greater_than(s[1],ysize)) { // Border checking
+    int get_value_at(const state &s) {
+        if(is_less_than(s.x,0.)
+        || is_less_than(s.y,0.)
+        || is_greater_than(s.x,xsize)
+        || is_greater_than(s.y,ysize)) { // Border checking
             return -1;
         }
         for(auto &sh : elements) { // Wall checking is performed first
-            if(sh->is_within(s[0], s[1])) {
+            if(sh->is_within(s.x, s.y)) {
                 return -1;
             }
         }
-        if(goal.is_within(s[0], s[1])) { // Goal checking
+        if(goal.is_within(s.x, s.y)) { // Goal checking
             return +1;
         }
         return 0;
@@ -64,11 +64,10 @@ public:
      * Save the position in the trajectory matrix.
      * At the end of the simulation, the matrix is saved in the trajectory file.
      * No real time plot is implemented yet.
-     * @param {const std::vector<double> &} agent_position; position of the agent
+     * @param {const state &} s; state of the agent
      */
-    void print(const std::vector<double> &agent_position) {
-        //std::cout << "s: " << agent_position.at(0) << " " << agent_position.at(1) << std::endl;
-        trajectory.push_back(agent_position);
+    void print(const state &s) {
+        trajectory.push_back(std::vector<double>{s.x,s.y});
     }
 
     /**

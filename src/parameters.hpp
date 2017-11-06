@@ -9,6 +9,7 @@
 #include <circle.hpp>
 #include <rectangle.hpp>
 #include <shape.hpp>
+#include <state.hpp>
 
 constexpr double TO_RAD = 0.01745329251; ///< radians to degrees
 
@@ -21,10 +22,10 @@ class parameters {
 public:
     bool IS_WORLD_CONTINUOUS;
     double MISSTEP_PROBABILITY;
+    state INITIAL_STATE;
     std::string GRID_PATH;
     std::string CWORLD_PATH;
     std::string TRAJECTORY_OUTPUT_PATH;
-    std::vector<double> INITIAL_STATE;
     unsigned POLICY_SELECTOR;
     unsigned DECISION_CRITERION_SELECTOR;
     std::vector<std::vector<double>> ACTION_SPACE;
@@ -111,6 +112,24 @@ public:
     }
 
     /**
+     * @brief Parse state
+     *
+     * Build the state of the agent
+     * @param {libconfig::Config &} cfg; configuration
+     */
+    void parse_state(libconfig::Config &cfg) {
+        double x = 0., y = 0.;
+        if(cfg.lookupValue("initial_state_x",x)
+        && cfg.lookupValue("initial_state_y",y)) {
+            /* Nothing to do */
+        } else {
+            throw wrong_world_configuration_path();
+        }
+        INITIAL_STATE.x = x;
+        INITIAL_STATE.y = y;
+    }
+
+    /**
      * @brief Parse continuous world
      *
      * Build the continuous world attributes given as input.
@@ -181,11 +200,8 @@ public:
     parameters(const char *cfg_path) {
         libconfig::Config cfg;
         cfg.readFile(cfg_path);
-        double sr = 0., sc = 0.;
         if(cfg.lookupValue("is_world_continuous",IS_WORLD_CONTINUOUS)
         && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
-        && cfg.lookupValue("initial_state_x",sr)
-        && cfg.lookupValue("initial_state_y",sc)
         && cfg.lookupValue("policy_selector",POLICY_SELECTOR)
         && cfg.lookupValue("decision_criterion_selector",DECISION_CRITERION_SELECTOR)
         && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)
@@ -198,7 +214,7 @@ public:
             } else { // take path of discrete world
                 assert(cfg.lookupValue("grid_path",GRID_PATH));
             }
-            INITIAL_STATE = std::vector<double> {sr,sc};
+            parse_state(cfg);
             parse_actions(cfg);
         }
         else { // Error in config file

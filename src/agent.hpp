@@ -12,12 +12,11 @@ template <class PLC, class WRLD>
 class agent {
 public:
     typedef PLC PLC_type;
-    //typedef WRLD WRLD_type;
     PLC policy;
-    std::vector<double> state; ///< Current state of the agent
+    state s; ///< Current state of the agent
+    state s_p; ///< Next state of the agent
     std::vector<double> action; ///< Action selected by the policy
-    std::vector<double> state_p; ///< Next state of the agent
-    double reward; ///< Reward from transition (state,action,state_p)
+    double reward; ///< Reward from transition (s,action,s_p)
 
     /**
      * @brief Default constructor
@@ -31,9 +30,9 @@ public:
         const parameters &p,
         environment<WRLD> *en) :
         policy(p,en),
-        state(p.INITIAL_STATE)
+        s(p.INITIAL_STATE)
     {
-        state_p = state;
+        s_p = s;
         action = std::vector<double> {0.,0.};
     }
 
@@ -43,16 +42,16 @@ public:
      * Modify the action attribute wrt the state attribute and the chosen policy.
      */
     void apply_policy() {
-        action = policy(state);
+        action = policy(s);
     }
 
     /**
      * @brief Process reward
      *
-     * Process the resulting reward from transition (state,action,state_p)
+     * Process the resulting reward from transition (s,action,s_p)
      */
     void process_reward() {
-        policy.process_reward(state,action,state_p);
+        policy.process_reward(s,action,s_p);
     }
 
     /**
@@ -61,7 +60,7 @@ public:
      * Go to the next state
      */
     void step() {
-        state = state_p;
+        s = s_p;
     }
 };
 

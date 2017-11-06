@@ -36,10 +36,10 @@ public:
      * @param {const std::vector<double &} s; state
      * @return Return the reduced action space.
      */
-    std::vector<std::vector<double>> reduced_action_space(const std::vector<double> &s) {
+    std::vector<std::vector<double>> reduced_action_space(const state &s) {
         std::vector<std::vector<double>> ras;
         for(auto &a : action_space) {
-            std::vector<double> s_p;
+            state s_p;
             if(envt->state_transition(s,a,s_p)) {
                 ras.push_back(a);
             }
@@ -52,10 +52,10 @@ public:
      *
      * Select the decision criterion according to the chosen algorithm.
      * The tested tree is the current tree saved in the parameters.
-     * @param {const std::vector<double> &} s; the current state of the agent
+     * @param {const state &} s; the current state of the agent
      * @return Return 'true' if the sub-tree is kept.
      */
-    bool decision_criterion(const std::vector<double> & s) {
+    bool decision_criterion(const state & s) {
         (void) s;//TODO: remove with other decision criteria
         switch(decision_criterion_selector) {
             default: { // Plain decision criterion
@@ -68,10 +68,10 @@ public:
      * @brief Policy operator
      *
      * Policy operator for the undertaken action at given state.
-     * @param {const std::vector<double> &} s; given state
+     * @param {const state &} s; given state
      * @return Return the undertaken action at s.
      */
-	std::vector<double> operator()(const std::vector<double> &s) {
+	std::vector<double> operator()(const state &s) {
         if(!pl.root_node.is_fully_expanded() || !decision_criterion(s)) {
             pl.build_uct_tree(s);
         }
@@ -84,14 +84,14 @@ public:
      * @brief Process reward
      *
      * Process the resulting reward from transition (s,a,s_p)
-     * @param {std::vector<double> &} s; state
+     * @param {state &} s; state
      * @param {std::vector<double> &} a; action
-     * @param {std::vector<double> &} s_p; next state
+     * @param {state &} s_p; next state
      */
     void process_reward(
-        const std::vector<double> & s,
+        const state & s,
         const std::vector<double> & a,
-        const std::vector<double> & s_p)
+        const state & s_p)
     {
         /* OLUCT policy does not learn. */
         (void) s;

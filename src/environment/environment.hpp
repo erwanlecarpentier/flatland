@@ -33,21 +33,20 @@ public:
      * @brief Print environment
      *
      * Print the environment including the agent's position.
-     * @param {const std::vector<double> &} agent_position; position of the agent
+     * @param {const state &} s; state of the agent
      */
-    void print(const std::vector<double> &agent_position) {
-        world.print(agent_position);
+    void print(const state &s) {
+        world.print(s);
     }
 
     /**
      * @brief World value
      *
      * Evaluate the world at the given state.
-     * @param {const std::vector<double> &} s; given state
+     * @param {const state &} s; given state
      * @return Return the value of the world.
      */
-    int world_value_at(const std::vector<double> &s) {
-        assert(s.size() == 2);
+    int world_value_at(const state &s) {
         return world.get_value_at(s);
     }
 
@@ -55,10 +54,10 @@ public:
      * @brief Is state valid
      *
      * Test if the state is valid (wall or not).
-     * @param {const std::vector<double> &} s; given state
+     * @param {const state &} s; given state
      * @return Return the value of the grid.
      */
-    bool is_state_valid(const std::vector<double> &s) {
+    bool is_state_valid(const state &s) {
         return (world_value_at(s) != -1);
     }
 
@@ -66,13 +65,13 @@ public:
      * @brief Get action space
      *
      * Get the action space at the given state.
-     * @param {const std::vector<double> &} s; given state
+     * @param {const state &} s; given state
      * @return Return space of the available actions at s.
      */
-    std::vector<std::vector<double>> get_action_space(const std::vector<double> &s) {
+    std::vector<std::vector<double>> get_action_space(const state &s) {
         std::vector<std::vector<double>> resulting_as;
         for(auto &a : action_space) {
-            std::vector<double> s_p = {s.at(0) + a.at(0), s.at(1) + a.at(1)};
+            state s_p = {s.x + a.at(0), s.x + a.at(1)};
             if(is_state_valid(s_p)) {
                 resulting_as.push_back(a);
             }
@@ -86,23 +85,23 @@ public:
      * State transition function, compute the resulting state from the application of the
      * given action at the given state.
      * @warning next state vector is cleared.
-     * @param {const std::vector<double> &} s; state
+     * @param {const state &} s; state
      * @param {std::vector<double>} a; copy of the action
-     * @param {std::vector<double> &} s_p; next state
+     * @param {state &} s_p; next state
      * @return Return true if the action is valid at the given state.
      */
     bool state_transition(
-        const std::vector<double> &s,
+        const state &s,
         std::vector<double> a,
-        std::vector<double> &s_p)
+        state &s_p)
     {
-        assert(s.size() == 2 && a.size() == 2);
+        assert(a.size() == 2);
         if(is_less_than(uniform_double(0.,1.),misstep_probability)) { // misstep
             a = rand_element(get_action_space(s));
         }
         s_p = s;
-        s_p[0] += a[0];
-        s_p[1] += a[1];
+        s_p.x += a[0];
+        s_p.y += a[1];
         if(!is_state_valid(s_p)) { // frontier
             s_p = s;
             return false;
@@ -115,15 +114,15 @@ public:
      * @brief Reward function
      *
      * Reward function, compute the resulting reward from the transition (s,a,s_p).
-     * @param {const std::vector<double> &} s; state
+     * @param {state &} s; state
      * @param {const std::vector<double> &} a; action
-     * @param {const std::vector<double> &} s_p; next state
+     * @param {state &} s_p; next state
      * @return Return the resulting reward.
      */
     double reward_function(
-        const std::vector<double> &s,
+        const state &s,
         const std::vector<double> &a,
-        const std::vector<double> &s_p)
+        const state &s_p)
     {
         (void) s;
         (void) a;
@@ -138,16 +137,16 @@ public:
      * @brief Transition operator
      *
      * Transition operator, compute the resulting state and reward wrt a state and an action.
-     * @param {const std::vector<double> &} s; state
+     * @param {const state &} s; state
      * @param {const std::vector<double> &} a; action
      * @param {double &} r; reward
-     * @param {std::vector<double> &} s_p; next state
+     * @param {state &} s_p; next state
      */
     void transition(
-        const std::vector<double> &s,
+        const state &s,
         const std::vector<double> &a,
         double &r,
-        std::vector<double> &s_p)
+        state &s_p)
     {
         state_transition(s,a,s_p);
         r = reward_function(s,a,s_p);
@@ -158,10 +157,10 @@ public:
      *
      * Test if the given state is terminal.
      * Convention for gridworld if 1 for a terminal grid cell.
-     * @param {const std::vector<double> &} s; given state
+     * @param {const state &} s; given state
      * @return Return true if the test is terminal, else false.
      */
-    bool is_terminal(const std::vector<double> &s) {
+    bool is_terminal(const state &s) {
         if(world_value_at(s) == 1) {
             return true;
         } else {

@@ -24,22 +24,22 @@ public:
      * @brief World value
      *
      * Evaluate the world at the given state.
-     * @param {const std::vector<double> &} s; given state
+     * @param {const state &} s; given state
      * @return Return the value of the world.
      */
-    int get_value_at(const std::vector<double> &s) {
-        return grid_world.at(s.at(0)).at(s.at(1));
+    int get_value_at(const state &s) {
+        return grid_world.at(s.x).at(s.y);
     }
 
     /**
      * @brief Print grid with agent's position
      *
      * Print the environment including the agent's position.
-     * @param {const std::vector<double> &} agent_position; position of the agent
+     * @param {const state &} s; state of the agent
      */
-    void print(const std::vector<double> &agent_position) {
-        unsigned rval = (unsigned) agent_position[0];
-        unsigned cval = (unsigned) agent_position[1];
+    void print(const state &s) {
+        unsigned rval = (unsigned) s.x;
+        unsigned cval = (unsigned) s.y;
         for(unsigned i=0; i<grid_world.size(); ++i) {
             for(unsigned j=0; j<grid_world[i].size(); ++j) {
                 if(i == rval && j == cval) {

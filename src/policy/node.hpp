@@ -11,9 +11,9 @@ private :
     bool root; ///< True if the node is root i.e. labeled by a unique state instead of a family of states
     double value; ///< Value function estimate
     unsigned visits_count; ///< Number of visits during the tree expansion
-    std::vector<double> state; ///<Unique labelling state for a root node
+    state s; ///<Unique labelling state for a root node
     std::vector<double> incoming_action; ///< Action of the parent node that led to this node
-    std::vector<std::vector<double>> states; ///< Sampled states for a standard node
+    std::vector<state> states; ///< Sampled states for a standard node
     std::vector<std::vector<double>> action_space; ///< Available actions at this node (bandit arms)
 
 public :
@@ -34,9 +34,9 @@ public :
      * actions of the node (bandit arms)
      */
     node(
-        std::vector<double> _state,
+        state _state,
         std::vector<std::vector<double>> _action_space) :
-        state(_state)
+        s(_state)
     {
         root = true;
         action_space = _action_space;
@@ -54,7 +54,7 @@ public :
     node(
         node * _parent,
         std::vector<double> _incoming_action,
-        std::vector<double> _new_state,
+        state _new_state,
         std::vector<std::vector<double>> _action_space) :
         incoming_action(_incoming_action),
         parent(_parent)
@@ -79,7 +79,7 @@ public :
         parent = nullptr;
         value = 0;
         visits_count = 0;
-        state.clear();
+        s.set_to_default();
         incoming_action.clear();
         states.clear();
         children.clear();
@@ -111,9 +111,9 @@ public :
     }
 
     /** @brief Get the state of the node (root node) */
-    std::vector<double> get_state() const {
+    state get_state() const {
         assert(root);
-        return state;
+        return s;
     }
 
     /** @brief Get the number of sampled states (non-root node) */
@@ -123,12 +123,12 @@ public :
     }
 
     /** @brief Get a copy of the states vector of the node */
-    std::vector<std::vector<double>> get_states() const {
+    std::vector<state> get_states() const {
         return states;
     }
 
     /** @brief Get a copy of the last sampled state among the states family (non-root node) */
-    std::vector<double> get_last_sampled_state() const {
+    state get_last_sampled_state() const {
         assert(!root);
         return states.back();
     }
@@ -139,7 +139,7 @@ public :
      * Get either the unique labelling state if node is root, or the last sampled state
      * if non-root.
      */
-    std::vector<double> get_state_or_last() const {
+    state get_state_or_last() const {
         if(is_root()) {
             return get_state();
         } else {
@@ -200,35 +200,35 @@ public :
      *
      * Create a child based on the incoming action.
      * @param {std::vector<double> &} inc_ac; incoming action of the new child
-     * @param {std::vector<double> &} state; first sampled state of the new child
+     * @param {state &} state; first sampled state of the new child
      * @param {std::vector<std::vector<double>>} as; action space
      */
     void create_child(
         std::vector<double> &inc_ac,
-        std::vector<double> &state,
+        state &s,
         std::vector<std::vector<double>> as)
     {
-        children.emplace_back(node(this,inc_ac,state,as));
+        children.emplace_back(node(this,inc_ac,s,as));
     }
 
     /**
      * @brief Set state
      *
      * Copy the given state to the nodes state. Node should be root.
-     * @param {std::vector<double> &} s; copied state
+     * @param {state &} _s; copied state
      */
-    void set_state(const std::vector<double> &s) {
+    void set_state(const state &_s) {
         assert(root);
-        state = s;
+        s = _s;
     }
 
     /**
      * @brief Add to state
      *
      * Add a new sampled state to the states. Node should not be root.
-     * @param {std::vector<double> &} s; added state
+     * @param {state &} s; added state
      */
-    void add_to_states(std::vector<double> &s) {
+    void add_to_states(state &s) {
         assert(!root);
         states.push_back(s);
     }
@@ -259,9 +259,9 @@ public :
      * The current root node takes the children, states and action vector of one of its
      * children and updates its state.
      * @param {unsigned} indice; indice of the moved child
-     * @param {std::vector<double> &} new_state; new labelling state
+     * @param {state &} new_state; new labelling state
      */
-    void move_to_child(unsigned indice, const std::vector<double> &new_state) {
+    void move_to_child(unsigned indice, const state &new_state) {
         assert(is_root());
         action_space = children[indice].get_action_space();
         states = children[indice].get_states();
@@ -270,7 +270,7 @@ public :
             elt.parent = this;
         }
         children = std::move(tmp);
-        state = new_state;
+        s = new_state;
     }
 };
 

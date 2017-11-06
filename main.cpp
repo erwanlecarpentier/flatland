@@ -19,6 +19,7 @@
 #include <uct.hpp>
 #include <oluct.hpp>
 #include <save.hpp>
+#include <state.hpp>
 #include <utils.hpp>
 
 /**
@@ -27,9 +28,9 @@
 template <class PLC, class WRLD>
 void print_tsasp(double t, const agent<PLC,WRLD> &ag) {
     std::cout << "t:" << t << " ";
-    std::cout << "s:" << ag.state.at(0) << " " << ag.state.at(1) << " ";
+    std::cout << "s:" << ag.s.x << " " << ag.s.y << " ";
     std::cout << "a:" << ag.action.at(0) << " " << ag.action.at(1) << " ";
-    std::cout << "s_p:" << ag.state_p.at(0) << " " << ag.state_p.at(1) << std::endl;
+    std::cout << "s_p:" << ag.s_p.x << " " << ag.s_p.y << std::endl;
 }
 
 /**
@@ -53,13 +54,13 @@ void single_run(
     agent<PLC,WRLD> ag(p,&en);
     unsigned t = 0; // time
 	std::clock_t c_start = std::clock();
-    while(!en.is_terminal(ag.state)) {
+    while(!en.is_terminal(ag.s)) {
         ag.apply_policy();
-        en.transition(ag.state,ag.action,ag.reward,ag.state_p);
+        en.transition(ag.s,ag.action,ag.reward,ag.s_p);
         ag.process_reward();
         if(prnt) {
             print_tsasp(t,ag);
-            en.print(ag.state);
+            en.print(ag.s);
         }
         ag.step();
         ++t;
@@ -68,7 +69,7 @@ void single_run(
     double time_elapsed_ms = 1000. * (c_end - c_start) / CLOCKS_PER_SEC;
     if(prnt) {
         print_tsasp(t,ag);
-        en.print(ag.state);
+        en.print(ag.s);
         en.save_trajectory(); //
     }
     if(bckp) {
