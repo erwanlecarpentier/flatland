@@ -151,7 +151,6 @@ public:
             && cworld_cfg.lookupValue(d0name,d0)
             && cworld_cfg.lookupValue(d1name,d1)) {
                 elements.emplace_back(std::unique_ptr<shape>(new rectangle(std::tuple<double,double>{c0,c1},d0,d1)));
-                //rectangle(std::tuple<double,double>{c0,c1},d0,d1)//TRM
             } else {
                 throw wrong_world_configuration_path();
             }
@@ -185,8 +184,8 @@ public:
         double sr = 0., sc = 0.;
         if(cfg.lookupValue("is_world_continuous",IS_WORLD_CONTINUOUS)
         && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
-        && cfg.lookupValue("initial_state_row",sr)
-        && cfg.lookupValue("initial_state_col",sc)
+        && cfg.lookupValue("initial_state_x",sr)
+        && cfg.lookupValue("initial_state_y",sc)
         && cfg.lookupValue("policy_selector",POLICY_SELECTOR)
         && cfg.lookupValue("decision_criterion_selector",DECISION_CRITERION_SELECTOR)
         && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)
