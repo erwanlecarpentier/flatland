@@ -69,14 +69,20 @@ public:
      * @return Return space of the available actions at s.
      */
     std::vector<std::vector<double>> get_action_space(const state &s) {
-        std::vector<std::vector<double>> resulting_as;
+        std::cout << std::endl;//TRM
+        std::vector<std::vector<double>> resulting_action_space;
         for(auto &a : action_space) {
             state s_p = {s.x + a.at(0), s.x + a.at(1)};
+            std::cout << world_value_at(s_p) << " ";//TRM
             if(is_state_valid(s_p)) {
-                resulting_as.push_back(a);
+                resulting_action_space.push_back(a);
             }
         }
-        return resulting_as;
+        if(resulting_action_space.size() == 0) {//TRM
+            std::cout << "s " << s.x << " " << s.y << std::endl;
+        }
+        assert(resulting_action_space.size() != 0);//TRM
+        return resulting_action_space;
     }
 
     /**

@@ -61,7 +61,7 @@ traj_path = "data/trajectory.csv";
 data = pd.read_csv(traj_path,sep = ',');
 x = data["x"];
 y = data["y"];
-ax.plot(x,y,color=RED);
+ax.plot(x,y,color=LIGHTBLUE);
 
 plt.show()
 
