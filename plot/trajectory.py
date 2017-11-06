@@ -47,6 +47,14 @@ for i in range(config.nb_circles):
 	c = mpatches.Circle((cx,cy),radius,edgecolor='none',facecolor=BLACK, alpha = 0.5)
 	ax.add_patch(c)
 
+# Plot goal --------------------------------------------------------------------
+
+xg = config.xgoal;
+yg = config.ygoal;
+rg = config.rgoal;
+g = mpatches.Circle((xg,yg),rg,edgecolor='none',facecolor=GREEN, alpha = 0.5)
+ax.add_patch(g)
+
 # Plot trajectory --------------------------------------------------------------
 
 traj_path = "data/trajectory.csv";
