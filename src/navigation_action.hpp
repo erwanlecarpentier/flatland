@@ -6,7 +6,7 @@
 /**
  * @brief Navigation action class
  */
-class navigation_action : action {
+class navigation_action : public action {
 public:
     double fv; ///< absolute velocity variational factor
     double vmax; ///< maximum velocity

@@ -6,7 +6,7 @@
 /**
  * @brief Cartesian action class
  */
-class cartesian_action : action {
+class cartesian_action : public action {
 public:
     double dx; ///< variation along x coordinate
     double dy; ///< variation along y coordinate

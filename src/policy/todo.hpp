@@ -28,7 +28,7 @@ public:
      * @param {const state &} s; given state
      * @return Return the undertaken action at s.
      */
-	std::unique_ptr<action> operator()(const state &s) {
+	std::shared_ptr<action> operator()(const state &s) {
         /* TODO: define the policy here */
 	}
 
@@ -37,12 +37,12 @@ public:
      *
      * Process the resulting reward from transition (s,a,s_p)
      * @param {state &} s; state
-     * @param {std::unique_ptr<action> &} a; action
+     * @param {std::shared_ptr<action> &} a; action
      * @param {state &} s_p; next state
      */
     void process_reward(
         const state & s,
-        const std::unique_ptr<action> & a,
+        const std::shared_ptr<action> & a,
         const state & s_p)
     {
         /* TODO: define the reward use here */

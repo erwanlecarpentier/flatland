@@ -15,7 +15,7 @@ public:
     PLC policy;
     state s; ///< Current state of the agent
     state s_p; ///< Next state of the agent
-    std::unique_ptr<action> a; ///< Action selected by the policy
+    std::shared_ptr<action> a; ///< Action selected by the policy
     double reward; ///< Reward from transition (s,a,s_p)
 
     /**
@@ -33,7 +33,7 @@ public:
         s(p.INITIAL_STATE)
     {
         s_p = s;
-        a = action(); // null cartesian action
+        //a = action(); // null cartesian action//TRM
     }
 
     /**

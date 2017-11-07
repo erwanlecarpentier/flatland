@@ -14,7 +14,7 @@
 #include <shape.hpp>
 #include <state.hpp>
 
-constexpr double TO_RAD = 0.01745329251; ///< radians to degrees
+constexpr double TO_RAD = 0.01745329251; ///< degrees to radians
 
 /**
  * @brief Simulation parameters
@@ -54,9 +54,9 @@ public:
      * @brief Parse actions
      *
      * Parse the actions given as parameters
-     * @param {std::vector<std::unique_ptr<action>> &} action_space; resulting action space
+     * @param {std::vector<std::shared_ptr<action>> &} action_space; resulting action space
      */
-    void parse_actions(std::vector<std::unique_ptr<action>> &action_space) {
+    void parse_actions(std::vector<std::shared_ptr<action>> &action_space) {
         libconfig::Config cfg;
         cfg.readFile(MAIN_CFG_PATH.c_str());
         unsigned selector = 0;
@@ -72,7 +72,7 @@ public:
                     if(cfg.lookupValue(mname,mgn)
                     && cfg.lookupValue(aname,ang)) {
                         action_space.emplace_back(
-                            std::unique_ptr<action>(
+                            std::shared_ptr<action>(
                                 new cartesian_action(
                                     mgn * cos(TO_RAD * ang),
                                     mgn * sin(TO_RAD * ang)
@@ -99,7 +99,9 @@ public:
                         double dt = 0., fv = 0.;
                         if(cfg.lookupValue(dt_name,dt)
                         && cfg.lookupValue(fv_name,fv)) {
-                            action_space.emplace_back(std::unique_ptr<action>(new navigation_action(fv,vmax,vmin,dt)));
+                            action_space.emplace_back(
+                                std::shared_ptr<action>(new navigation_action(fv,vmax,vmin,dt))
+                            );
                         } else { // Error in action names syntax
                             throw action_names_configuration_file_exception();
                         }
@@ -117,7 +119,7 @@ public:
                     if(cfg.lookupValue(rname,rval)
                     && cfg.lookupValue(cname,cval)) {
                         action_space.emplace_back(
-                            std::unique_ptr<action>(new cartesian_action(rval,cval))
+                            std::shared_ptr<action>(new cartesian_action(rval,cval))
                         );
                     } else { // Error in action names syntax
                         throw action_names_configuration_file_exception();
