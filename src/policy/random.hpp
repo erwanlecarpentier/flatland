@@ -37,7 +37,9 @@ public:
     /**
      * @brief Process reward
      *
-     * Process the resulting reward from transition (s,a,s_p)
+     * Process the resulting reward from transition (s,a,s_p).
+     * Here nothing to do.
+     * Random policy does not learn.
      * @param {state &} s; state
      * @param {action &} a; action
      * @param {state &} s_p; next state

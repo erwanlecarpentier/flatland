@@ -25,7 +25,7 @@ public:
     oluct(const parameters &p, environment<WRLD> *en) :
         pl(p,en)
     {
-        action_space = p.ACTION_SPACE;
+        action_space = envt->action_space;
         decision_criterion_selector = p.DECISION_CRITERION_SELECTOR;
     }
 

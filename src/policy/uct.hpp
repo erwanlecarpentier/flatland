@@ -11,14 +11,14 @@
 template <class WRLD>
 class uct {
 public:
+    environment<WRLD> * envt; ///< Pointer to an environment, used for action space reduction, termination criterion and generative model
     node root_node; ///< Root node of the tree
     double uct_cst; ///< UCT constant within UCT formula
-    double discount_factor;
+    double discount_factor; ///< MDP discount factor
     unsigned horizon; ///< Horizon for default policy
     unsigned budget; ///< Algorithm budget (number of expanded nodes)
     unsigned expd_counter; ///< Counter of the number of expanded nodes
     unsigned nb_calls; ///< Number of calls to the generative model
-    environment<WRLD> * envt; ///< Pointer to an environment, used for action space reduction, termination criterion and generative model
     random_policy<WRLD> rndplc; ///< Random policy used as a default policy
 
     /**
@@ -30,8 +30,8 @@ public:
      * termination criterion and generative model
      */
     uct(const parameters &p, environment<WRLD> *en) :
-        root_node(state(),p.ACTION_SPACE), // null state as default
         envt(en),
+        root_node(state(),envt->action_space), // null state as default
         rndplc(p,en)
     {
         budget = p.TREE_SEARCH_BUDGET;
