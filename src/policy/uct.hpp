@@ -69,12 +69,12 @@ public:
      *
      * Perform a call to the generative model.
      * @param {const state &} s; state
-     * @param {std::vector<double>} a; copy of the action
+     * @param {action} a; copy of the action
      * @param {state &} s_p; next state
      */
     void generative_model(
         const state &s,
-        std::vector<double> a,
+        action a,
         state &s_p)
     {
         envt->state_transition(s,a,s_p);
@@ -90,7 +90,7 @@ public:
      */
     void sample_new_state(node * v) {
         assert(!v->is_root());
-        std::vector<double> a = v->get_incoming_action();
+        action a = v->get_incoming_action();
         state s = (v->parent)->get_state_or_last();
         state s_p;
         generative_model(s,a,s_p);
@@ -105,7 +105,7 @@ public:
      * @return Return a pointer to the created leaf node
      */
     node * expand(node &v) {
-        std::vector<double> nodes_action = v.get_next_expansion_action();
+        action nodes_action = v.get_next_expansion_action();
         state nodes_state = v.get_state_or_last();
         state new_state;
         generative_model(nodes_state,nodes_action,new_state);
@@ -168,11 +168,11 @@ public:
     double default_policy(node * ptr) {
         state s = ptr->get_last_sampled_state();
         if(is_node_terminal(*ptr)) {
-            std::vector<double> a = {0.,0.};
+            action a(0.,0.);
             return envt->reward_function(s,a,s);
         }
         double total_return = 0.;
-        std::vector<double> a = rndplc(s);
+        action a = rndplc(s);
         for(unsigned t=0; t<horizon; ++t) {
             state s_p;
             generative_model(s,a,s_p);
@@ -254,7 +254,7 @@ public:
      * @return Return the action with the highest score (leading to the child with the higher
      * value).
      */
-    std::vector<double> get_recommended_action(const node &v) {
+    action get_recommended_action(const node &v) {
         return v.get_action_at(argmax_score(v));
     }
 
@@ -265,7 +265,7 @@ public:
      * @param {const state &} s; given state
      * @return Return the undertaken action at s.
      */
-	std::vector<double> operator()(const state &s) {
+	action operator()(const state &s) {
         build_uct_tree(s);
         return get_recommended_action(root_node);
 	}
@@ -275,12 +275,12 @@ public:
      *
      * Process the resulting reward from transition (s,a,s_p)
      * @param {state &} s; state
-     * @param {std::vector<double> &} a; action
+     * @param {action &} a; action
      * @param {state &} s_p; next state
      */
     void process_reward(
         const state & s,
-        const std::vector<double> & a,
+        const action & a,
         const state & s_p)
     {
         (void) s;

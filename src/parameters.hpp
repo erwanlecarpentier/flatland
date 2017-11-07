@@ -4,9 +4,10 @@
 #include <libconfig.h++>
 #include <fstream>
 #include <sstream>
-#include <exceptions.hpp>
 
+#include <action.hpp>
 #include <circle.hpp>
+#include <exceptions.hpp>
 #include <rectangle.hpp>
 #include <shape.hpp>
 #include <state.hpp>
@@ -29,7 +30,7 @@ public:
     std::string TRAJECTORY_OUTPUT_PATH;
     unsigned POLICY_SELECTOR;
     unsigned DECISION_CRITERION_SELECTOR;
-    std::vector<std::vector<double>> ACTION_SPACE;
+    std::vector<action> ACTION_SPACE;
     unsigned TREE_SEARCH_BUDGET;
     unsigned DEFAULT_POLICY_HORIZON;
     double UCT_CST;
@@ -65,10 +66,10 @@ public:
                     if(cfg.lookupValue(mname,mgn)
                     && cfg.lookupValue(aname,ang)) {
                         ACTION_SPACE.emplace_back(
-                            std::vector<double>{
+                            action(
                                 mgn * cos(TO_RAD * ang),
                                 mgn * sin(TO_RAD * ang)
-                            }
+                            )
                         );
                     } else { // Error in action names syntax
                         throw action_names_configuration_file_exception();
@@ -87,7 +88,7 @@ public:
                     double rval = 0., cval = 0.;
                     if(cfg.lookupValue(rname,rval)
                     && cfg.lookupValue(cname,cval)) {
-                        ACTION_SPACE.emplace_back(std::vector<double>{rval,cval});
+                        ACTION_SPACE.emplace_back(action(rval,cval));
                     } else { // Error in action names syntax
                         throw action_names_configuration_file_exception();
                     }

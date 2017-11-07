@@ -15,8 +15,8 @@ public:
     PLC policy;
     state s; ///< Current state of the agent
     state s_p; ///< Next state of the agent
-    std::vector<double> action; ///< Action selected by the policy
-    double reward; ///< Reward from transition (s,action,s_p)
+    action a; ///< Action selected by the policy
+    double reward; ///< Reward from transition (s,a,s_p)
 
     /**
      * @brief Default constructor
@@ -33,7 +33,7 @@ public:
         s(p.INITIAL_STATE)
     {
         s_p = s;
-        action = std::vector<double> {0.,0.};
+        a = action(); // null cartesian action
     }
 
     /**
@@ -42,16 +42,16 @@ public:
      * Modify the action attribute wrt the state attribute and the chosen policy.
      */
     void apply_policy() {
-        action = policy(s);
+        a = policy(s);
     }
 
     /**
      * @brief Process reward
      *
-     * Process the resulting reward from transition (s,action,s_p)
+     * Process the resulting reward from transition (s,a,s_p)
      */
     void process_reward() {
-        policy.process_reward(s,action,s_p);
+        policy.process_reward(s,a,s_p);
     }
 
     /**

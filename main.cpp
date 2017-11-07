@@ -10,6 +10,7 @@
 #include <tuple>
 #include <vector>
 
+#include <action.hpp>
 #include <agent.hpp>
 #include <discrete_world.hpp>
 #include <continuous_world.hpp>
@@ -29,7 +30,7 @@ template <class PLC, class WRLD>
 void print_tsasp(double t, const agent<PLC,WRLD> &ag) {
     std::cout << "t:" << t << " ";
     std::cout << "s:" << ag.s.x << " " << ag.s.y << " ";
-    std::cout << "a:" << ag.action.at(0) << " " << ag.action.at(1) << " ";
+    std::cout << "a:" << ag.a.dx << " " << ag.a.dy << " ";
     std::cout << "s_p:" << ag.s_p.x << " " << ag.s_p.y << std::endl;
 }
 
@@ -56,7 +57,7 @@ void single_run(
 	std::clock_t c_start = std::clock();
     while(!en.is_terminal(ag.s)) {
         ag.apply_policy();
-        en.transition(ag.s,ag.action,ag.reward,ag.s_p);
+        en.transition(ag.s,ag.a,ag.reward,ag.s_p);
         ag.process_reward();
         if(prnt) {
             print_tsasp(t,ag);

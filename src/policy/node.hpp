@@ -12,9 +12,9 @@ private :
     double value; ///< Value function estimate
     unsigned visits_count; ///< Number of visits during the tree expansion
     state s; ///<Unique labelling state for a root node
-    std::vector<double> incoming_action; ///< Action of the parent node that led to this node
+    action incoming_action; ///< Action of the parent node that led to this node
     std::vector<state> states; ///< Sampled states for a standard node
-    std::vector<std::vector<double>> action_space; ///< Available actions at this node (bandit arms)
+    std::vector<action> action_space; ///< Available actions at this node (bandit arms)
 
 public :
     node *parent; ///< Pointer to the parent node
@@ -30,12 +30,12 @@ public :
      *
      * Usually the first node to be created. The provided action space is a vector containing
      * all the actions and is shuffled at the nodes creation.
-     * @param {std::vector<std::vector<double>>} _action_space; copied then shuffled in
+     * @param {std::vector<action>} _action_space; copied then shuffled in
      * actions of the node (bandit arms)
      */
     node(
         state _state,
-        std::vector<std::vector<double>> _action_space) :
+        std::vector<action> _action_space) :
         s(_state)
     {
         root = true;
@@ -48,14 +48,14 @@ public :
      * @brief Non-root node constructor
      *
      * Used during the expansion of the tree.
-     * @param {std::vector<std::vector<double>>} _action_space; copied then shuffled in
+     * @param {std::vector<action>} _action_space; copied then shuffled in
      * actions of the node (bandit arms)
      */
     node(
         node * _parent,
-        std::vector<double> _incoming_action,
+        action _incoming_action,
         state _new_state,
-        std::vector<std::vector<double>> _action_space) :
+        std::vector<action> _action_space) :
         incoming_action(_incoming_action),
         parent(_parent)
     {
@@ -80,7 +80,7 @@ public :
         value = 0;
         visits_count = 0;
         s.set_to_default();
-        incoming_action.clear();
+        incoming_action.set_to_default();
         states.clear();
         children.clear();
     }
@@ -148,7 +148,7 @@ public :
     }
 
     /** @brief Get the incoming action of the node (non-root node) */
-    std::vector<double> get_incoming_action() const {
+    action get_incoming_action() const {
         assert(!root);
         return incoming_action;
     }
@@ -160,22 +160,22 @@ public :
     }
 
     /** @brief Set the action space */
-    void set_action_space(std::vector<std::vector<double>> as) {
+    void set_action_space(std::vector<action> as) {
         action_space = as;
     }
 
     /** @brief Get a copy of the actions vector */
-    std::vector<std::vector<double>> get_action_space() const {
+    std::vector<action> get_action_space() const {
         return action_space;
     }
 
     /** @brief Get one action of the node given its indice in the actions vector */
-    std::vector<double> get_action_at(unsigned indice) const {
+    action get_action_at(unsigned indice) const {
         return action_space.at(indice);
     }
 
     /** @brief Get the next expansion action among the available actions */
-    std::vector<double> get_next_expansion_action() const {
+    action get_next_expansion_action() const {
         return action_space.at(children.size());
     }
 
@@ -199,14 +199,14 @@ public :
      * @brief Create a child
      *
      * Create a child based on the incoming action.
-     * @param {std::vector<double> &} inc_ac; incoming action of the new child
+     * @param {action &} inc_ac; incoming action of the new child
      * @param {state &} state; first sampled state of the new child
-     * @param {std::vector<std::vector<double>>} as; action space
+     * @param {std::vector<action>} as; action space
      */
     void create_child(
-        std::vector<double> &inc_ac,
+        action &inc_ac,
         state &s,
-        std::vector<std::vector<double>> as)
+        std::vector<action> as)
     {
         children.emplace_back(node(this,inc_ac,s,as));
     }

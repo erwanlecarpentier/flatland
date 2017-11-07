@@ -17,7 +17,7 @@ public:
     WRLD world;
     double misstep_probability; ///< Probability of misstep
     double state_gaussian_stddev; ///< Standard deviation of the Gaussian applied on the position
-    std::vector<std::vector<double>> action_space; ///< Full space of the actions available in the environment
+    std::vector<action> action_space; ///< Full space of the actions available in the environment
 
     /**
      * @brief Default constructor
@@ -70,12 +70,12 @@ public:
      * @param {const state &} s; given state
      * @return Return space of the available actions at s.
      */
-    std::vector<std::vector<double>> get_action_space(const state &s) {
-        std::vector<std::vector<double>> resulting_action_space;
+    std::vector<action> get_action_space(const state &s) {
+        std::vector<action> resulting_action_space;
         for(auto &a : action_space) {
             state s_p = s;
-            s_p.x += a.at(0);
-            s_p.y += a.at(1);
+            s_p.x += a.dx; // action application
+            s_p.y += a.dy;
             if(is_state_valid(s_p)) {
                 resulting_action_space.push_back(a);
             }
@@ -90,27 +90,26 @@ public:
      * given action at the given state.
      * @warning next state vector is cleared.
      * @param {const state &} s; state
-     * @param {std::vector<double>} a; copy of the action
+     * @param {action} a; copy of the action
      * @param {state &} s_p; next state
      */
     void state_transition(
         const state &s,
-        std::vector<double> a,
+        action a,
         state &s_p)
     {
-        assert(a.size() == 2);
         if(is_less_than(uniform_double(0.,1.),misstep_probability)) { // misstep
             a = rand_element(get_action_space(s));
         }
         s_p = s;
-        s_p.x += a[0];
-        s_p.y += a[1];
+        s_p.x += a.dx; // action application
+        s_p.y += a.dy;
         if(!is_state_valid(s_p)) { // misstep led to a wall, state is unchanged
             s_p = s;
         }
         for(unsigned i=0; i<50; ++i) { // 50 trials for gaussian application - no gaussian if no result
             state _s_p = s_p;
-            _s_p.x += normal_double(0.,state_gaussian_stddev);
+            _s_p.x += normal_double(0.,state_gaussian_stddev); // TODO: can be random cartesian action
             _s_p.y += normal_double(0.,state_gaussian_stddev);
             if(is_state_valid(_s_p)) {
                 s_p = _s_p;
@@ -124,13 +123,13 @@ public:
      *
      * Reward function, compute the resulting reward from the transition (s,a,s_p).
      * @param {state &} s; state
-     * @param {const std::vector<double> &} a; action
+     * @param {const action &} a; action
      * @param {state &} s_p; next state
      * @return Return the resulting reward.
      */
     double reward_function(
         const state &s,
-        const std::vector<double> &a,
+        const action &a,
         const state &s_p)
     {
         (void) s;
@@ -147,13 +146,13 @@ public:
      *
      * Transition operator, compute the resulting state and reward wrt a state and an action.
      * @param {const state &} s; state
-     * @param {const std::vector<double> &} a; action
+     * @param {const action &} a; action
      * @param {double &} r; reward
      * @param {state &} s_p; next state
      */
     void transition(
         const state &s,
-        const std::vector<double> &a,
+        const action &a,
         double &r,
         state &s_p)
     {

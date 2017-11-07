@@ -28,7 +28,7 @@ public:
      * @param {const state &} s; given state
      * @return Return the undertaken action at s.
      */
-	std::vector<double> operator()(const state &s) {
+	action operator()(const state &s) {
         /* TODO: define the policy here */
 	}
 
@@ -37,12 +37,12 @@ public:
      *
      * Process the resulting reward from transition (s,a,s_p)
      * @param {state &} s; state
-     * @param {std::vector<double> &} a; action
+     * @param {action &} a; action
      * @param {state &} s_p; next state
      */
     void process_reward(
         const state & s,
-        const std::vector<double> & a,
+        const action & a,
         const state & s_p)
     {
         /* TODO: define the reward use here */
@@ -55,7 +55,7 @@ public:
      * @return Return a vector containing the values to be saved.
      */
     std::vector<double> get_backup() {
-        return std::vector<double>{};
+        return std::vector<double>{/* TODO: define the vales to backup here */};
     }
 };
 

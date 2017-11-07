@@ -10,7 +10,7 @@
 template <class WRLD>
 class oluct {
 public:
-    std::vector<std::vector<double>> action_space; ///< Full action space
+    std::vector<action> action_space; ///< Full action space
     unsigned decision_criterion_selector;
     environment<WRLD> * envt; ///< Pointer to an environment, used for action space reduction
     uct<WRLD> pl;
@@ -28,27 +28,6 @@ public:
         action_space = p.ACTION_SPACE;
         decision_criterion_selector = p.DECISION_CRITERION_SELECTOR;
     }
-
-    /**
-     * @brief Reduced action space
-     *
-     * Compute the action space available at the given state.
-     * @deprecated
-     * @param {const std::vector<double &} s; state
-     * @return Return the reduced action space.
-     */
-    /* TRM
-    std::vector<std::vector<double>> reduced_action_space(const state &s) {
-        std::vector<std::vector<double>> ras;
-        for(auto &a : action_space) {
-            state s_p;
-            if(envt->state_transition(s,a,s_p)) {
-                ras.push_back(a);
-            }
-        }
-        return ras;
-    }
-    */
 
     /**
      * @brief Switch on decision criterion
@@ -74,11 +53,11 @@ public:
      * @param {const state &} s; given state
      * @return Return the undertaken action at s.
      */
-	std::vector<double> operator()(const state &s) {
+	action operator()(const state &s) {
         if(!pl.root_node.is_fully_expanded() || !decision_criterion(s)) {
             pl.build_uct_tree(s);
         }
-        std::vector<double> ra = pl.get_recommended_action(pl.root_node);
+        action ra = pl.get_recommended_action(pl.root_node);
         pl.root_node.move_to_child(pl.argmax_score(pl.root_node),s);
         return ra;
 	}
@@ -88,12 +67,12 @@ public:
      *
      * Process the resulting reward from transition (s,a,s_p)
      * @param {state &} s; state
-     * @param {std::vector<double> &} a; action
+     * @param {action &} a; action
      * @param {state &} s_p; next state
      */
     void process_reward(
         const state & s,
-        const std::vector<double> & a,
+        const action & a,
         const state & s_p)
     {
         /* OLUCT policy does not learn. */

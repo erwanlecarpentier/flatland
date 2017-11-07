@@ -29,7 +29,7 @@ public:
      * @param {const state &} s; given state
      * @return Return the undertaken action at s.
      */
-	std::vector<double> operator()(const state &s) {
+	action operator()(const state &s) {
         (void) s;
         return rand_element(envt->get_action_space(s));
 	}
@@ -39,12 +39,12 @@ public:
      *
      * Process the resulting reward from transition (s,a,s_p)
      * @param {state &} s; state
-     * @param {std::vector<double> &} a; action
+     * @param {action &} a; action
      * @param {state &} s_p; next state
      */
     void process_reward(
         const state & s,
-        const std::vector<double> & a,
+        const action & a,
         const state & s_p)
     {
         (void) s;
