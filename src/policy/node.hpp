@@ -12,9 +12,9 @@ private :
     double value; ///< Value function estimate
     unsigned visits_count; ///< Number of visits during the tree expansion
     state s; ///<Unique labelling state for a root node
-    action incoming_action; ///< Action of the parent node that led to this node
+    std::unique_ptr<action> incoming_action; ///< Action of the parent node that led to this node
     std::vector<state> states; ///< Sampled states for a standard node
-    std::vector<action> local_action_space; ///< Available actions at this node (bandit arms)
+    std::vector<std::unique_ptr<action>> local_action_space; ///< Available actions at this node (bandit arms)
 
 public :
     node *parent; ///< Pointer to the parent node
@@ -31,12 +31,12 @@ public :
      * Usually the first node to be created.
      * The provided action space is a vector containing all the actions and is
      * shuffled at the nodes creation.
-     * @param {std::vector<action>} _local_action_space; copied then shuffled in
+     * @param {std::vector<std::unique_ptr<action>>} _local_action_space; copied then shuffled in
      * local action space of the node (bandit arms)
      */
     node(
         state _state,
-        std::vector<action> _local_action_space) :
+        std::vector<std::unique_ptr<action>> _local_action_space) :
         s(_state)
     {
         root = true;
@@ -49,14 +49,14 @@ public :
      * @brief Non-root node constructor
      *
      * Used during the expansion of the tree.
-     * @param {std::vector<action>} _local_action_space; copied then shuffled in
+     * @param {std::vector<std::unique_ptr<action>>} _local_action_space; copied then shuffled in
      * actions of the node (bandit arms)
      */
     node(
         node * _parent,
-        action _incoming_action,
+        std::unique_ptr<action> _incoming_action,
         state _new_state,
-        std::vector<action> _local_action_space) :
+        std::vector<std::unique_ptr<action>> _local_action_space) :
         incoming_action(_incoming_action),
         parent(_parent)
     {
@@ -81,7 +81,7 @@ public :
         value = 0;
         visits_count = 0;
         s.set_to_default();
-        incoming_action.set_to_default();
+        incoming_action->set_to_default();
         states.clear();
         children.clear();
     }
@@ -149,7 +149,7 @@ public :
     }
 
     /** @brief Get the incoming action of the node (non-root node) */
-    action get_incoming_action() const {
+    std::unique_ptr<action> get_incoming_action() const {
         assert(!root);
         return incoming_action;
     }
@@ -161,22 +161,22 @@ public :
     }
 
     /** @brief Set the action space */
-    void set_action_space(std::vector<action> as) {
+    void set_action_space(std::vector<std::unique_ptr<action>> as) {
         local_action_space = as;
     }
 
     /** @brief Get a copy of the actions vector */
-    std::vector<action> get_action_space() const {
+    std::vector<std::unique_ptr<action>> get_action_space() const {
         return local_action_space;
     }
 
     /** @brief Get one action of the node given its indice in the actions vector */
-    action get_action_at(unsigned indice) const {
+    std::unique_ptr<action> get_action_at(unsigned indice) const {
         return local_action_space.at(indice);
     }
 
     /** @brief Get the next expansion action among the available actions */
-    action get_next_expansion_action() const {
+    std::unique_ptr<action> get_next_expansion_action() const {
         return local_action_space.at(children.size());
     }
 
@@ -200,14 +200,14 @@ public :
      * @brief Create a child
      *
      * Create a child based on the incoming action.
-     * @param {action &} inc_ac; incoming action of the new child
+     * @param {std::unique_ptr<action> &} inc_ac; incoming action of the new child
      * @param {state &} state; first sampled state of the new child
-     * @param {std::vector<action>} as; action space
+     * @param {std::vector<std::unique_ptr<action>>} as; action space
      */
     void create_child(
-        action &inc_ac,
+        std::unique_ptr<action> &inc_ac,
         state &s,
-        std::vector<action> as)
+        std::vector<std::unique_ptr<action>> as)
     {
         children.emplace_back(node(this,inc_ac,s,as));
     }

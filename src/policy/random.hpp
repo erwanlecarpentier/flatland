@@ -29,7 +29,7 @@ public:
      * @param {const state &} s; given state
      * @return Return the undertaken action at s.
      */
-	action operator()(const state &s) {
+	std::unique_ptr<action> operator()(const state &s) {
         (void) s;
         return rand_element(envt->get_action_space(s));
 	}
@@ -41,12 +41,12 @@ public:
      * Here nothing to do.
      * Random policy does not learn.
      * @param {state &} s; state
-     * @param {action &} a; action
+     * @param {std::unique_ptr<action> &} a; action
      * @param {state &} s_p; next state
      */
     void process_reward(
         const state & s,
-        const action & a,
+        const std::unique_ptr<action> & a,
         const state & s_p)
     {
         (void) s;

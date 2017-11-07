@@ -1,12 +1,12 @@
 #ifndef NAVIGATION_ACTION_HPP_
 #define NAVIGATION_ACTION_HPP_
 
-#include <state.hpp>
+#include <action.hpp>
 
 /**
  * @brief Navigation action class
  */
-class navigation_action {
+class navigation_action : action {
 public:
     double fv; ///< absolute velocity variational factor
     double vmax; ///< maximum velocity
@@ -33,7 +33,7 @@ public:
      * Modifiy the input state by applying the action.
      * @param {state &} s; modified state
      */
-    void apply(state &s) {
+    void apply(state &s) override {
         s.x += s.v * cos(s.theta);
         s.y += s.v * sin(s.theta);
         s.v *= fv;
@@ -51,10 +51,10 @@ public:
      *
      * Set the attributes to default values.
      */
-    void set_to_default() {
+    void set_to_default() override {
         fv = 0.;
         dtheta = 0.;
     }
 };
 
-#endif // ACTION_HPP_
+#endif // NAVIGATION_ACTION_HPP_

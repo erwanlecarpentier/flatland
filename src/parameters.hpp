@@ -6,6 +6,8 @@
 #include <sstream>
 
 #include <action.hpp>
+#include <cartesian_action.hpp>
+#include <navigation_action.hpp>
 #include <circle.hpp>
 #include <exceptions.hpp>
 #include <rectangle.hpp>
@@ -21,13 +23,14 @@ constexpr double TO_RAD = 0.01745329251; ///< radians to degrees
  */
 class parameters {
 public:
+    std::string MAIN_CFG_PATH;
+    std::string GRID_PATH;
+    std::string CWORLD_PATH;
+    std::string TRAJECTORY_OUTPUT_PATH;
     bool IS_WORLD_CONTINUOUS;
     double MISSTEP_PROBABILITY;
     double STATE_GAUSSIAN_STDDEV;
     state INITIAL_STATE;
-    std::string GRID_PATH;
-    std::string CWORLD_PATH;
-    std::string TRAJECTORY_OUTPUT_PATH;
     unsigned POLICY_SELECTOR;
     unsigned DECISION_CRITERION_SELECTOR;
     std::vector<action> ACTION_SPACE;
@@ -51,24 +54,29 @@ public:
      * @brief Parse actions
      *
      * Parse the actions given as parameters
-     * @param {libconfig::Config &} cfg; configuration
+     * @param {std::vector<std::unique_ptr<action>> &} action_space; resulting action space
      */
-    void parse_actions(libconfig::Config &cfg) {
-        unsigned nbac = 0, selector = 0;
-        assert(cfg.lookupValue("nb_actions",nbac));
+    void parse_actions(std::vector<std::unique_ptr<action>> &action_space) {
+        libconfig::Config cfg;
+        cfg.readFile(MAIN_CFG_PATH.c_str());
+        unsigned selector = 0;
         assert(cfg.lookupValue("action_definition_selector",selector));
         switch(selector) {
-            case 0: { // Polar coordinates, turned to cartesian
+            case 0: { // Polar actions, turned to cartesian actions
+                unsigned nbac = 0;
+                assert(cfg.lookupValue("nb_actions",nbac));
                 for(unsigned i=0; i<nbac; ++i) {
                     std::string mname = "a" + std::to_string(i) + "m";
                     std::string aname = "a" + std::to_string(i) + "a";
                     double mgn = 0., ang = 0.;
                     if(cfg.lookupValue(mname,mgn)
                     && cfg.lookupValue(aname,ang)) {
-                        ACTION_SPACE.emplace_back(
-                            action(
-                                mgn * cos(TO_RAD * ang),
-                                mgn * sin(TO_RAD * ang)
+                        action_space.emplace_back(
+                            std::unique_ptr<action>(
+                                new cartesian_action(
+                                    mgn * cos(TO_RAD * ang),
+                                    mgn * sin(TO_RAD * ang)
+                                )
                             )
                         );
                     } else { // Error in action names syntax
@@ -78,17 +86,39 @@ public:
                 break;
             }
             case 1: { // Navigation actions
-                //TODO
+                unsigned nb_dtheta = 0, nb_fvelocity = 0;
+                double vmax = 1., vmin = 0.;
+                assert(cfg.lookupValue("nb_dtheta",nb_dtheta));
+                assert(cfg.lookupValue("nb_fvelocity",nb_fvelocity));
+                assert(cfg.lookupValue("min_velocity",vmax));
+                assert(cfg.lookupValue("max_velocity",vmin));
+                for(unsigned i=0; i<nb_dtheta; ++i) {
+                    for(unsigned j=0; j<nb_fvelocity; ++j) {
+                        std::string dt_name = "dtheta" + std::to_string(i);
+                        std::string fv_name = "fvelocity" + std::to_string(j);
+                        double dt = 0., fv = 0.;
+                        if(cfg.lookupValue(dt_name,dt)
+                        && cfg.lookupValue(fv_name,fv)) {
+                            action_space.emplace_back(std::unique_ptr<action>(new navigation_action(fv,vmax,vmin,dt)));
+                        } else { // Error in action names syntax
+                            throw action_names_configuration_file_exception();
+                        }
+                    }
+                }
                 break;
             }
-            default: { // Cartesian coordinates
+            default: { // Cartesian actions
+                unsigned nbac = 0;
+                assert(cfg.lookupValue("nb_actions",nbac));
                 for(unsigned i=0; i<nbac; ++i) {
                     std::string rname = "a" + std::to_string(i) + "x";
                     std::string cname = "a" + std::to_string(i) + "y";
                     double rval = 0., cval = 0.;
                     if(cfg.lookupValue(rname,rval)
                     && cfg.lookupValue(cname,cval)) {
-                        ACTION_SPACE.emplace_back(action(rval,cval));
+                        action_space.emplace_back(
+                            std::unique_ptr<action>(new cartesian_action(rval,cval))
+                        );
                     } else { // Error in action names syntax
                         throw action_names_configuration_file_exception();
                     }
@@ -202,9 +232,9 @@ public:
      * The used library for parsing is libconfig.
      * @param {const char *} cfg_path; path of the configuration file
      */
-    parameters(const char *cfg_path) {
+    parameters(const char *cfg_path) : MAIN_CFG_PATH(cfg_path) {
         libconfig::Config cfg;
-        cfg.readFile(cfg_path);
+        cfg.readFile(MAIN_CFG_PATH.c_str());
         if(cfg.lookupValue("is_world_continuous",IS_WORLD_CONTINUOUS)
         && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
         && cfg.lookupValue("state_gaussian_stddev",STATE_GAUSSIAN_STDDEV)
@@ -221,7 +251,6 @@ public:
                 assert(cfg.lookupValue("grid_path",GRID_PATH));
             }
             parse_state(cfg);
-            parse_actions(cfg);
         }
         else { // Error in config file
             throw wrong_syntax_configuration_file_exception();

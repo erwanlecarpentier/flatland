@@ -1,12 +1,12 @@
 #ifndef CARTESIAN_ACTION_HPP_
 #define CARTESIAN_ACTION_HPP_
 
-#include <state.hpp>
+#include <action.hpp>
 
 /**
  * @brief Cartesian action class
  */
-class cartesian_action {
+class cartesian_action : action {
 public:
     double dx; ///< variation along x coordinate
     double dy; ///< variation along y coordinate
@@ -32,7 +32,7 @@ public:
      * Modifiy the input state by applying the action.
      * @param {state &} s; modified state
      */
-    void apply(state &s) {
+    void apply(state &s) override {
         s.x += dx;
         s.y += dy;
         s.v = _v;
@@ -44,7 +44,7 @@ public:
      *
      * Set the attributes to default values.
      */
-    void set_to_default() {
+    void set_to_default() override {
         dx = 0.;
         dy = 0.;
         _v = 0.;

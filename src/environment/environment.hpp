@@ -17,7 +17,7 @@ public:
     WRLD world;
     double misstep_probability; ///< Probability of misstep
     double state_gaussian_stddev; ///< Standard deviation of the Gaussian applied on the position
-    std::vector<action> action_space; ///< Full space of the actions available in the environment
+    std::vector<std::unique_ptr<action>> action_space; ///< Full space of the actions available in the environment
 
     /**
      * @brief Default constructor
@@ -26,7 +26,8 @@ public:
      * @param {parameters &} p; parameters
      */
     environment(parameters &p) : world(p) {
-        action_space = p.ACTION_SPACE;
+        //action_space = p.ACTION_SPACE;//TRM
+        p.parse_actions(action_space);
         misstep_probability = p.MISSTEP_PROBABILITY;
         state_gaussian_stddev = p.STATE_GAUSSIAN_STDDEV;
     }
@@ -70,12 +71,13 @@ public:
      * @param {const state &} s; given state
      * @return Return space of the available actions at s.
      */
-    std::vector<action> get_action_space(const state &s) {
-        std::vector<action> resulting_action_space;
+    std::vector<std::unique_ptr<action>> get_action_space(const state &s) {
+        std::vector<std::unique_ptr<action>> resulting_action_space;
         for(auto &a : action_space) {
             state s_p = s;
-            s_p.x += a.dx; // action application
-            s_p.y += a.dy;
+            //s_p.x += a.dx; // action application //TRM
+            //s_p.y += a.dy;//TRM
+            a->apply(s_p);
             if(is_state_valid(s_p)) {
                 resulting_action_space.push_back(a);
             }
@@ -90,20 +92,21 @@ public:
      * given action at the given state.
      * @warning next state vector is cleared.
      * @param {const state &} s; state
-     * @param {action} a; copy of the action
+     * @param {std::unique_ptr<action>} a; copy of the action
      * @param {state &} s_p; next state
      */
     void state_transition(
         const state &s,
-        action a,
+        std::unique_ptr<action> a,
         state &s_p)
     {
         if(is_less_than(uniform_double(0.,1.),misstep_probability)) { // misstep
             a = rand_element(get_action_space(s));
         }
         s_p = s;
-        s_p.x += a.dx; // action application
-        s_p.y += a.dy;
+        //s_p.x += a.dx; // action application //TRM
+        //s_p.y += a.dy; //TRM
+        a->apply(s_p);
         if(!is_state_valid(s_p)) { // misstep led to a wall, state is unchanged
             s_p = s;
         }
@@ -123,13 +126,13 @@ public:
      *
      * Reward function, compute the resulting reward from the transition (s,a,s_p).
      * @param {state &} s; state
-     * @param {const action &} a; action
+     * @param {const std::unique_ptr<action> &} a; action
      * @param {state &} s_p; next state
      * @return Return the resulting reward.
      */
     double reward_function(
         const state &s,
-        const action &a,
+        const std::unique_ptr<action> &a,
         const state &s_p)
     {
         (void) s;
@@ -146,13 +149,13 @@ public:
      *
      * Transition operator, compute the resulting state and reward wrt a state and an action.
      * @param {const state &} s; state
-     * @param {const action &} a; action
+     * @param {const std::unique_ptr<action> &} a; action
      * @param {double &} r; reward
      * @param {state &} s_p; next state
      */
     void transition(
         const state &s,
-        const action &a,
+        const std::unique_ptr<action> &a,
         double &r,
         state &s_p)
     {

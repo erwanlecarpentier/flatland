@@ -15,7 +15,7 @@ public:
     PLC policy;
     state s; ///< Current state of the agent
     state s_p; ///< Next state of the agent
-    action a; ///< Action selected by the policy
+    std::unique_ptr<action> a; ///< Action selected by the policy
     double reward; ///< Reward from transition (s,a,s_p)
 
     /**

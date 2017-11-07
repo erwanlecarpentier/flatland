@@ -8,12 +8,12 @@
  */
 class shape {
 public:
-    std::tuple<double,double> center;
+    //std::tuple<double,double> center;//TRM
 
     /**
      * @brief Constructor
      */
-    shape() { /* No default */ }
+    //shape() { /* No default */ }//TRM
 
     /**
      * @brief Test if a position is within the shape
