@@ -14,44 +14,54 @@ LIGHTBLUE = '#6699ff';
 
 cworldpath = os.path.join(CURDIR, '../config/cworld.cfg')
 with io.open(cworldpath) as f:
-	config = libconf.load(f)
+	world_config = libconf.load(f)
+mainpath = os.path.join(CURDIR, '../config/main.cfg')
+with io.open(mainpath) as g:
+	main_config = libconf.load(g)
 
 # Create figure and axes
 fig,ax = plt.subplots(1)
-ax.set_xlim([0,config.xsize])
-ax.set_ylim([0,config.ysize])
+ax.set_xlim([0,world_config.xsize])
+ax.set_ylim([0,world_config.ysize])
 
 # Plot world -------------------------------------------------------------------
 
 # Parse rectangles
-for i in range(config.nb_rectangles):
+for i in range(world_config.nb_rectangles):
 	n_wdth = "dr" + str(i) + "0";
 	n_hght = "dr" + str(i) + "1";
 	n_cx   = "cr" + str(i) + "0";
 	n_cy   = "cr" + str(i) + "1";
-	wdth = config[n_wdth];
-	hght = config[n_hght];
-	cx = config[n_cx] - wdth / 2;
-	cy = config[n_cy] - hght / 2;
+	wdth = world_config[n_wdth];
+	hght = world_config[n_hght];
+	cx = world_config[n_cx] - wdth / 2;
+	cy = world_config[n_cy] - hght / 2;
 	r = mpatches.Rectangle((cx,cy),wdth,hght,edgecolor='none',facecolor=BLACK, alpha = 0.5)
 	ax.add_patch(r)
 
 # Parse circles
-for i in range(config.nb_circles):
+for i in range(world_config.nb_circles):
 	n_radius = "r" + str(i);
 	n_cx   = "cc" + str(i) + "0";
 	n_cy   = "cc" + str(i) + "1";
-	radius = config[n_radius];
-	cx = config[n_cx];
-	cy = config[n_cy];
+	radius = world_config[n_radius];
+	cx = world_config[n_cx];
+	cy = world_config[n_cy];
 	c = mpatches.Circle((cx,cy),radius,edgecolor='none',facecolor=BLACK, alpha = 0.5)
 	ax.add_patch(c)
 
+# Plot start -------------------------------------------------------------------
+
+xs = main_config.initial_state_x;
+ys = main_config.initial_state_y;
+g = mpatches.Circle((xs,ys),0.03,edgecolor='none',facecolor=BLACK)
+ax.add_patch(g)
+
 # Plot goal --------------------------------------------------------------------
 
-xg = config.xgoal;
-yg = config.ygoal;
-rg = config.rgoal;
+xg = world_config.xgoal;
+yg = world_config.ygoal;
+rg = world_config.rgoal;
 g = mpatches.Circle((xg,yg),rg,edgecolor='none',facecolor=GREEN, alpha = 0.5)
 ax.add_patch(g)
 

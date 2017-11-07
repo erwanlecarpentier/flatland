@@ -1,6 +1,7 @@
 exe
 todo.txt
 *.sh
+todo.txt
 
 src/outdated/
 data/*

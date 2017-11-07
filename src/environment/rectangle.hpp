@@ -31,11 +31,11 @@ public:
      */
     bool is_within(double x, double y) override {
         return is_less_than(
-            x - std::get<0>(center),
-            xsize
+            fabs(x - std::get<0>(center)),
+            xsize / 2.
         ) && is_less_than(
-            y - std::get<1>(center),
-            ysize
+            fabs(y - std::get<1>(center)),
+            ysize / 2.
         );
     }
 };
