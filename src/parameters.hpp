@@ -57,7 +57,7 @@ public:
         assert(cfg.lookupValue("nb_actions",nbac));
         assert(cfg.lookupValue("action_definition_selector",selector));
         switch(selector) {
-            case 1: { // Polar coordinates, turned to cartesian
+            case 0: { // Polar coordinates, turned to cartesian
                 for(unsigned i=0; i<nbac; ++i) {
                     std::string mname = "a" + std::to_string(i) + "m";
                     std::string aname = "a" + std::to_string(i) + "a";
@@ -74,6 +74,10 @@ public:
                         throw action_names_configuration_file_exception();
                     }
                 }
+                break;
+            }
+            case 1: { // Navigation actions
+                //TODO
                 break;
             }
             default: { // Cartesian coordinates
