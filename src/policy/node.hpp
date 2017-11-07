@@ -81,7 +81,9 @@ public :
         value = 0;
         visits_count = 0;
         s.set_to_default();
-        incoming_action->set_to_default();
+        //std::cout << "bug:" << std::endl;//TRM
+        //incoming_action->print();//TRM
+        //incoming_action->set_to_default();//TRM
         states.clear();
         children.clear();
     }

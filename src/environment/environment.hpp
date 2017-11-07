@@ -28,6 +28,11 @@ public:
     environment(parameters &p) : world(p) {
         //action_space = p.ACTION_SPACE;//TRM
         p.parse_actions(action_space);
+        /*
+        for(auto &elt:action_space) {//TRM
+            elt->print();
+        }
+        */
         misstep_probability = p.MISSTEP_PROBABILITY;
         state_gaussian_stddev = p.STATE_GAUSSIAN_STDDEV;
     }

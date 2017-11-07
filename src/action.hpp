@@ -25,6 +25,13 @@ public:
      * Set the attributes to default values.
      */
     virtual void set_to_default() = 0;
+
+    /**
+     * @brief Print
+     *
+     * Print the attributes of the action
+     */
+    virtual void print() = 0;
 };
 
 #endif // ACTION_HPP_

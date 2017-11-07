@@ -173,7 +173,6 @@ int main() {
     try {
         srand(time(NULL));
         run(1,"config/main.cfg","data/test.dat");
-        return 1;
     }
     catch(const std::exception &e) {
         std::cerr << "Error in main(): standard exception caught: " << e.what() << std::endl;

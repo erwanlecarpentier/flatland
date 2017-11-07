@@ -35,8 +35,8 @@ public:
     void apply(state &s) override {
         s.x += dx;
         s.y += dy;
-        s.v = _v;
-        s.theta = _theta;
+        s.v = _v; // not used
+        s.theta = _theta; // not used
     }
 
     /**
@@ -49,6 +49,16 @@ public:
         dy = 0.;
         _v = 0.;
         _theta = 0.;
+    }
+
+    /**
+     * @brief Print
+     *
+     * Print the attributes of the action
+     */
+    void print() override {
+        std::cout << "Cartesian action, dx: ";
+        std::cout << dx << " dy: " << dy << std::endl;
     }
 };
 

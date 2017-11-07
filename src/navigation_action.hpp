@@ -55,6 +55,17 @@ public:
         fv = 0.;
         dtheta = 0.;
     }
+
+    /**
+     * @brief Print
+     *
+     * Print the attributes of the action
+     */
+    void print() override {
+        std::cout << "Navigation action, ";
+        std::cout << "fv: " << fv << " vmin: " << vmin << " vmax: " << vmax << " ";
+        std::cout << "dtheta: " << dtheta << std::endl;
+    }
 };
 
 #endif // NAVIGATION_ACTION_HPP_
