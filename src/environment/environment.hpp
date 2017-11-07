@@ -16,6 +16,7 @@ public:
     bool is_continuous; ///< Is state space continuous
     WRLD world;
     double misstep_probability; ///< Probability of misstep
+    double state_gaussian_stddev; ///< Standard deviation of the Gaussian applied on the position
     std::vector<std::vector<double>> action_space; ///< Full space of the actions available in the environment
 
     /**
@@ -27,6 +28,7 @@ public:
     environment(parameters &p) : world(p) {
         action_space = p.ACTION_SPACE;
         misstep_probability = p.MISSTEP_PROBABILITY;
+        state_gaussian_stddev = p.STATE_GAUSSIAN_STDDEV;
     }
 
     /**
@@ -90,9 +92,8 @@ public:
      * @param {const state &} s; state
      * @param {std::vector<double>} a; copy of the action
      * @param {state &} s_p; next state
-     * @return Return true if the action is valid at the given state.
      */
-    bool state_transition(
+    void state_transition(
         const state &s,
         std::vector<double> a,
         state &s_p)
@@ -104,11 +105,17 @@ public:
         s_p = s;
         s_p.x += a[0];
         s_p.y += a[1];
-        if(!is_state_valid(s_p)) { // frontier
+        if(!is_state_valid(s_p)) { // misstep led to a wall, state is unchanged
             s_p = s;
-            return false;
-        } else { // admissible state
-            return true;
+        }
+        for(unsigned i=0; i<50; ++i) { // 50 trials for gaussian application - no gaussian if no result
+            state _s_p = s_p;
+            _s_p.x += normal_double(0.,state_gaussian_stddev);
+            _s_p.y += normal_double(0.,state_gaussian_stddev);
+            if(is_state_valid(_s_p)) {
+                s_p = _s_p;
+                break;
+            }
         }
     }
 

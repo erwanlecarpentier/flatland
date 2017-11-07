@@ -28,10 +28,10 @@ ax.set_ylim([0,world_config.ysize])
 
 # Parse rectangles
 for i in range(world_config.nb_rectangles):
-	n_wdth = "dr" + str(i) + "0";
-	n_hght = "dr" + str(i) + "1";
-	n_cx   = "cr" + str(i) + "0";
-	n_cy   = "cr" + str(i) + "1";
+	n_wdth = "dr" + str(i) + "x";
+	n_hght = "dr" + str(i) + "y";
+	n_cx   = "cr" + str(i) + "x";
+	n_cy   = "cr" + str(i) + "y";
 	wdth = world_config[n_wdth];
 	hght = world_config[n_hght];
 	cx = world_config[n_cx] - wdth / 2;
@@ -42,8 +42,8 @@ for i in range(world_config.nb_rectangles):
 # Parse circles
 for i in range(world_config.nb_circles):
 	n_radius = "r" + str(i);
-	n_cx   = "cc" + str(i) + "0";
-	n_cy   = "cc" + str(i) + "1";
+	n_cx   = "cc" + str(i) + "x";
+	n_cy   = "cc" + str(i) + "y";
 	radius = world_config[n_radius];
 	cx = world_config[n_cx];
 	cy = world_config[n_cy];

@@ -22,6 +22,7 @@ class parameters {
 public:
     bool IS_WORLD_CONTINUOUS;
     double MISSTEP_PROBABILITY;
+    double STATE_GAUSSIAN_STDDEV;
     state INITIAL_STATE;
     std::string GRID_PATH;
     std::string CWORLD_PATH;
@@ -77,8 +78,8 @@ public:
             }
             default: { // Cartesian coordinates
                 for(unsigned i=0; i<nbac; ++i) {
-                    std::string rname = "a" + std::to_string(i) + "0";
-                    std::string cname = "a" + std::to_string(i) + "1";
+                    std::string rname = "a" + std::to_string(i) + "x";
+                    std::string cname = "a" + std::to_string(i) + "y";
                     double rval = 0., cval = 0.;
                     if(cfg.lookupValue(rname,rval)
                     && cfg.lookupValue(cname,cval)) {
@@ -160,10 +161,10 @@ public:
         assert(cworld_cfg.lookupValue("nb_circles",nbc));
         elements.reserve(nbr + nbc);
         for(unsigned i=0; i<nbr; ++i) { // parse rectangles
-            std::string c0name = "cr" + std::to_string(i) + "0";
-            std::string c1name = "cr" + std::to_string(i) + "1";
-            std::string d0name = "dr" + std::to_string(i) + "0";
-            std::string d1name = "dr" + std::to_string(i) + "1";
+            std::string c0name = "cr" + std::to_string(i) + "x";
+            std::string c1name = "cr" + std::to_string(i) + "y";
+            std::string d0name = "dr" + std::to_string(i) + "x";
+            std::string d1name = "dr" + std::to_string(i) + "y";
             double c0 = 0., c1 = 0., d0 = 0., d1 = 0.;
             if(cworld_cfg.lookupValue(c0name,c0)
             && cworld_cfg.lookupValue(c1name,c1)
@@ -175,15 +176,14 @@ public:
             }
         }
         for(unsigned i=0; i<nbc; ++i) { // parse circles
-            std::string c0name = "cc" + std::to_string(i) + "0";
-            std::string c1name = "cc" + std::to_string(i) + "1";
+            std::string c0name = "cc" + std::to_string(i) + "x";
+            std::string c1name = "cc" + std::to_string(i) + "y";
             std::string rdname = "r"  + std::to_string(i);
             double c0 = 0., c1 = 0., rd = 0.;
             if(cworld_cfg.lookupValue(c0name,c0)
             && cworld_cfg.lookupValue(c1name,c1)
             && cworld_cfg.lookupValue(rdname,rd)) {
                 elements.emplace_back(std::unique_ptr<shape>(new circle(std::tuple<double,double>{c0,c1},rd)));
-                //elements.emplace_back(circle(std::tuple<double,double>{c0,c1},rd));
             } else {
                 throw wrong_world_configuration_path();
             }
@@ -202,6 +202,7 @@ public:
         cfg.readFile(cfg_path);
         if(cfg.lookupValue("is_world_continuous",IS_WORLD_CONTINUOUS)
         && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
+        && cfg.lookupValue("state_gaussian_stddev",STATE_GAUSSIAN_STDDEV)
         && cfg.lookupValue("policy_selector",POLICY_SELECTOR)
         && cfg.lookupValue("decision_criterion_selector",DECISION_CRITERION_SELECTOR)
         && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)

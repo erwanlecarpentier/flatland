@@ -33,9 +33,11 @@ public:
      * @brief Reduced action space
      *
      * Compute the action space available at the given state.
+     * @deprecated
      * @param {const std::vector<double &} s; state
      * @return Return the reduced action space.
      */
+    /* TRM
     std::vector<std::vector<double>> reduced_action_space(const state &s) {
         std::vector<std::vector<double>> ras;
         for(auto &a : action_space) {
@@ -46,6 +48,7 @@ public:
         }
         return ras;
     }
+    */
 
     /**
      * @brief Switch on decision criterion
