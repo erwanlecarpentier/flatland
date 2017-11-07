@@ -46,8 +46,18 @@ public:
      * @deprecated
      */
     parameters()
-    {
-        /* TODO: set some default parameters in this constructor */
+    {/* Set some default parameters in this constructor */}
+
+    /**
+     * @brief Display libconfig ParseException
+     *
+     * @param {const libconfig::ParseException &} e; displayed exception
+     */
+    void display_libconfig_parseexception(const libconfig::ParseException &e) {
+        std::cerr << "Error in parameters(const char *cfg_path): ParseException ";
+        std::cerr << "in file " << e.getFile() << " ";
+        std::cerr << "at line " << e.getLine() << ": ";
+        std::cerr << e.getError() << std::endl;
     }
 
     /**
@@ -58,7 +68,12 @@ public:
      */
     void parse_actions(std::vector<std::shared_ptr<action>> &action_space) {
         libconfig::Config cfg;
-        cfg.readFile(MAIN_CFG_PATH.c_str());
+        try {
+            cfg.readFile(MAIN_CFG_PATH.c_str());
+        }
+        catch(const libconfig::ParseException &e) {
+            display_libconfig_parseexception(e);
+        }
         unsigned selector = 0;
         assert(cfg.lookupValue("action_definition_selector",selector));
         switch(selector) {
@@ -183,7 +198,12 @@ public:
         circle &goal)
     {
         libconfig::Config cworld_cfg;
-        cworld_cfg.readFile(CWORLD_PATH.c_str());
+        try {
+            cworld_cfg.readFile(CWORLD_PATH.c_str());
+        }
+        catch(const libconfig::ParseException &e) {
+            display_libconfig_parseexception(e);
+        }
         if(cworld_cfg.lookupValue("xsize",xsize)
         && cworld_cfg.lookupValue("ysize",ysize)
         && cworld_cfg.lookupValue("xgoal",std::get<0>(goal.center))
@@ -236,7 +256,12 @@ public:
      */
     parameters(const char *cfg_path) : MAIN_CFG_PATH(cfg_path) {
         libconfig::Config cfg;
-        cfg.readFile(MAIN_CFG_PATH.c_str());
+        try {
+            cfg.readFile(MAIN_CFG_PATH.c_str());
+        }
+        catch(const libconfig::ParseException &e) {
+            display_libconfig_parseexception(e);
+        }
         if(cfg.lookupValue("is_world_continuous",IS_WORLD_CONTINUOUS)
         && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
         && cfg.lookupValue("state_gaussian_stddev",STATE_GAUSSIAN_STDDEV)
@@ -246,10 +271,10 @@ public:
         && cfg.lookupValue("uct_cst",UCT_CST)
         && cfg.lookupValue("discount_factor",DISCOUNT_FACTOR)
         && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)) {
-            if(IS_WORLD_CONTINUOUS) { // take path of continuous world
+            if(IS_WORLD_CONTINUOUS) { // parse path of continuous world
                 assert(cfg.lookupValue("cworld_path",CWORLD_PATH));
                 assert(cfg.lookupValue("trajectory_output_path",TRAJECTORY_OUTPUT_PATH));
-            } else { // take path of discrete world
+            } else { // parse path of discrete world
                 assert(cfg.lookupValue("grid_path",GRID_PATH));
             }
             parse_state(cfg);

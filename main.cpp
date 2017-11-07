@@ -63,6 +63,7 @@ void single_run(
         ag.process_reward();
         if(prnt) {
             //print_tsasp(t,ag);//TRM
+            std::cout << t << std::endl;
             en.print(ag.s);
         }
         ag.step();
@@ -172,6 +173,7 @@ int main() {
     try {
         srand(time(NULL));
         run(1,"config/main.cfg","data/test.dat");
+        return 1;
     }
     catch(const std::exception &e) {
         std::cerr << "Error in main(): standard exception caught: " << e.what() << std::endl;
