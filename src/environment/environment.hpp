@@ -168,7 +168,7 @@ public:
     bool is_terminal(const state &s) {
         int world_value = world_value_at(s);
         if(world_value == 1 /* goal reached */
-        || world_value == -1 /* policy deliberately reached a wall */) {
+        || world_value == -1 /* policy deliberately reached a wall (no other options) */) {
             return true;
         } else {
             return false;

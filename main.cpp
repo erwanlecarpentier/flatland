@@ -44,7 +44,7 @@ void single_run(
     agent<PLC> ag(p,&en);
     unsigned t = 0; // time
 	std::clock_t c_start = std::clock();
-    while(!en.is_terminal(ag.s)) {
+    for(t=0; t<p.SIMULATION_LIMIT_TIME; ++t) {
         ag.apply_policy();
         en.transition(ag.s,ag.a,ag.reward,ag.s_p);
         ag.process_reward();
@@ -53,7 +53,9 @@ void single_run(
             en.print(ag.s);
         }
         ag.step();
-        ++t;
+        if(en.is_terminal(ag.s)) { // terminal state reached
+            break;
+        }
     }
     std::clock_t c_end = std::clock();
     double time_elapsed_ms = 1000. * (c_end - c_start) / CLOCKS_PER_SEC;

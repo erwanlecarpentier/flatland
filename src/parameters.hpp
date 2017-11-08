@@ -23,6 +23,7 @@ constexpr double TO_RAD = 0.01745329251; ///< degrees to radians
  */
 class parameters {
 public:
+    unsigned SIMULATION_LIMIT_TIME;
     std::string MAIN_CFG_PATH;
     std::string GRID_PATH;
     std::string WORLD_PATH;
@@ -31,7 +32,6 @@ public:
     double STATE_GAUSSIAN_STDDEV;
     unsigned POLICY_SELECTOR;
     unsigned DECISION_CRITERION_SELECTOR;
-    std::vector<action> ACTION_SPACE;
     unsigned TREE_SEARCH_BUDGET;
     unsigned DEFAULT_POLICY_HORIZON;
     double UCT_CST;
@@ -267,10 +267,11 @@ public:
         catch(const libconfig::ParseException &e) {
             display_libconfig_parse_exception(e);
         }
-        if(cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
-        && cfg.lookupValue("state_gaussian_stddev",STATE_GAUSSIAN_STDDEV)
+        if(cfg.lookupValue("simulation_limit_time",SIMULATION_LIMIT_TIME)
         && cfg.lookupValue("world_path",WORLD_PATH)
         && cfg.lookupValue("trajectory_output_path",TRAJECTORY_OUTPUT_PATH)
+        && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
+        && cfg.lookupValue("state_gaussian_stddev",STATE_GAUSSIAN_STDDEV)
         && cfg.lookupValue("policy_selector",POLICY_SELECTOR)
         && cfg.lookupValue("decision_criterion_selector",DECISION_CRITERION_SELECTOR)
         && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)
