@@ -13,7 +13,6 @@
 #include <action.hpp>
 #include <agent.hpp>
 #include <world.hpp>
-//#include <continuous_world.hpp> //TRM deprecated
 #include <environment.hpp>
 #include <parameters.hpp>
 #include <random.hpp>
