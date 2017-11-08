@@ -11,8 +11,9 @@ BLACK = '#000000';
 RED = '#d85040';
 GREEN = '#00cc66';
 LIGHTBLUE = '#6699ff';
+GREY = '#4d4d4d';
 
-cworldpath = os.path.join(CURDIR, '../config/cworld.cfg')
+cworldpath = os.path.join(CURDIR, '../config/world.cfg')
 with io.open(cworldpath) as f:
 	world_config = libconf.load(f)
 mainpath = os.path.join(CURDIR, '../config/main.cfg')
@@ -36,7 +37,7 @@ for i in range(world_config.nb_rectangles):
 	hght = world_config[n_hght];
 	cx = world_config[n_cx] - wdth / 2;
 	cy = world_config[n_cy] - hght / 2;
-	r = mpatches.Rectangle((cx,cy),wdth,hght,edgecolor='none',facecolor=BLACK, alpha = 0.5)
+	r = mpatches.Rectangle((cx,cy),wdth,hght,edgecolor='none',facecolor=GREY)
 	ax.add_patch(r)
 
 # Parse circles
@@ -47,14 +48,14 @@ for i in range(world_config.nb_circles):
 	radius = world_config[n_radius];
 	cx = world_config[n_cx];
 	cy = world_config[n_cy];
-	c = mpatches.Circle((cx,cy),radius,edgecolor='none',facecolor=BLACK, alpha = 0.5)
+	c = mpatches.Circle((cx,cy),radius,edgecolor='none',facecolor=GREY)
 	ax.add_patch(c)
 
 # Plot start -------------------------------------------------------------------
 
 xs = main_config.initial_state_x;
 ys = main_config.initial_state_y;
-g = mpatches.Circle((xs,ys),0.03,edgecolor='none',facecolor=BLACK)
+g = mpatches.Circle((xs,ys),0.03,edgecolor='none',facecolor=RED)
 ax.add_patch(g)
 
 # Plot goal --------------------------------------------------------------------
@@ -62,7 +63,7 @@ ax.add_patch(g)
 xg = world_config.xgoal;
 yg = world_config.ygoal;
 rg = world_config.rgoal;
-g = mpatches.Circle((xg,yg),rg,edgecolor='none',facecolor=GREEN, alpha = 0.5)
+g = mpatches.Circle((xg,yg),rg,edgecolor='none',facecolor=GREEN)
 ax.add_patch(g)
 
 # Plot trajectory --------------------------------------------------------------
