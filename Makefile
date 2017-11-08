@@ -18,3 +18,6 @@ run :
 trajectory :
 	python3 plot/trajectory.py
 
+comparison :
+	python3 plot/comparison.py
+

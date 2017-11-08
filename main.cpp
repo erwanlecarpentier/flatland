@@ -168,7 +168,7 @@ void run(
 int main() {
     try {
         srand(time(NULL));
-        run(1,"config/main.cfg","data/test.dat");
+        run(1,"config/main.cfg","data/test.csv");
     }
     catch(const std::exception &e) {
         std::cerr << "Error in main(): standard exception caught: " << e.what() << std::endl;
