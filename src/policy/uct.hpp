@@ -8,8 +8,10 @@
 /**
  * @brief UCT policy
  */
+template <class DFTPLC>
 class uct {
 public:
+    typedef DFTPLC DFTPLC_type;
     environment * envt; ///< Pointer to an environment, used for action space reduction, termination criterion and generative model
     node root_node; ///< Root node of the tree
     double uct_cst; ///< UCT constant within UCT formula
@@ -18,7 +20,7 @@ public:
     unsigned budget; ///< Algorithm budget (number of expanded nodes)
     unsigned expd_counter; ///< Counter of the number of expanded nodes
     unsigned nb_calls; ///< Number of calls to the generative model
-    random_policy rndplc; ///< Random policy used as a default policy
+    DFTPLC default_policy; ///< Default policy
 
     /**
      * @brief Constructor
@@ -31,7 +33,7 @@ public:
     uct(const parameters &p, environment *en) :
         envt(en),
         root_node(state(),envt->action_space), // null state as default
-        rndplc(p,en)
+        default_policy(p,en)
     {
         budget = p.TREE_SEARCH_BUDGET;
         expd_counter = 0;
@@ -171,7 +173,7 @@ public:
             return envt->reward_function(s,a,s);
         }
         double total_return = 0.;
-        std::shared_ptr<action> a = rndplc(s);
+        std::shared_ptr<action> a = default_policy(s);
         for(unsigned t=0; t<horizon; ++t) {
             state s_p;
             generative_model(s,a,s_p);
@@ -180,7 +182,7 @@ public:
                 break;
             }
             s = s_p;
-            a = rndplc(s);
+            a = default_policy(s);
         }
         return total_return;
     }

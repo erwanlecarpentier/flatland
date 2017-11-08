@@ -31,6 +31,7 @@ public:
     double MISSTEP_PROBABILITY;
     double STATE_GAUSSIAN_STDDEV;
     unsigned POLICY_SELECTOR;
+    unsigned DEFAULT_POLICY_SELECTOR;
     unsigned DECISION_CRITERION_SELECTOR;
     unsigned TREE_SEARCH_BUDGET;
     unsigned DEFAULT_POLICY_HORIZON;
@@ -273,6 +274,7 @@ public:
         && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
         && cfg.lookupValue("state_gaussian_stddev",STATE_GAUSSIAN_STDDEV)
         && cfg.lookupValue("policy_selector",POLICY_SELECTOR)
+        && cfg.lookupValue("default_policy_selector",DEFAULT_POLICY_SELECTOR)
         && cfg.lookupValue("decision_criterion_selector",DECISION_CRITERION_SELECTOR)
         && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)
         && cfg.lookupValue("uct_cst",UCT_CST)

@@ -7,11 +7,12 @@
 /**
  * @brief OLUCT policy
  */
+template <class DFTPLC>
 class oluct {
 public:
     unsigned decision_criterion_selector;
     environment * envt; ///< Pointer to an environment, used for action space reduction
-    uct pl;
+    uct<DFTPLC> pl;
 
     /**
      * @brief Constructor
