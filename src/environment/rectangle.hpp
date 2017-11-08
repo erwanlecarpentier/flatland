@@ -4,6 +4,11 @@
 #include <shape.hpp>
 
 class rectangle : public shape {
+private:
+    shape * do_clone() const override final {
+        return new rectangle(center,xsize,ysize);
+    }
+
 public:
     std::tuple<double,double> center;
     double xsize;

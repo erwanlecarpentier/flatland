@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <boost/ptr_container/ptr_vector.hpp>
 #include <cassert>
 #include <cmath>
 #include <cstdlib>

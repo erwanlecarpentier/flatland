@@ -17,6 +17,16 @@ public:
      * @return Return true if the given position is within the shape.
      */
     virtual bool is_within(double x, double y) = 0;
+
+    shape* clone() const {
+        return do_clone(); // implemented by private virtual function
+    }
+
+    virtual shape * do_clone() const = 0;
 };
+
+inline shape* new_clone(const shape& sh) {
+    return sh.clone();
+}
 
 #endif // SHAPE_HPP_

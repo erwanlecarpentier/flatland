@@ -195,12 +195,14 @@ public:
      * @param {double &} xsize;
      * @param {double &} ysize;
      * @param {std::vector<std::unique_ptr<shape>> &} elements;
+     * @param {boost::ptr_vector<shape> &} elements;
      * @param {circle &} goal;
      */
     void parse_world(
         double &xsize,
         double &ysize,
-        std::vector<std::unique_ptr<shape>> &elements,
+        //std::vector<std::unique_ptr<shape>> &elements,//TRM OTK
+        boost::ptr_vector<shape> &elements,
         circle &goal)
     {
         libconfig::Config cworld_cfg;
@@ -233,7 +235,8 @@ public:
             && cworld_cfg.lookupValue(c1name,c1)
             && cworld_cfg.lookupValue(d0name,d0)
             && cworld_cfg.lookupValue(d1name,d1)) {
-                elements.emplace_back(std::unique_ptr<shape>(new rectangle(std::tuple<double,double>{c0,c1},d0,d1)));
+                //elements.emplace_back(std::unique_ptr<shape>(new rectangle(std::tuple<double,double>{c0,c1},d0,d1)));//TRM OTK
+                elements.push_back(new rectangle(std::tuple<double,double>{c0,c1},d0,d1)); //TRM OTK
             } else {
                 throw wrong_world_configuration_path();
             }
@@ -246,7 +249,8 @@ public:
             if(cworld_cfg.lookupValue(c0name,c0)
             && cworld_cfg.lookupValue(c1name,c1)
             && cworld_cfg.lookupValue(rdname,rd)) {
-                elements.emplace_back(std::unique_ptr<shape>(new circle(std::tuple<double,double>{c0,c1},rd)));
+                //elements.emplace_back(std::unique_ptr<shape>(new circle(std::tuple<double,double>{c0,c1},rd)));//TRM OTK
+                elements.push_back(new circle(std::tuple<double,double>{c0,c1},rd)); //TRM OTK
             } else {
                 throw wrong_world_configuration_path();
             }

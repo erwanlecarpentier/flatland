@@ -4,6 +4,11 @@
 #include <shape.hpp>
 
 class circle : public shape {
+private:
+    shape * do_clone() const override final {
+        return new circle(center,radius);
+    }
+
 public:
     std::tuple<double,double> center;
     double radius;
