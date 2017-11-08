@@ -8,10 +8,9 @@
 /**
  * @brief UCT policy
  */
-template <class WRLD>
 class uct {
 public:
-    environment<WRLD> * envt; ///< Pointer to an environment, used for action space reduction, termination criterion and generative model
+    environment * envt; ///< Pointer to an environment, used for action space reduction, termination criterion and generative model
     node root_node; ///< Root node of the tree
     double uct_cst; ///< UCT constant within UCT formula
     double discount_factor; ///< MDP discount factor
@@ -19,7 +18,7 @@ public:
     unsigned budget; ///< Algorithm budget (number of expanded nodes)
     unsigned expd_counter; ///< Counter of the number of expanded nodes
     unsigned nb_calls; ///< Number of calls to the generative model
-    random_policy<WRLD> rndplc; ///< Random policy used as a default policy
+    random_policy rndplc; ///< Random policy used as a default policy
 
     /**
      * @brief Constructor
@@ -29,7 +28,7 @@ public:
      * @param {environment *} en; pointer to the environment, used for action space reduction,
      * termination criterion and generative model
      */
-    uct(const parameters &p, environment<WRLD> *en) :
+    uct(const parameters &p, environment *en) :
         envt(en),
         root_node(state(),envt->action_space), // null state as default
         rndplc(p,en)

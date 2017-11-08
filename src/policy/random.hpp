@@ -6,10 +6,9 @@
 /**
  * @brief Random policy
  */
-template <class WRLD>
 class random_policy {
 public:
-    environment<WRLD> * envt; ///< Pointer to an environment, used for action space reduction
+    environment * envt; ///< Pointer to an environment, used for action space reduction
 
     /**
      * @brief Constructor
@@ -18,7 +17,7 @@ public:
      * @param {const parameters &} p; parameters
      * @param {environment *} en; pointer to the environment, used for action space reduction
      */
-    random_policy(const parameters &p, environment<WRLD> *en) : envt(en) {
+    random_policy(const parameters &p, environment *en) : envt(en) {
         (void) p;
     }
 

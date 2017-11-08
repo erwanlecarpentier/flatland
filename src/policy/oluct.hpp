@@ -7,12 +7,11 @@
 /**
  * @brief OLUCT policy
  */
-template <class WRLD>
 class oluct {
 public:
     unsigned decision_criterion_selector;
-    environment<WRLD> * envt; ///< Pointer to an environment, used for action space reduction
-    uct<WRLD> pl;
+    environment * envt; ///< Pointer to an environment, used for action space reduction
+    uct pl;
 
     /**
      * @brief Constructor
@@ -21,7 +20,7 @@ public:
      * @param {const parameters &} p; parameters
      * @param {environment *} en; pointer to the environment, used for action space reduction
      */
-    oluct(const parameters &p, environment<WRLD> *en) :
+    oluct(const parameters &p, environment *en) :
         pl(p,en)
     {
         decision_criterion_selector = p.DECISION_CRITERION_SELECTOR;
