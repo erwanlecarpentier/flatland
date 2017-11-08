@@ -14,10 +14,6 @@ simulation parameters.
 - 'main.cfg' contains the main parameters of the simulation;
 - 'world.cfg' contains the map definition for the continuous environment.
 
-In order to introduce a new policy, modify the 'src/policy/todo.hpp' file.
-The policy classes are template classes that suppose a few methods to be
-implemented.
-
 The state space is composed with a position, a velocity and an orientation wrt
 the x axis of the continuous world.
 
@@ -35,6 +31,13 @@ The world is by default continuous. In order to use it in the discrete setting,
 you should modify the configuration file consequently. This means only allowing
 actions of the discrete world, avoiding gaussian noise on the resulting state,
 setting the shapes of the obstacles so that they overlap the right cells, etc.
+
+# Modify
+
+In order to introduce a new policy, modify the 'src/policy/todo_policy.hpp'
+file and include the resulting class.
+In order to introduce a new environment shape, modify the
+'src/environment/todo_shape.hpp' file and include the resulting class.
 
 # Dependencies
 
