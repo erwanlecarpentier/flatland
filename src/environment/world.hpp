@@ -16,8 +16,7 @@ class world {
 public:
     double xsize; ///< Horizontal dimension of the environment
     double ysize; ///< Vertical dimension of the environment
-    //std::vector<std::unique_ptr<shape>> elements; ///< Container of the wall elements of the world//TRM OTK
-    boost::ptr_vector<shape> elements; //TRM OTK
+    boost::ptr_vector<shape> elements;
     circle goal;
     std::vector<std::vector<double>> trajectory; ///< Matrix of the trajectory for backup
     std::string trajectory_output_path; ///< Output path for the trajectory
@@ -48,13 +47,6 @@ public:
         || is_greater_than(s.y,ysize)) { // Border checking
             return -1;
         }
-        /* TRM OTK
-        for(auto &sh : elements) { // Wall checking is performed first
-            if(sh.is_within(s.x, s.y)) {
-                return -1;
-            }
-        }
-        */
         for(unsigned i=0; i<elements.capacity(); ++i) { // Wall checking is performed first
             if(elements[i].is_within(s.x, s.y)) {
                 return -1;

@@ -31,7 +31,6 @@ public:
      * termination criterion and generative model
      */
     uct(const parameters &p, environment *en) :
-        //envt(en),//TRM
         envt(*en),
         root_node(state(),envt.action_space), // null state as default
         dflt_policy(p,en)
