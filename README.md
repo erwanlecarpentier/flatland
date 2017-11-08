@@ -12,8 +12,7 @@ own classes.
 Use the configuration files in the 'config' repository in order to set the
 simulation parameters.
 - 'main.cfg' contains the main parameters of the simulation;
-- 'gridworld.cfg' contains the map definition for the discrete world;
-- 'cworld.cfg' contains the map definition for the continuous environment.
+- 'world.cfg' contains the map definition for the continuous environment.
 
 In order to introduce a new policy, modify the 'src/policy/todo.hpp' file.
 The policy classes are template classes that suppose a few methods to be
@@ -31,6 +30,11 @@ push the agent into a wall.
 increments and discrete multiplicative factors applied to the velocity.
 The wall constraint also applies here. Additionally, there are minimum and
 maximum velocity limits.
+
+The world is by default continuous. In order to use it in the discrete setting,
+you should modify the configuration file consequently. This means only allowing
+actions of the discrete world, avoiding gaussian noise on the resulting state,
+setting the shapes of the obstacles so that they overlap the right cells, etc.
 
 # Dependencies
 
