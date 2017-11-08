@@ -30,7 +30,6 @@ public:
     bool IS_WORLD_CONTINUOUS;
     double MISSTEP_PROBABILITY;
     double STATE_GAUSSIAN_STDDEV;
-    state INITIAL_STATE;
     unsigned POLICY_SELECTOR;
     unsigned DECISION_CRITERION_SELECTOR;
     std::vector<action> ACTION_SPACE;
@@ -115,7 +114,7 @@ public:
                         if(cfg.lookupValue(dt_name,dt)
                         && cfg.lookupValue(fv_name,fv)) {
                             action_space.emplace_back(
-                                std::shared_ptr<action>(new navigation_action(fv,vmax,vmin,dt))
+                                std::shared_ptr<action>(new navigation_action(fv,vmax,vmin,TO_RAD * dt))
                             );
                         } else { // Error in action names syntax
                             throw action_names_configuration_file_exception();
@@ -167,20 +166,39 @@ public:
     /**
      * @brief Parse state
      *
-     * Build the state of the agent
-     * @param {libconfig::Config &} cfg; configuration
+     * Parse the initial state of the agent.
+     * @param {state &} s; reference to the state of the agent
      */
+    void parse_state(state &s) {
+        libconfig::Config cfg;
+        try {
+            cfg.readFile(MAIN_CFG_PATH.c_str());
+        }
+        catch(const libconfig::ParseException &e) {
+            display_libconfig_parseexception(e);
+        }
+        if(cfg.lookupValue("initial_state_x",s.x)
+        && cfg.lookupValue("initial_state_y",s.y)
+        && cfg.lookupValue("initial_state_v",s.v)
+        && cfg.lookupValue("initial_state_theta",s.theta)) {
+            /* Nothing to do */
+        } else {
+            throw wrong_world_configuration_path();
+        }
+    }
+    /* deprecated //TRM
     void parse_state(libconfig::Config &cfg) {
         double x = 0., y = 0.;
         if(cfg.lookupValue("initial_state_x",x)
         && cfg.lookupValue("initial_state_y",y)) {
-            /* Nothing to do */
+            // Nothing to do
         } else {
             throw wrong_world_configuration_path();
         }
         INITIAL_STATE.x = x;
         INITIAL_STATE.y = y;
     }
+    */
 
     /**
      * @brief Parse continuous world
@@ -277,7 +295,6 @@ public:
             } else { // parse path of discrete world
                 assert(cfg.lookupValue("grid_path",GRID_PATH));
             }
-            parse_state(cfg);
         }
         else { // Error in config file
             throw wrong_syntax_configuration_file_exception();

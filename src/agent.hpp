@@ -22,16 +22,16 @@ public:
      * @brief Default constructor
      *
      * Default constructor initialising the parameters via a 'parameters' object.
-     * @param {const parameters &} p; parameters
+     * @param {parameters &} p; parameters
      * @param {environment *} en; pointer to the environment, used for action space reduction /
      * termination criterion / generative model
      */
     agent(
-        const parameters &p,
+        parameters &p,
         environment<WRLD> *en) :
-        policy(p,en),
-        s(p.INITIAL_STATE)
+        policy(p,en)
     {
+        p.parse_state(s);
         s_p = s;
         //a = action(); // null cartesian action//TRM
     }
