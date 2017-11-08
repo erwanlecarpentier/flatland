@@ -43,6 +43,7 @@ standard libraries, here is a complete list:
 - 'libconfig.h++' available at https://github.com/hyperrealm/libconfig
 - 'libconf.py' available at https://pypi.python.org/pypi/libconf (for plotting
 purpose only)
+- 'boost/ptr_container/ptr_vector.hpp' available at 'http://www.boost.org/'
 
 Edit: 30th of October 2017
 
