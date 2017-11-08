@@ -19,7 +19,7 @@ public:
      * @param {environment *} en; pointer to the environment, used for action space reduction
      */
     random_policy(const parameters &p, environment<WRLD> *en) : envt(en) {
-        (void) p; // No parameters in random policy
+        (void) p;
     }
 
     /**
@@ -30,7 +30,6 @@ public:
      * @return Return the undertaken action at s.
      */
 	std::shared_ptr<action> operator()(const state &s) {
-        (void) s;
         return rand_element(envt->get_action_space(s));
 	}
 
