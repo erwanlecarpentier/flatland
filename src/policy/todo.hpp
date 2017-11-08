@@ -6,9 +6,10 @@
 /**
  * @brief TODO policy
  */
+template <class WRLD>
 class todo_policy {
 public:
-    environment * envt; ///< Pointer to an environment, used for action space reduction
+    environment<WRLD> * envt; ///< Pointer to an environment, used for action space reduction
 
     /**
      * @brief Constructor
@@ -17,7 +18,7 @@ public:
      * @param {const parameters &} p; parameters
      * @param {environment *} en; pointer to the environment, used for action space reduction
      */
-    todo_policy(const parameters &p, environment *en) {
+    todo_policy(const parameters &p, environment<WRLD> *en) {
         /* TODO: set the parameters here */
     }
 
