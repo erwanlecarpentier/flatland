@@ -36,6 +36,17 @@ public:
         v = 1.;
         theta = 0.;
     }
+
+    /**
+     * @brief Print
+     *
+     * Print the attributes of the state
+     */
+    void print() {
+        std::cout << "State, ";
+        std::cout << "x: " << x << " y: " << y;
+        std::cout << " v: " << v << " theta: " << theta << std::endl;
+    }
 };
 
 #endif // STATE_HPP_

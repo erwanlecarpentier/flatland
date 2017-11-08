@@ -57,8 +57,8 @@ public:
      * Print the attributes of the action
      */
     void print() override {
-        std::cout << "Cartesian action, dx: ";
-        std::cout << dx << " dy: " << dy << std::endl;
+        std::cout << "Cartesian action, ";
+        std::cout << "dx: " << dx << " dy: " << dy << std::endl;
     }
 };
 

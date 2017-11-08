@@ -18,7 +18,7 @@ public:
      */
     navigation_action(
         double _fv = 0.,
-        double _vmax = 1.,
+        double _vmax = .2,
         double _vmin = 0.,
         double _dtheta = 0.) :
         fv(_fv),
@@ -34,8 +34,6 @@ public:
      * @param {state &} s; modified state
      */
     void apply(state &s) override {
-        s.x += s.v * cos(s.theta);
-        s.y += s.v * sin(s.theta);
         s.v *= fv;
         if(is_greater_than(s.v,vmax)) { // above maximum velocity
             s.v = vmax;
@@ -44,6 +42,8 @@ public:
             s.v = vmin;
         }
         s.theta += dtheta;
+        s.x += s.v * cos(s.theta);
+        s.y += s.v * sin(s.theta);
     }
 
     /**

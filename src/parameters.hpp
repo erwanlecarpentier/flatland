@@ -104,8 +104,8 @@ public:
                 double vmax = 1., vmin = 0.;
                 assert(cfg.lookupValue("nb_dtheta",nb_dtheta));
                 assert(cfg.lookupValue("nb_fvelocity",nb_fvelocity));
-                assert(cfg.lookupValue("min_velocity",vmax));
-                assert(cfg.lookupValue("max_velocity",vmin));
+                assert(cfg.lookupValue("min_velocity",vmin));
+                assert(cfg.lookupValue("max_velocity",vmax));
                 for(unsigned i=0; i<nb_dtheta; ++i) {
                     for(unsigned j=0; j<nb_fvelocity; ++j) {
                         std::string dt_name = "dtheta" + std::to_string(i);
@@ -181,7 +181,7 @@ public:
         && cfg.lookupValue("initial_state_y",s.y)
         && cfg.lookupValue("initial_state_v",s.v)
         && cfg.lookupValue("initial_state_theta",s.theta)) {
-            /* Nothing to do */
+            s.theta *= TO_RAD;
         } else {
             throw wrong_world_configuration_path();
         }
