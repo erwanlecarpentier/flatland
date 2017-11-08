@@ -30,6 +30,8 @@ public:
     std::string TRAJECTORY_OUTPUT_PATH;
     double MISSTEP_PROBABILITY;
     double STATE_GAUSSIAN_STDDEV;
+    double MODEL_MISSTEP_PROBABILITY;
+    double MODEL_STATE_GAUSSIAN_STDDEV;
     unsigned POLICY_SELECTOR;
     unsigned DEFAULT_POLICY_SELECTOR;
     unsigned DECISION_CRITERION_SELECTOR;
@@ -274,6 +276,8 @@ public:
         && cfg.lookupValue("trajectory_output_path",TRAJECTORY_OUTPUT_PATH)
         && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
         && cfg.lookupValue("state_gaussian_stddev",STATE_GAUSSIAN_STDDEV)
+        && cfg.lookupValue("model_misstep_probability",MODEL_MISSTEP_PROBABILITY)
+        && cfg.lookupValue("model_state_gaussian_stddev",MODEL_STATE_GAUSSIAN_STDDEV)
         && cfg.lookupValue("policy_selector",POLICY_SELECTOR)
         && cfg.lookupValue("default_policy_selector",DEFAULT_POLICY_SELECTOR)
         && cfg.lookupValue("decision_criterion_selector",DECISION_CRITERION_SELECTOR)

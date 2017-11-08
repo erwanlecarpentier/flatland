@@ -12,7 +12,7 @@ template <class DFTPLC>
 class uct {
 public:
     typedef DFTPLC DFTPLC_type;
-    environment envt; ///< Copy of the environment, used for action space reduction, termination criterion and generative model, also its attributes may be changed according to the used configuration
+    environment model; ///< Copy of the environment, used for action space reduction, termination criterion and generative model, also its attributes may be changed according to the used configuration
     node root_node; ///< Root node of the tree
     double uct_cst; ///< UCT constant within UCT formula
     double discount_factor; ///< MDP discount factor
@@ -31,10 +31,12 @@ public:
      * termination criterion and generative model
      */
     uct(const parameters &p, environment *en) :
-        envt(*en),
-        root_node(state(),envt.action_space), // null state as default
+        model(*en),
+        root_node(state(),model.action_space), // null state as default
         dflt_policy(p,en)
     {
+        model.misstep_probability = p.MODEL_MISSTEP_PROBABILITY;
+        model.state_gaussian_stddev = p.MODEL_STATE_GAUSSIAN_STDDEV;
         budget = p.TREE_SEARCH_BUDGET;
         expd_counter = 0;
         nb_calls = 0;
@@ -54,10 +56,10 @@ public:
      */
     bool is_node_terminal(node &v) {
         if(v.is_root()) {
-            return envt.is_terminal(v.get_state());
+            return model.is_terminal(v.get_state());
         } else {
             for(auto &s: v.get_states()) {
-                if(!envt.is_terminal(s)) {
+                if(!model.is_terminal(s)) {
                     return false;
                 }
             }
@@ -78,7 +80,7 @@ public:
         std::shared_ptr<action> a,
         state &s_p)
     {
-        envt.state_transition(s,a,s_p);
+        model.state_transition(s,a,s_p);
         ++nb_calls;
     }
 
@@ -113,7 +115,7 @@ public:
         v.create_child(
             nodes_action,
             new_state,
-            envt.action_space //TODO: warning - stochastic case
+            model.action_space //TODO: warning - stochastic case
         );
         return v.get_last_child();
     }
@@ -170,15 +172,15 @@ public:
         state s = ptr->get_last_sampled_state();
         if(is_node_terminal(*ptr)) {
             std::shared_ptr<action> a(new navigation_action()); // default action
-            return envt.reward_function(s,a,s);
+            return model.reward_function(s,a,s);
         }
         double total_return = 0.;
         std::shared_ptr<action> a = dflt_policy(s);
         for(unsigned t=0; t<horizon; ++t) {
             state s_p;
             generative_model(s,a,s_p);
-            total_return += pow(discount_factor,(double)t) * envt.reward_function(s,a,s_p);
-            if(envt.is_terminal(s)) { // Termination criterion
+            total_return += pow(discount_factor,(double)t) * model.reward_function(s,a,s_p);
+            if(model.is_terminal(s)) { // Termination criterion
                 break;
             }
             s = s_p;
@@ -200,7 +202,7 @@ public:
         ptr->increment_visits_count();
         ptr->add_to_value(total_return);
         total_return *= discount_factor; // apply the discount for the parent node
-        total_return += envt.reward_function( // add the reward of the transition
+        total_return += model.reward_function( // add the reward of the transition
             ptr->parent->get_state_or_last(),
             ptr->get_incoming_action(),
             ptr->get_last_sampled_state()
@@ -221,7 +223,7 @@ public:
         root_node.clear_node();
         root_node.set_as_root();
         root_node.set_state(s);
-        root_node.set_action_space(envt.get_action_space(s));
+        root_node.set_action_space(model.get_action_space(s));
         expd_counter = 0;
         for(unsigned i=0; i<budget; ++i) {
             node *ptr = tree_policy(root_node);
