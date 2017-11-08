@@ -36,7 +36,7 @@ public:
      * @return Return 'true' if the sub-tree is kept.
      */
     bool decision_criterion(const state & s) {
-        (void) s;//TODO: remove with other decision criteria
+        (void) s;
         switch(decision_criterion_selector) {
             default: { // Plain decision criterion
                 return true;

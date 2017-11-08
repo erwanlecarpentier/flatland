@@ -168,7 +168,7 @@ public:
     double default_policy(node * ptr) {
         state s = ptr->get_last_sampled_state();
         if(is_node_terminal(*ptr)) {
-            std::shared_ptr<action> a(new navigation_action()); //default with default action
+            std::shared_ptr<action> a(new navigation_action()); // default action
             return envt->reward_function(s,a,s);
         }
         double total_return = 0.;

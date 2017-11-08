@@ -168,7 +168,9 @@ public:
      * @return Return true if the test is terminal, else false.
      */
     bool is_terminal(const state &s) {
-        if(world_value_at(s) == 1) {
+        int world_value = world_value_at(s);
+        if(world_value == 1 /* goal reached */
+        || world_value == -1 /* policy deliberately reached a wall */) {
             return true;
         } else {
             return false;
