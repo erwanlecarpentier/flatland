@@ -12,8 +12,8 @@
 
 #include <action.hpp>
 #include <agent.hpp>
-#include <discrete_world.hpp>
-#include <continuous_world.hpp>
+#include <world.hpp>
+//#include <continuous_world.hpp> //TRM deprecated
 #include <environment.hpp>
 #include <parameters.hpp>
 #include <random.hpp>
@@ -33,15 +33,15 @@
  * @param {std::vector<std::vector<double>>} backup_vector; backup vector into which each
  * simulation records its backed up values
  */
-template <class PLC, class WRLD>
+template <class PLC>
 void single_run(
     parameters &p,
     bool prnt,
     bool bckp,
     std::vector<std::vector<double>> &backup_vector)
 {
-    environment<WRLD> en(p);
-    agent<PLC,WRLD> ag(p,&en);
+    environment en(p);
+    agent<PLC> ag(p,&en);
     unsigned t = 0; // time
 	std::clock_t c_start = std::clock();
     while(!en.is_terminal(ag.s)) {
@@ -91,27 +91,15 @@ void run_switch(
 {
     switch(p.POLICY_SELECTOR) {
         case 0: { // UCT policy
-            if(p.IS_WORLD_CONTINUOUS) {
-                single_run<uct<continuous_world>,continuous_world>(p,prnt,bckp,backup_vector);
-            } else {
-                single_run<uct<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
-            }
+            single_run<uct>(p,prnt,bckp,backup_vector);
             break;
         }
         case 1: { // OLUCT policy
-            if(p.IS_WORLD_CONTINUOUS) {
-                single_run<oluct<continuous_world>,continuous_world>(p,prnt,bckp,backup_vector);
-            } else {
-                single_run<oluct<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
-            }
+            single_run<oluct>(p,prnt,bckp,backup_vector);
             break;
         }
         default: { // random policy
-            if(p.IS_WORLD_CONTINUOUS) {
-                single_run<random_policy<continuous_world>,continuous_world>(p,prnt,bckp,backup_vector);
-            } else {
-                single_run<random_policy<discrete_world>,discrete_world>(p,prnt,bckp,backup_vector);
-            }
+            single_run<random_policy>(p,prnt,bckp,backup_vector);
         }
     }
 }

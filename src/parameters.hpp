@@ -25,9 +25,8 @@ class parameters {
 public:
     std::string MAIN_CFG_PATH;
     std::string GRID_PATH;
-    std::string CWORLD_PATH;
+    std::string WORLD_PATH;
     std::string TRAJECTORY_OUTPUT_PATH;
-    bool IS_WORLD_CONTINUOUS;
     double MISSTEP_PROBABILITY;
     double STATE_GAUSSIAN_STDDEV;
     unsigned POLICY_SELECTOR;
@@ -52,7 +51,7 @@ public:
      *
      * @param {const libconfig::ParseException &} e; displayed exception
      */
-    void display_libconfig_parseexception(const libconfig::ParseException &e) {
+    void display_libconfig_parse_exception(const libconfig::ParseException &e) {
         std::cerr << "Error in parameters(const char *cfg_path): ParseException ";
         std::cerr << "in file " << e.getFile() << " ";
         std::cerr << "at line " << e.getLine() << ": ";
@@ -71,7 +70,7 @@ public:
             cfg.readFile(MAIN_CFG_PATH.c_str());
         }
         catch(const libconfig::ParseException &e) {
-            display_libconfig_parseexception(e);
+            display_libconfig_parse_exception(e);
         }
         unsigned selector = 0;
         assert(cfg.lookupValue("action_definition_selector",selector));
@@ -148,6 +147,7 @@ public:
      *
      * Build the discrete world.
      * @param {std::vector<std::vector<int>> &} grid; grid world
+     * @deprecated Grid world is no more implemented this way
      */
     void parse_grid(std::vector<std::vector<int>> &grid) {
         grid.clear();
@@ -175,7 +175,7 @@ public:
             cfg.readFile(MAIN_CFG_PATH.c_str());
         }
         catch(const libconfig::ParseException &e) {
-            display_libconfig_parseexception(e);
+            display_libconfig_parse_exception(e);
         }
         if(cfg.lookupValue("initial_state_x",s.x)
         && cfg.lookupValue("initial_state_y",s.y)
@@ -188,7 +188,7 @@ public:
     }
 
     /**
-     * @brief Parse continuous world
+     * @brief Parse world
      *
      * Build the continuous world attributes given as input.
      * @param {double &} xsize;
@@ -196,7 +196,7 @@ public:
      * @param {std::vector<std::unique_ptr<shape>> &} elements;
      * @param {circle &} goal;
      */
-    void parse_cworld(
+    void parse_world(
         double &xsize,
         double &ysize,
         std::vector<std::unique_ptr<shape>> &elements,
@@ -204,10 +204,10 @@ public:
     {
         libconfig::Config cworld_cfg;
         try {
-            cworld_cfg.readFile(CWORLD_PATH.c_str());
+            cworld_cfg.readFile(WORLD_PATH.c_str());
         }
         catch(const libconfig::ParseException &e) {
-            display_libconfig_parseexception(e);
+            display_libconfig_parse_exception(e);
         }
         if(cworld_cfg.lookupValue("xsize",xsize)
         && cworld_cfg.lookupValue("ysize",ysize)
@@ -265,23 +265,19 @@ public:
             cfg.readFile(MAIN_CFG_PATH.c_str());
         }
         catch(const libconfig::ParseException &e) {
-            display_libconfig_parseexception(e);
+            display_libconfig_parse_exception(e);
         }
-        if(cfg.lookupValue("is_world_continuous",IS_WORLD_CONTINUOUS)
-        && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
+        if(cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
         && cfg.lookupValue("state_gaussian_stddev",STATE_GAUSSIAN_STDDEV)
+        && cfg.lookupValue("world_path",WORLD_PATH)
+        && cfg.lookupValue("trajectory_output_path",TRAJECTORY_OUTPUT_PATH)
         && cfg.lookupValue("policy_selector",POLICY_SELECTOR)
         && cfg.lookupValue("decision_criterion_selector",DECISION_CRITERION_SELECTOR)
         && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)
         && cfg.lookupValue("uct_cst",UCT_CST)
         && cfg.lookupValue("discount_factor",DISCOUNT_FACTOR)
         && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)) {
-            if(IS_WORLD_CONTINUOUS) { // parse path of continuous world
-                assert(cfg.lookupValue("cworld_path",CWORLD_PATH));
-                assert(cfg.lookupValue("trajectory_output_path",TRAJECTORY_OUTPUT_PATH));
-            } else { // parse path of discrete world
-                assert(cfg.lookupValue("grid_path",GRID_PATH));
-            }
+            /* Nothing to do */
         }
         else { // Error in config file
             throw wrong_syntax_configuration_file_exception();

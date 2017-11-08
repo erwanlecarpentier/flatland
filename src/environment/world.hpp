@@ -1,5 +1,5 @@
-#ifndef CONTINUOUS_WORLD_HPP_
-#define CONTINUOUS_WORLD_HPP_
+#ifndef WORLD_HPP_
+#define WORLD_HPP_
 
 #include <circle.hpp>
 #include <rectangle.hpp>
@@ -7,12 +7,12 @@
 #include <save.hpp>
 
 /**
- * @brief Continuous world
+ * @brief World
  *
  * Continuous world.
  * Defined by its geometric elements and its size.
  */
-class continuous_world {
+class world {
 public:
     double xsize; ///< Horizontal dimension of the environment
     double ysize; ///< Vertical dimension of the environment
@@ -27,9 +27,9 @@ public:
      * Constructor wrt the given parameters.
      * @param {parameters &} p; parameters
      */
-    continuous_world(parameters &p){
+    world(parameters &p){
         trajectory_output_path = p.TRAJECTORY_OUTPUT_PATH;
-        p.parse_cworld(xsize,ysize,elements,goal);
+        p.parse_world(xsize,ysize,elements,goal);
         initialize_backup(std::vector<std::string>{"x","y"},trajectory_output_path,",");
     }
 
@@ -80,4 +80,4 @@ public:
     }
 };
 
-#endif // CONTINUOUS_WORLD_HPP_
+#endif // WORLD_HPP_

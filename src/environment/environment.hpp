@@ -2,6 +2,7 @@
 #define ENVIRONMENT_HPP_
 
 #include <parameters.hpp>
+#include <world.hpp>
 #include <utils.hpp>
 
 /**
@@ -9,12 +10,10 @@
  *
  * Environment template class.
  */
-template<class WRLD>
 class environment {
 public:
-    typedef WRLD WRLD_type;
     bool is_continuous; ///< Is state space continuous
-    WRLD world;
+    world w; ///< world
     double misstep_probability; ///< Probability of misstep
     double state_gaussian_stddev; ///< Standard deviation of the Gaussian applied on the position
     std::vector<std::shared_ptr<action>> action_space; ///< Full space of the actions available in the environment
@@ -25,7 +24,7 @@ public:
      * Default constructor initialising the parameters via a 'parameters' object.
      * @param {parameters &} p; parameters
      */
-    environment(parameters &p) : world(p) {
+    environment(parameters &p) : w(p) {
         p.parse_actions(action_space);
         misstep_probability = p.MISSTEP_PROBABILITY;
         state_gaussian_stddev = p.STATE_GAUSSIAN_STDDEV;
@@ -38,7 +37,7 @@ public:
      * @param {const state &} s; state of the agent
      */
     void print(const state &s) {
-        world.print(s);
+        w.print(s);
     }
 
     /**
@@ -49,7 +48,7 @@ public:
      * @return Return the value of the world.
      */
     int world_value_at(const state &s) {
-        return world.get_value_at(s);
+        return w.get_value_at(s);
     }
 
     /**
@@ -57,7 +56,7 @@ public:
      *
      * Test if the state is valid (wall or not).
      * @param {const state &} s; given state
-     * @return Return the value of the grid.
+     * @return Return true if the world value is different than -1.
      */
     bool is_state_valid(const state &s) {
         return (world_value_at(s) != -1);
@@ -163,7 +162,6 @@ public:
      * @brief Is terminal
      *
      * Test if the given state is terminal.
-     * Convention for gridworld if 1 for a terminal grid cell.
      * @param {const state &} s; given state
      * @return Return true if the test is terminal, else false.
      */
@@ -183,7 +181,7 @@ public:
      * Save the trajectory for plotting purpose with continuous world.
      */
     void save_trajectory() {
-        world.save_trajectory();
+        w.save_trajectory();
     }
 };
 

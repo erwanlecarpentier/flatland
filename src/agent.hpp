@@ -8,7 +8,7 @@
  *
  * Agent template class.
  */
-template <class PLC, class WRLD>
+template <class PLC>
 class agent {
 public:
     typedef PLC PLC_type;
@@ -28,7 +28,7 @@ public:
      */
     agent(
         parameters &p,
-        environment<WRLD> *en) :
+        environment *en) :
         policy(p,en)
     {
         p.parse_state(s);
