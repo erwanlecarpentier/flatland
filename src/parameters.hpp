@@ -186,19 +186,6 @@ public:
             throw wrong_world_configuration_path();
         }
     }
-    /* deprecated //TRM
-    void parse_state(libconfig::Config &cfg) {
-        double x = 0., y = 0.;
-        if(cfg.lookupValue("initial_state_x",x)
-        && cfg.lookupValue("initial_state_y",y)) {
-            // Nothing to do
-        } else {
-            throw wrong_world_configuration_path();
-        }
-        INITIAL_STATE.x = x;
-        INITIAL_STATE.y = y;
-    }
-    */
 
     /**
      * @brief Parse continuous world

@@ -10,7 +10,6 @@
 template <class WRLD>
 class oluct {
 public:
-    //std::vector<std::shared_ptr<action>> action_space; ///< Full action space//TRM
     unsigned decision_criterion_selector;
     environment<WRLD> * envt; ///< Pointer to an environment, used for action space reduction
     uct<WRLD> pl;
@@ -25,7 +24,6 @@ public:
     oluct(const parameters &p, environment<WRLD> *en) :
         pl(p,en)
     {
-        //action_space = envt->action_space;//TRM
         decision_criterion_selector = p.DECISION_CRITERION_SELECTOR;
     }
 

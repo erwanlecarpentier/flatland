@@ -24,19 +24,6 @@
 #include <utils.hpp>
 
 /**
- * @brief Print (t,s,a,s_p)
- */
-/* //TRM
-template <class PLC, class WRLD>
-void print_tsasp(double t, const agent<PLC,WRLD> &ag) {
-    std::cout << "t:" << t << " ";
-    std::cout << "s:" << ag.s.x << " " << ag.s.y << " ";
-    std::cout << "a:" << ag.a.dx << " " << ag.a.dy << " ";
-    std::cout << "s_p:" << ag.s_p.x << " " << ag.s_p.y << std::endl;
-}
-*/
-
-/**
  * @brief Single run
  *
  * Run a single simulation using the given parameters.
@@ -62,7 +49,6 @@ void single_run(
         en.transition(ag.s,ag.a,ag.reward,ag.s_p);
         ag.process_reward();
         if(prnt) {
-            //print_tsasp(t,ag);//TRM
             std::cout << t << std::endl;
             en.print(ag.s);
         }
@@ -72,7 +58,6 @@ void single_run(
     std::clock_t c_end = std::clock();
     double time_elapsed_ms = 1000. * (c_end - c_start) / CLOCKS_PER_SEC;
     if(prnt) {
-        //print_tsasp(t,ag);//TRM
         en.print(ag.s);
         en.save_trajectory();
     }

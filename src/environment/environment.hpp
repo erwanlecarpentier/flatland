@@ -26,11 +26,7 @@ public:
      * @param {parameters &} p; parameters
      */
     environment(parameters &p) : world(p) {
-        //action_space = p.ACTION_SPACE;//TRM
         p.parse_actions(action_space);
-        for(auto &elt:action_space) {//TRM
-            elt->print();
-        }
         misstep_probability = p.MISSTEP_PROBABILITY;
         state_gaussian_stddev = p.STATE_GAUSSIAN_STDDEV;
     }
@@ -74,16 +70,11 @@ public:
      * @param {const state &} s; given state
      * @return Return space of the available actions at s.
      */
-    std::vector<std::shared_ptr<action>> get_action_space(state s) { //(const state &s) { //TRM
+    std::vector<std::shared_ptr<action>> get_action_space(const state &s) {
         std::vector<std::shared_ptr<action>> resulting_action_space;
-        //s.print();//TRM
         for(auto &a : action_space) {
             state s_p = s;
             a->apply(s_p);
-            //std::cout << "       ";//TRM
-            //a->print();//TRM
-            //std::cout << "      -> ";//TRM
-            //s_p.print();//TRM
             if(is_state_valid(s_p)) {
                 resulting_action_space.push_back(a);
             }
@@ -111,15 +102,13 @@ public:
             a = rand_element(get_action_space(s));
         }
         s_p = s;
-        //s_p.x += a.dx; // action application //TRM
-        //s_p.y += a.dy; //TRM
         a->apply(s_p);
         if(!is_state_valid(s_p)) { // misstep led to a wall, state is unchanged
             s_p = s;
         }
         for(unsigned i=0; i<50; ++i) { // 50 trials for gaussian application - no gaussian if no result
             state _s_p = s_p;
-            _s_p.x += normal_double(0.,state_gaussian_stddev); // TODO: can be random cartesian action
+            _s_p.x += normal_double(0.,state_gaussian_stddev);
             _s_p.y += normal_double(0.,state_gaussian_stddev);
             if(is_state_valid(_s_p)) {
                 s_p = _s_p;

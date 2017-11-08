@@ -33,7 +33,6 @@ public:
     {
         p.parse_state(s);
         s_p = s;
-        //a = action(); // null cartesian action//TRM
     }
 
     /**
