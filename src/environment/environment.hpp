@@ -81,7 +81,7 @@ public:
         }
         if(resulting_action_space.size() == 0) { // Crash against a wall
             std::shared_ptr<action> a(new navigation_action());
-            a->set_to_default();
+            a->set_to_default(); // default action is null action
             resulting_action_space.emplace_back(a);
             is_crashed = true;
         }
@@ -138,10 +138,16 @@ public:
     {
         (void) s;
         (void) a;
-        if(world_value_at(s_p) == 1) {
-            return 1.;
-        } else {
-            return 0.;
+        switch(world_value_at(s_p)) {
+            case 1: { // Goal reached
+                return 1.;
+            }
+            case -1: { // Wall reached
+                return -1.;
+            }
+            default: {
+                return 0.;
+            }
         }
     }
 
