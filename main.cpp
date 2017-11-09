@@ -50,17 +50,20 @@ void single_run(
         en.transition(ag.s,ag.a,ag.reward,ag.s_p);
         ag.process_reward();
         if(prnt) {
-            std::cout << t << std::endl;
+            std::cout << t << " ";
+            ag.s.print();
             en.print(ag.s);
         }
         ag.step();
-        if(en.is_terminal(ag.s)) { // terminal state reached
+        if(en.is_terminal(ag.s) || en.is_crashed) { // terminal state reached
             break;
         }
     }
     std::clock_t c_end = std::clock();
     double time_elapsed_ms = 1000. * (c_end - c_start) / CLOCKS_PER_SEC;
     if(prnt) {
+        std::cout << t << " ";
+        ag.s.print();
         en.print(ag.s);
         en.save_trajectory();
     }

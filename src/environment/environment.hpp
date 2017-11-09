@@ -13,6 +13,7 @@
 class environment {
 public:
     bool is_continuous; ///< Is state space continuous
+    bool is_crashed; ///< Is the agent crashed
     world w; ///< world
     double misstep_probability; ///< Probability of misstep
     double state_gaussian_stddev; ///< Standard deviation of the Gaussian applied on the position
@@ -24,7 +25,7 @@ public:
      * Default constructor initialising the parameters via a 'parameters' object.
      * @param {parameters &} p; parameters
      */
-    environment(parameters &p) : w(p) {
+    environment(parameters &p, bool _is_crashed = false) : is_crashed(_is_crashed), w(p) {
         p.parse_actions(action_space);
         misstep_probability = p.MISSTEP_PROBABILITY;
         state_gaussian_stddev = p.STATE_GAUSSIAN_STDDEV;
@@ -78,7 +79,12 @@ public:
                 resulting_action_space.push_back(a);
             }
         }
-        assert(resulting_action_space.size() != 0);
+        if(resulting_action_space.size() == 0) { // Crash against a wall
+            std::shared_ptr<action> a(new navigation_action());
+            a->set_to_default();
+            resulting_action_space.emplace_back(a);
+            is_crashed = true;
+        }
         return resulting_action_space;
     }
 
