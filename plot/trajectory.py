@@ -60,11 +60,15 @@ ax.add_patch(g)
 
 # Plot goal --------------------------------------------------------------------
 
-xg = world_config.xgoal;
-yg = world_config.ygoal;
-rg = world_config.rgoal;
-g = mpatches.Circle((xg,yg),rg,edgecolor='none',facecolor=GREEN)
-ax.add_patch(g)
+for i in range(world_config.nb_goals):
+	n_r = "rgoal" + str(i);
+	n_x = "xgoal" + str(i);
+	n_y = "ygoal" + str(i);
+	radius = world_config[n_r];
+	cx = world_config[n_x];
+	cy = world_config[n_y];
+	c = mpatches.Circle((cx,cy),radius,edgecolor='none',facecolor=GREEN)
+	ax.add_patch(c)
 
 # Plot trajectory --------------------------------------------------------------
 
