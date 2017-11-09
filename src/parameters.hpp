@@ -196,15 +196,14 @@ public:
      * Build the continuous world attributes given as input.
      * @param {double &} xsize;
      * @param {double &} ysize;
-     * @param {std::vector<std::unique_ptr<shape>> &} elements;
-     * @param {boost::ptr_vector<shape> &} elements;
-     * @param {circle &} goal;
+     * @param {boost::ptr_vector<shape> &} walls;
+     * @param {std::vector<circle> &} goals;
      */
     void parse_world(
         double &xsize,
         double &ysize,
         boost::ptr_vector<shape> &elements,
-        circle &goal)
+        std::vector<circle> &goals)
     {
         libconfig::Config cworld_cfg;
         try {
@@ -213,20 +212,18 @@ public:
         catch(const libconfig::ParseException &e) {
             display_libconfig_parse_exception(e);
         }
+        unsigned nbr = 0, nbc = 0, nbg = 0;
         if(cworld_cfg.lookupValue("xsize",xsize)
         && cworld_cfg.lookupValue("ysize",ysize)
-        && cworld_cfg.lookupValue("xgoal",std::get<0>(goal.center))
-        && cworld_cfg.lookupValue("ygoal",std::get<1>(goal.center))
-        && cworld_cfg.lookupValue("rgoal",goal.radius)) {
-            /* Nothing to do */
+        && cworld_cfg.lookupValue("nb_rectangles",nbr)
+        && cworld_cfg.lookupValue("nb_circles",nbc)
+        && cworld_cfg.lookupValue("nb_goals",nbg)) {
+            elements.reserve(nbr + nbc);
+            goals.reserve(nbg);
         } else {
             throw wrong_world_configuration_path();
         }
-        unsigned nbr = 0, nbc = 0;
-        assert(cworld_cfg.lookupValue("nb_rectangles",nbr));
-        assert(cworld_cfg.lookupValue("nb_circles",nbc));
-        elements.reserve(nbr + nbc);
-        for(unsigned i=0; i<nbr; ++i) { // parse rectangles
+        for(unsigned i=0; i<nbr; ++i) { // parse rectangle walls
             std::string c0name = "cr" + std::to_string(i) + "x";
             std::string c1name = "cr" + std::to_string(i) + "y";
             std::string d0name = "dr" + std::to_string(i) + "x";
@@ -241,7 +238,7 @@ public:
                 throw wrong_world_configuration_path();
             }
         }
-        for(unsigned i=0; i<nbc; ++i) { // parse circles
+        for(unsigned i=0; i<nbc; ++i) { // parse circle walls
             std::string c0name = "cc" + std::to_string(i) + "x";
             std::string c1name = "cc" + std::to_string(i) + "y";
             std::string rdname = "r"  + std::to_string(i);
@@ -250,6 +247,19 @@ public:
             && cworld_cfg.lookupValue(c1name,c1)
             && cworld_cfg.lookupValue(rdname,rd)) {
                 elements.push_back(new circle(std::tuple<double,double>{c0,c1},rd));
+            } else {
+                throw wrong_world_configuration_path();
+            }
+        }
+        for(unsigned i=0; i<nbg; ++i) { // parse goals
+            std::string xname = "xgoal" + std::to_string(i);
+            std::string yname = "ygoal" + std::to_string(i);
+            std::string rname = "rgoal"  + std::to_string(i);
+            double x = 0., y = 0., r = 0.;
+            if(cworld_cfg.lookupValue(xname,x)
+            && cworld_cfg.lookupValue(yname,y)
+            && cworld_cfg.lookupValue(rname,r)) {
+                goals.emplace_back(circle(std::tuple<double,double>{x,y},r));
             } else {
                 throw wrong_world_configuration_path();
             }
