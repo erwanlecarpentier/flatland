@@ -29,26 +29,26 @@ ax.set_ylim([0,world_config.ysize])
 
 # Parse rectangles
 for i in range(world_config.nb_rectangles):
-	n_wdth = "dr" + str(i) + "x";
-	n_hght = "dr" + str(i) + "y";
-	n_cx   = "cr" + str(i) + "x";
-	n_cy   = "cr" + str(i) + "y";
-	wdth = world_config[n_wdth];
-	hght = world_config[n_hght];
-	cx = world_config[n_cx] - wdth / 2;
-	cy = world_config[n_cy] - hght / 2;
-	r = mpatches.Rectangle((cx,cy),wdth,hght,edgecolor='none',facecolor=GREY)
+	xn = "x_rect" + str(i);
+	yn = "y_rect" + str(i);
+	wn = "w_rect" + str(i);
+	hn = "h_rect" + str(i);
+	w = world_config[wn];
+	h = world_config[hn];
+	x = world_config[xn] - w / 2;
+	y = world_config[yn] - h / 2;
+	r = mpatches.Rectangle((x,y),w,h,edgecolor='none',facecolor=GREY)
 	ax.add_patch(r)
 
 # Parse circles
 for i in range(world_config.nb_circles):
-	n_radius = "r" + str(i);
-	n_cx   = "cc" + str(i) + "x";
-	n_cy   = "cc" + str(i) + "y";
-	radius = world_config[n_radius];
-	cx = world_config[n_cx];
-	cy = world_config[n_cy];
-	c = mpatches.Circle((cx,cy),radius,edgecolor='none',facecolor=GREY)
+	xn = "x_circ" + str(i);
+	yn = "y_circ" + str(i);
+	rn = "r_circ" + str(i);
+	x = world_config[xn];
+	y = world_config[yn];
+	r = world_config[rn];
+	c = mpatches.Circle((x,y),r,edgecolor='none',facecolor=GREY)
 	ax.add_patch(c)
 
 # Plot start -------------------------------------------------------------------
@@ -61,13 +61,13 @@ ax.add_patch(g)
 # Plot goal --------------------------------------------------------------------
 
 for i in range(world_config.nb_goals):
-	n_r = "rgoal" + str(i);
-	n_x = "xgoal" + str(i);
-	n_y = "ygoal" + str(i);
-	radius = world_config[n_r];
-	cx = world_config[n_x];
-	cy = world_config[n_y];
-	c = mpatches.Circle((cx,cy),radius,edgecolor='none',facecolor=GREEN)
+	xn = "x_goal" + str(i);
+	yn = "y_goal" + str(i);
+	rn = "r_goal" + str(i);
+	x = world_config[xn];
+	y = world_config[yn];
+	r = world_config[rn];
+	c = mpatches.Circle((x,y),r,edgecolor='none',facecolor=GREEN)
 	ax.add_patch(c)
 
 # Plot trajectory --------------------------------------------------------------

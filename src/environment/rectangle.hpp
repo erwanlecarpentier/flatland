@@ -6,24 +6,24 @@
 class rectangle : public shape {
 private:
     shape * do_clone() const override final {
-        return new rectangle(center,xsize,ysize);
+        return new rectangle(center,width,height);
     }
 
 public:
     std::tuple<double,double> center;
-    double xsize;
-    double ysize;
+    double width;
+    double height;
 
     /**
      * @brief Constructor
      */
     rectangle(
         std::tuple<double,double> _center,
-        double _xsize,
-        double _ysize) :
+        double _width,
+        double _height) :
         center(_center),
-        xsize(_xsize),
-        ysize(_ysize)
+        width(_width),
+        height(_height)
     {/* Nothing to do */}
 
     /**
@@ -37,10 +37,10 @@ public:
     bool is_within(double x, double y) override {
         return is_less_than(
             fabs(x - std::get<0>(center)),
-            xsize / 2.
+            width / 2.
         ) && is_less_than(
             fabs(y - std::get<1>(center)),
-            ysize / 2.
+            height / 2.
         );
     }
 };
