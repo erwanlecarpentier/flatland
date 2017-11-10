@@ -10,7 +10,7 @@ public:
     double y; ///< y coordinate
     double v; ///< velocity
     double theta; ///< angle with x axis (rad)
-    unsigned goal_reached_counter; ///< Goal reached counter
+    unsigned waypoints_reached_counter; ///< Waypoints reached counter
 
     /**
      * @brief Default constructor
@@ -24,7 +24,7 @@ public:
         y(_y),
         v(_v),
         theta(_theta)
-    { /* Nothing to do */ }
+    { }
 
     /**
      * @brief Set to default

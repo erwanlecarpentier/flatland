@@ -25,7 +25,7 @@ public:
         vmax(_vmax),
         vmin(_vmin),
         dtheta(_dtheta)
-    {/* Nothing to do */}
+    { }
 
     /**
      * @brief Apply action

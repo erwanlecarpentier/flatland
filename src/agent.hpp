@@ -35,6 +35,10 @@ public:
         s_p = s;
     }
 
+    void waypoint_reached() {
+        s.waypoints_reached_counter += policy.remove_waypoints_at(s);
+    }
+
     /**
      * @brief Apply policy
      *

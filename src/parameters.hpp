@@ -46,8 +46,9 @@ public:
      * The parameters are set to the default values defined in this constructor.
      * @deprecated
      */
-    parameters()
-    {/* Set some default parameters in this constructor */}
+    parameters() {
+        /* Set some default parameters in this constructor */
+    }
 
     /**
      * @brief Display libconfig ParseException
