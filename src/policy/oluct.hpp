@@ -86,6 +86,22 @@ public:
     }
 
     /**
+     * @brief Distance to state distribution test
+     *
+     * Compute the distances between the current state and every states of the sampled state
+     * distribution.
+     * Reject the tree if the minimum distance is greater than a selected threshold.
+     * The used distance is the Mahalanobis distance (edit 10/11/2017).
+     * @param {const state &} s; the current state of the agent
+     * @return Return true if the sub-tree is kept.
+     */
+    bool distance_to_state_distribution_test(const state &s) {
+        node * v_ptr = pl.root_node.get_child_at(pl.argmax_score(pl.root_node));
+        std::vector<state> samples = v_ptr->get_states();
+        //TODO
+    }
+
+    /**
      * @brief Switch on decision criterion
      *
      * Select the decision criterion according to the chosen algorithm.
@@ -101,8 +117,11 @@ public:
             case 0: { // Plain with action validity test
                 return action_validity_test(s);
             }
-            case 1: { // State distribution variance test
+            case 1: { // State distribution vmr test
                 return state_distribution_vmr_test();
+            }
+            case 2: { // Distance to state distribution test
+                return distance_to_state_distribution_test(s);
             }
         }
     }
