@@ -22,6 +22,20 @@ public:
     }
 
     /**
+     * @brief Remove waypoint
+     *
+     * Remove the waypoints of the environment model at the position of s.
+     * Nothing to do for random policy
+     * @param {const state &} s; state
+     * @return Return the number of reached waypoints.
+     */
+    unsigned remove_waypoints_at(const state &s) {
+        /* Nothing to do for random policy */
+        (void) s;
+        return 0;
+    }
+
+    /**
      * @brief Policy operator
      *
      * Policy operator for the undertaken action at given state.

@@ -45,6 +45,18 @@ public:
     }
 
     /**
+     * @brief Remove waypoint
+     *
+     * Remove the waypoints of the environment model at the position of s.
+     * OLUCT simply forwards this instruction to its underlying UCT policy.
+     * @param {const state &} s; state
+     * @return Return the number of reached waypoints.
+     */
+    unsigned remove_waypoints_at(const state &s) {
+        return pl.remove_waypoints_at(s);
+    }
+
+    /**
      * @brief Policy operator
      *
      * Policy operator for the undertaken action at given state.

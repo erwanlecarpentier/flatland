@@ -263,6 +263,18 @@ public:
     }
 
     /**
+     * @brief Remove waypoint
+     *
+     * Remove the waypoints of the environment model at the position of s.
+     * UCT has to do it on its own because it has its own independent model.
+     * @param {const state &} s; state
+     * @return Return the number of reached waypoints.
+     */
+    unsigned remove_waypoints_at(const state &s) {
+        return model.remove_waypoints_at(s);
+    }
+
+    /**
      * @brief Policy operator
      *
      * Policy operator for the undertaken action at given state.

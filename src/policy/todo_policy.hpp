@@ -22,6 +22,17 @@ public:
     }
 
     /**
+     * @brief Remove waypoint
+     *
+     * Remove the waypoints of the environment model at the position of s.
+     * @param {const state &} s; state
+     * @return Return the number of reached waypoints.
+     */
+    unsigned remove_waypoints_at(const state &s) {
+        /* TODO: define the process triggered while reaching a waypoint */
+    }
+
+    /**
      * @brief Policy operator
      *
      * Policy operator for the undertaken action at given state.
