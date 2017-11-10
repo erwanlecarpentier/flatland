@@ -13,7 +13,6 @@
 class environment {
 public:
     bool is_continuous; ///< Is state space continuous
-    bool is_crashed; ///< Is the agent crashed
     world w; ///< world
     double misstep_probability; ///< Probability of misstep
     double state_gaussian_stddev; ///< Standard deviation of the Gaussian applied on the position
@@ -25,7 +24,7 @@ public:
      * Default constructor initialising the parameters via a 'parameters' object.
      * @param {parameters &} p; parameters
      */
-    environment(parameters &p, bool _is_crashed = false) : is_crashed(_is_crashed), w(p) {
+    environment(parameters &p) : w(p) {
         p.parse_actions(action_space);
         misstep_probability = p.MISSTEP_PROBABILITY;
         state_gaussian_stddev = p.STATE_GAUSSIAN_STDDEV;
@@ -64,6 +63,25 @@ public:
     }
 
     /**
+     * @brief Will crash
+     *
+     * Test if the agent will crash at the given state.
+     * This means that at this state, every actions lead to crash.
+     * @param {const state &} s; given state
+     * @return Return true if the agent has crashed.
+     */
+    bool will_crash(const state &s) {
+        for(auto &a : action_space) {
+            state s_p = s;
+            a->apply(s_p);
+            if(is_state_valid(s_p)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * @brief Get action space
      *
      * Get the action space at the given state.
@@ -83,7 +101,6 @@ public:
             std::shared_ptr<action> a(new navigation_action());
             a->set_to_default(); // default action is null action
             resulting_action_space.emplace_back(a);
-            is_crashed = true;
         }
         return resulting_action_space;
     }
@@ -136,9 +153,9 @@ public:
         const std::shared_ptr<action> &a,
         const state &s_p)
     {
-        (void) s;
         (void) a;
-        switch(world_value_at(s_p)) {
+        (void) s_p;
+        switch(world_value_at(s)) {
             case 1: { // Goal reached
                 return 1.;
             }
@@ -179,8 +196,8 @@ public:
      */
     bool is_terminal(const state &s) {
         int world_value = world_value_at(s);
-        if(world_value == 1 /* goal reached */
-        || world_value == -1 /* policy deliberately reached a wall (no other options) */) {
+        if(world_value == +1 /* Goal */
+        || world_value == -1 /* Wall */) {
             return true;
         } else {
             return false;

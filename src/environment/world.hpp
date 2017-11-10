@@ -34,6 +34,23 @@ public:
     }
 
     /**
+     * @brief Remove elements
+     *
+     * Remove the given elements of the input vector.
+     * @param {std::vector<T> &} v; input vector
+     * @param {std::vector<unsigned> &} indices; indices of the vectors to be removed
+     */
+    template <class T>
+    void remove_elements(std::vector<T> &v, std::vector<unsigned> &indices) {
+        for (unsigned i=0; i<indices.size(); ++i) {
+            v.erase(v.begin() + indices[i]);
+            for(unsigned j=i+1; j<indices.size(); ++j) {
+                --indices[j];
+            }
+        }
+    }
+
+    /**
      * @brief World value
      *
      * Evaluate the world at the given state.
@@ -52,10 +69,15 @@ public:
                 return -1;
             }
         }
-        for(auto &g : goals) { // Goal checking
-            if(g.is_within(s.x, s.y)) {
-                return +1;
+        std::vector<unsigned> matching_goals_indices;
+        for(unsigned i=0; i<goals.size(); ++i) { // Goal checking
+            if(goals[i].is_within(s.x, s.y)) {
+                matching_goals_indices.push_back(i);
             }
+        }
+        if(matching_goals_indices.size() > 0) { // Goal(s) reached
+            //remove_elements(goals,matching_goals_indices);
+            return +1;
         }
         return 0;
     }

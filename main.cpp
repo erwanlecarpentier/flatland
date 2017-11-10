@@ -55,7 +55,7 @@ void single_run(
             en.print(ag.s);
         }
         ag.step();
-        if(en.is_terminal(ag.s) || en.is_crashed) { // terminal state reached
+        if(en.is_terminal(ag.s) || en.will_crash(ag.s)) { // terminal state reached
             break;
         }
     }

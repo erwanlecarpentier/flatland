@@ -13,7 +13,7 @@ public:
     /**
      * @brief Constructor
      *
-     * Constructu using the given parameters
+     * Construct using the given parameters
      * @param {const parameters &} p; parameters
      * @param {environment *} en; pointer to the environment, used for action space reduction
      */

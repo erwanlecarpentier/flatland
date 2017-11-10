@@ -49,7 +49,7 @@ public:
      * @brief Terminal node test
      *
      * A node is considered terminal if all of its states are terminal states.
-     * However another state will still be sampled in the tree policy method.
+     * Still another state will be sampled in the tree policy method.
      * If the node is root, only the labelling state is tested.
      * @param {node &} v; tested node
      * @return Return 'true' if the node is considered terminal.
@@ -167,6 +167,7 @@ public:
      * Compute the total return by running an episode with the default policy.
      * The simulation starts from the last sampled state of the input node.
      * @param {node *} ptr; pointer to the input node
+     * @return Return the sampled total return.
      */
     double default_policy(node * ptr) {
         state s = ptr->get_last_sampled_state();

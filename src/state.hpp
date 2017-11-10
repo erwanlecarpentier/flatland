@@ -10,6 +10,7 @@ public:
     double y; ///< y coordinate
     double v; ///< velocity
     double theta; ///< angle with x axis (rad)
+    unsigned goal_reached_counter; ///< Goal reached counter
 
     /**
      * @brief Default constructor
@@ -33,7 +34,7 @@ public:
     void set_to_default() {
         x = 0.;
         y = 0.;
-        v = 1.;
+        v = 0.;
         theta = 0.;
     }
 
