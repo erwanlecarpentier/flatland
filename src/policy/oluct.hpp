@@ -39,15 +39,15 @@ public:
     }
 
     /**
-     * @brief State distribution variance test
+     * @brief State distribution VMR test
      *
-     * Test whether the variance of the state distribution at the node reached by the
-     * recommended action is small enough.
+     * Test whether the Variance-Mean-Ratio (VMR) of the state distribution at the node
+     * reached by the recommended action is small enough.
      * Only the diagonal of the covariance matrix is tested.
-     * For the variances to be comparable, the test is based on the Variance-Mean-Ratio (VMR).
+     * The test is based on the VMR for the variances to be comparable.
      * @return Return true if the test does not discard the tree.
      */
-    bool state_distribution_variance_test() {
+    bool state_distribution_vmr_test() {
         node * v_ptr = pl.root_node.get_child_at(pl.argmax_score(pl.root_node));
         std::vector<state> samples = v_ptr->get_states();
         double one_over_n = 1. / ((double) samples.size());
@@ -80,13 +80,6 @@ public:
         vmr_v *= one_over_n;
         vmr_theta *= one_over_n;
         double m_vmr = (vmr_x + vmr_y + vmr_v + vmr_theta) / 4.;
-
-        std::cout << "    " << vmr_x << std::endl;
-        std::cout << "    " << vmr_y << std::endl;
-        std::cout << "    " << vmr_v << std::endl;
-        std::cout << "    " << vmr_theta << std::endl;
-        std::cout << "    ------->  " << m_vmr << std::endl;
-
         return is_less_than(m_vmr,.02);
     }
 
@@ -107,7 +100,7 @@ public:
                 return action_validity_test(s);
             }
             case 1: { // State distribution variance test
-                return state_distribution_variance_test();
+                return state_distribution_vmr_test();
             }
         }
     }
