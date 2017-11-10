@@ -23,7 +23,7 @@ public:
         dy(_dy)
     {
         _v = sqrt(dx * dx + dy * dy);
-        _theta = atan(dy / dy);
+        _theta = atan(dy / dx);
     }
 
     /**
