@@ -69,6 +69,12 @@ public:
                 return -1;
             }
         }
+        for(auto &g : goals) {
+            if(g.is_within(s.x,s.y)) {
+                return +1;
+            }
+        }
+        /*
         std::vector<unsigned> matching_goals_indices;
         for(unsigned i=0; i<goals.size(); ++i) { // Goal checking
             if(goals[i].is_within(s.x, s.y)) {
@@ -79,6 +85,7 @@ public:
             //remove_elements(goals,matching_goals_indices);
             return +1;
         }
+        */
         return 0;
     }
 
