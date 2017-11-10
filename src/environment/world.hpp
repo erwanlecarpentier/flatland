@@ -20,6 +20,7 @@ public:
     std::vector<circle> goals; ///< Goals (waypoints) of the environment
     std::vector<std::vector<double>> trajectory; ///< Matrix of the trajectory for backup
     std::string trajectory_output_path; ///< Output path for the trajectory
+    unsigned initial_number_of_goals; ///< Initial number of goals
 
     /**
      * @brief Constructor
@@ -30,6 +31,7 @@ public:
     world(parameters &p){
         trajectory_output_path = p.TRAJECTORY_OUTPUT_PATH;
         p.parse_world(xsize,ysize,walls,goals);
+        initial_number_of_goals = goals.size();
         initialize_backup(std::vector<std::string>{"x","y"},trajectory_output_path,",");
     }
 
@@ -48,6 +50,19 @@ public:
                 --indices[j];
             }
         }
+    }
+
+    unsigned remove_waypoints_at(const state &s) {
+        std::vector<unsigned> matching_goals_indices;
+        unsigned counter = 0;
+        for(unsigned i=0; i<goals.size(); ++i) { // Goal checking
+            if(goals[i].is_within(s.x, s.y)) {
+                ++counter;
+                matching_goals_indices.push_back(i);
+            }
+        }
+        remove_elements(goals,matching_goals_indices);
+        return counter;
     }
 
     /**
@@ -74,18 +89,6 @@ public:
                 return +1;
             }
         }
-        /*
-        std::vector<unsigned> matching_goals_indices;
-        for(unsigned i=0; i<goals.size(); ++i) { // Goal checking
-            if(goals[i].is_within(s.x, s.y)) {
-                matching_goals_indices.push_back(i);
-            }
-        }
-        if(matching_goals_indices.size() > 0) { // Goal(s) reached
-            //remove_elements(goals,matching_goals_indices);
-            return +1;
-        }
-        */
         return 0;
     }
 

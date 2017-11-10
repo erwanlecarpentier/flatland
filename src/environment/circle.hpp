@@ -23,7 +23,7 @@ public:
         double _radius = 0.) :
         center(_center),
         radius(_radius)
-    {/* Nothing to do */}
+    { }
 
     /**
      * @brief Test if position is within the shape

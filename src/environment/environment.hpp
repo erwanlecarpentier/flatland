@@ -187,6 +187,25 @@ public:
         r = reward_function(s,a,s_p);
     }
 
+    bool is_waypoint_reached(const state &s) {
+        if(world_value_at(s) == +1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @brief Remove waypoint
+     *
+     * Remove the waypoints of the environment at the position of s
+     * @param {const state &} s; state
+     * @return Return the number of reached waypoints
+     */
+    unsigned remove_waypoints_at(const state &s) {
+        return w.remove_waypoints_at(s);
+    }
+
     /**
      * @brief Is terminal
      *
@@ -196,7 +215,7 @@ public:
      */
     bool is_terminal(const state &s) {
         int world_value = world_value_at(s);
-        if(world_value == +1 /* Goal */
+        if(w.initial_number_of_goals == s.waypoints_reached_counter /* Every goal */
         || world_value == -1 /* Wall */) {
             return true;
         } else {

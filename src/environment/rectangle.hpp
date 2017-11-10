@@ -24,7 +24,7 @@ public:
         center(_center),
         width(_width),
         height(_height)
-    {/* Nothing to do */}
+    { }
 
     /**
      * @brief Test if position is within the shape
