@@ -165,6 +165,11 @@ public :
         local_action_space = as;
     }
 
+    /** @brief Shuffle the action space */
+    void shuffle_action_space() {
+        shuffle(local_action_space);
+    }
+
     /** @brief Get a copy of the actions vector */
     std::vector<std::shared_ptr<action>> get_action_space() const {
         return local_action_space;

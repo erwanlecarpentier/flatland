@@ -6,6 +6,8 @@ EXEC=exe
 
 all : clean compile run
 
+fast : run trajectory
+
 clean :
 	rm -f ${EXEC}
 

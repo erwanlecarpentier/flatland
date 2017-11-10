@@ -1,7 +1,7 @@
 #ifndef UTILS_HPP_
 #define UTILS_HPP_
 
-constexpr double COMPARISON_THRESHOLD = 1e-6;
+constexpr double COMPARISON_THRESHOLD = 1e-8;
 
 /**
  * @brief Print

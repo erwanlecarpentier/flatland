@@ -59,7 +59,8 @@ void single_run(
             en.remove_waypoints_at(ag.s);
             ag.waypoint_reached();
         }
-        if(en.is_terminal(ag.s) || en.will_crash(ag.s)) { // terminal state reached
+        //if(en.is_terminal(ag.s) || en.will_crash(ag.s)) { // terminal state reached//TRM
+        if(en.is_terminal(ag.s)) { // terminal state reached
             break;
         }
     }

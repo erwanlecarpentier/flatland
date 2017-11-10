@@ -78,5 +78,13 @@ x = data["x"];
 y = data["y"];
 ax.plot(x,y,color=LIGHTBLUE);
 
+# Plot default trajectory ------------------------------------------------------
+""" #TRM
+traj_path = "data/default_trajectory.csv";
+data = pd.read_csv(traj_path,sep = ',');
+x = data["x"];
+y = data["y"];
+ax.plot(x,y,color=RED,ls='none',marker='.');
+"""
 plt.show()
 

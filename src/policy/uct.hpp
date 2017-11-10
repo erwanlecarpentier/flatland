@@ -171,6 +171,7 @@ public:
      */
     double default_policy(node * ptr) {
         state s = ptr->get_last_sampled_state();
+        //std::cout << "--> DEFAULT POLICY, theta = " << s.theta/0.01745329251 << std::endl;//TRM
         if(is_node_terminal(*ptr)) {
             std::shared_ptr<action> a(new navigation_action()); // default action
             return model.reward_function(s,a,s);
@@ -178,9 +179,13 @@ public:
         double total_return = 0.;
         std::shared_ptr<action> a = dflt_policy(s);
         for(unsigned t=0; t<horizon; ++t) {
+            //std::cout << "s: " << s.x << " " << s.y << "   ";//TRM
             state s_p;
             generative_model(s,a,s_p);
+            //save_vector(std::vector<double>{s.x,s.y},"./data/default_trajectory.csv",",",std::ofstream::app);//TRM
+            //std::cout << "sp: " << s_p.x << " " << s_p.y << "   ";//TRM
             total_return += pow(discount_factor,(double)t) * model.reward_function(s,a,s_p);
+            //std::cout << "r: " << model.reward_function(s,a,s_p) << std::endl;//TRM
             if(model.is_terminal(s)) { // Termination criterion
                 break;
             }
@@ -213,6 +218,20 @@ public:
         }
     }
 
+    void print_tree_base() { //TRM
+        std::cout << std::endl;
+        std::cout << "nbch: " << root_node.get_nb_children() << std::endl;
+        std::cout << "V: ";
+        for(auto &ch : root_node.children) {
+            std::cout << ch.get_value() << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "A:\n";
+        for(auto &ch : root_node.children) {
+            ch.get_incoming_action()->print();
+        }
+    }
+
     /**
      * @brief Build UCT tree
      *
@@ -225,6 +244,7 @@ public:
         root_node.set_as_root();
         root_node.set_state(s);
         root_node.set_action_space(model.get_action_space(s));
+        root_node.shuffle_action_space();
         expd_counter = 0;
         for(unsigned i=0; i<budget; ++i) {
             node *ptr = tree_policy(root_node);
@@ -283,6 +303,7 @@ public:
      */
 	std::shared_ptr<action> operator()(const state &s) {
         build_uct_tree(s);
+        print_tree_base();//TRM
         return get_recommended_action(root_node);
 	}
 

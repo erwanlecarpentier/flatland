@@ -17,7 +17,7 @@ public:
      * @brief Default constructor
      */
     navigation_action(
-        double _fv = 0.,
+        double _fv = 1.,
         double _vmax = .2,
         double _vmin = 0.,
         double _dtheta = 0.) :
@@ -34,6 +34,7 @@ public:
      * @param {state &} s; modified state
      */
     void apply(state &s) override {
+        //std::cout << "v:" << s.v << " th:" << s.theta << " ";//TRM
         s.v *= fv;
         if(is_greater_than(s.v,vmax)) { // above maximum velocity
             s.v = vmax;

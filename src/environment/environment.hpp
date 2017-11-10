@@ -97,10 +97,8 @@ public:
                 resulting_action_space.push_back(a);
             }
         }
-        if(resulting_action_space.size() == 0) { // Crash against a wall
-            std::shared_ptr<action> a(new navigation_action());
-            a->set_to_default(); // default action is null action
-            resulting_action_space.emplace_back(a);
+        if(resulting_action_space.size() == 0) { // Every action leads to a crash
+            resulting_action_space.push_back(rand_element(action_space)); // Take a random action
         }
         return resulting_action_space;
     }
@@ -120,15 +118,17 @@ public:
         std::shared_ptr<action> a,
         state &s_p)
     {
+        s_p = s;
         if(is_less_than(uniform_double(0.,1.),misstep_probability)) { // misstep
             a = rand_element(get_action_space(s));
+            a->apply(s_p);
+            if(!is_state_valid(s_p)) { // misstep led to a wall, state is unchanged
+                s_p = s;
+            }
+        } else {
+            a->apply(s_p);
         }
-        s_p = s;
-        a->apply(s_p);
-        if(!is_state_valid(s_p)) { // misstep led to a wall, state is unchanged
-            s_p = s;
-        }
-        for(unsigned i=0; i<50; ++i) { // 50 trials for gaussian application - no gaussian if no result
+        for(unsigned i=0; i<50; ++i) { // 50 trials for gaussian application - no gaussian if no valid result
             state _s_p = s_p;
             _s_p.x += normal_double(0.,state_gaussian_stddev);
             _s_p.y += normal_double(0.,state_gaussian_stddev);
@@ -160,6 +160,7 @@ public:
                 return 1.;
             }
             case -1: { // Wall reached
+                //std::cout << "MAYBE GOING CHAZAM" << std::endl;//TRM
                 return -1.;
             }
             default: {

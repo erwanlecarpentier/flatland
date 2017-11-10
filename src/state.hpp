@@ -46,7 +46,7 @@ public:
     void print() {
         std::cout << "State, ";
         std::cout << "x: " << x << " y: " << y;
-        std::cout << " v: " << v << " theta: " << theta << std::endl;
+        std::cout << " v: " << v << " theta: " << theta/0.01745329251 << " (deg)" << std::endl;
     }
 };
 
