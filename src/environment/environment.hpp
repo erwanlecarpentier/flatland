@@ -63,6 +63,21 @@ public:
     }
 
     /**
+     * @brief Is action valid
+     *
+     * Test if the action is valid at the given state.
+     * The action is considered valid if it does not lead to a wall.
+     * @param {const state &} s; given state
+     * @param {const std::shared_ptr<action>} s; tested action
+     * @return Return true if the action is valid.
+     */
+    bool is_action_valid(const state &s, const std::shared_ptr<action> &a) {
+        state s_p = s;
+        a->apply(s_p);
+        return is_state_valid(s_p);
+    }
+
+    /**
      * @brief Will crash
      *
      * Test if the agent will crash at the given state.
@@ -72,9 +87,7 @@ public:
      */
     bool will_crash(const state &s) {
         for(auto &a : action_space) {
-            state s_p = s;
-            a->apply(s_p);
-            if(is_state_valid(s_p)) {
+            if(is_action_valid(s,a)) {
                 return false;
             }
         }
@@ -91,9 +104,7 @@ public:
     std::vector<std::shared_ptr<action>> get_action_space(const state &s) {
         std::vector<std::shared_ptr<action>> resulting_action_space;
         for(auto &a : action_space) {
-            state s_p = s;
-            a->apply(s_p);
-            if(is_state_valid(s_p)) {
+            if(is_action_valid(s,a)) {
                 resulting_action_space.push_back(a);
             }
         }
