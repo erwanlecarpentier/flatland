@@ -34,7 +34,6 @@ public:
      * @param {state &} s; modified state
      */
     void apply(state &s) override {
-        //std::cout << "v:" << s.v << " th:" << s.theta << " ";//TRM
         s.v *= fv;
         if(is_greater_than(s.v,vmax)) { // above maximum velocity
             s.v = vmax;

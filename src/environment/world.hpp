@@ -33,7 +33,6 @@ public:
         p.parse_world(xsize,ysize,walls,goals);
         initial_number_of_goals = goals.size();
         initialize_backup(std::vector<std::string>{"x","y"},trajectory_output_path,",");
-        //initialize_backup(std::vector<std::string>{"x","y"},"./data/default_trajectory.csv",",");//TRM
     }
 
     /**

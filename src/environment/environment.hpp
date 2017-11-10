@@ -160,7 +160,6 @@ public:
                 return 1.;
             }
             case -1: { // Wall reached
-                //std::cout << "MAYBE GOING CHAZAM" << std::endl;//TRM
                 return -1.;
             }
             default: {

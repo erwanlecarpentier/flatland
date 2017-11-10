@@ -57,8 +57,8 @@ public:
     void apply(state &s) override {
         s.x += dx;
         s.y += dy;
-        s.v = _v; // not used
-        s.theta = _theta; // not used
+        s.v = _v;
+        s.theta = _theta;
     }
 
     /**

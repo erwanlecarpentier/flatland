@@ -43,10 +43,7 @@ public:
      * @return Return the undertaken action at s.
      */
 	std::shared_ptr<action> operator()(const state &s) {
-        std::shared_ptr<action> act = rand_element(envt->get_action_space(s));//TRM
-        act->print();//TRM
-        return act;//TRM
-        //return rand_element(envt->get_action_space(s));
+        return rand_element(envt->get_action_space(s));
 	}
 
     /**
