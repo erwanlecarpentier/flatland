@@ -13,6 +13,7 @@ public:
     unsigned decision_criterion_selector;
     environment * envt; ///< Pointer to an environment, used for action space reduction
     uct<DFTPLC> pl;
+    double vmr_threshold;
 
     /**
      * @brief Constructor
@@ -25,6 +26,7 @@ public:
         pl(p,en)
     {
         decision_criterion_selector = p.DECISION_CRITERION_SELECTOR;
+        vmr_threshold = p.VMR_THRESHOLD;
     }
 
     /**
@@ -80,7 +82,7 @@ public:
         vmr_v *= one_over_n;
         vmr_theta *= one_over_n;
         double m_vmr = (vmr_x + vmr_y + vmr_v + vmr_theta) / 4.;
-        return is_less_than(m_vmr,.02);
+        return is_less_than(m_vmr,vmr_threshold);
     }
 
     /**

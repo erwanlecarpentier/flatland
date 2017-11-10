@@ -39,6 +39,7 @@ public:
     unsigned DEFAULT_POLICY_HORIZON;
     double UCT_CST;
     double DISCOUNT_FACTOR;
+    double VMR_THRESHOLD;
 
     /**
      * @brief Simulation parameters default constructor
@@ -295,6 +296,7 @@ public:
         && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)
         && cfg.lookupValue("uct_cst",UCT_CST)
         && cfg.lookupValue("discount_factor",DISCOUNT_FACTOR)
+        && cfg.lookupValue("vmr_threshold",VMR_THRESHOLD)
         && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)) {
             /* Nothing to do */
         }
