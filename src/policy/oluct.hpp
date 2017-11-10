@@ -35,11 +35,13 @@ public:
      * @param {const state &} s; the current state of the agent
      * @return Return 'true' if the sub-tree is kept.
      */
-    bool decision_criterion(const state & s) {
-        (void) s;
+    bool decision_criterion(const state &s) {
         switch(decision_criterion_selector) {
             default: { // Plain decision criterion
                 return true;
+            }
+            case 0: { // Plain with action validity check
+                return pl.model.is_action_valid(s,pl.get_recommended_action(pl.root_node));
             }
         }
     }
