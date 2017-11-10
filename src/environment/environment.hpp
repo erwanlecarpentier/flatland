@@ -143,6 +143,8 @@ public:
             state _s_p = s_p;
             _s_p.x += normal_double(0.,state_gaussian_stddev);
             _s_p.y += normal_double(0.,state_gaussian_stddev);
+            _s_p.v += normal_double(0.,state_gaussian_stddev);
+            _s_p.theta += normal_double(0.,state_gaussian_stddev);
             if(is_state_valid(_s_p)) {
                 s_p = _s_p;
                 break;
