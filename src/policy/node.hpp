@@ -108,7 +108,7 @@ public :
 
     /** @brief Get the value of the node */
     double get_value() const {
-        return value;
+        return value / ((double) visits_count);
     }
 
     /** @brief Get the state of the node (root node) */

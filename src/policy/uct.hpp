@@ -303,7 +303,7 @@ public:
      */
 	std::shared_ptr<action> operator()(const state &s) {
         build_uct_tree(s);
-        print_tree_base();//TRM
+        //print_tree_base();//TRM
         return get_recommended_action(root_node);
 	}
 
