@@ -253,6 +253,7 @@ public:
      * @brief Argmax of the score
      *
      * Get the indice of the child achieving the best score.
+     * The score here has to be understood as the value estimate.
      * @param {const node &} v; node of the tree
      * @return Return the indice of the child achieving the best score.
      */

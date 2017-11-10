@@ -123,7 +123,7 @@ public :
         return states.size();
     }
 
-    /** @brief Get a copy of the states vector of the node */
+    /** @brief Get a copy of the sampled states of the node */
     std::vector<state> get_states() const {
         return states;
     }
