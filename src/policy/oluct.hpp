@@ -16,6 +16,7 @@ public:
     uct<DFTPLC> pl; ///< Embedded UCT policy
     double vmr_threshold; ///< VMR threshold for the VMR test
     double distance_threshold;  ///< Threshold for the distance
+    double outcome_variance_threshold;  ///< Threshold for the distance
 
     /**
      * @brief Constructor
@@ -30,6 +31,7 @@ public:
         p.parse_decision_criterion(decision_criteria_selector);
         vmr_threshold = p.VMR_THRESHOLD;
         distance_threshold = p.DISTANCE_THRESHOLD;
+        outcome_variance_threshold = p.OUTCOME_VARIANCE_THRESHOLD;
     }
 
     /**
@@ -111,6 +113,9 @@ public:
         }
         if(decision_criteria_selector[3]) {
             keep_tree *= distance_to_state_distribution_test(s);
+        }
+        if(decision_criteria_selector[4]) {
+            keep_tree *= outcome_distribution_variance_test();
         }
         return keep_tree;
     }

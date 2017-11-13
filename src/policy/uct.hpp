@@ -32,7 +32,7 @@ public:
      */
     uct(const parameters &p, environment *en) :
         model(*en),
-        root_node(state(),model.action_space), // null state as default
+        root_node(state(),model.action_space), // initialise with default state
         dflt_policy(p,en)
     {
         model.misstep_probability = p.MODEL_MISSTEP_PROBABILITY;

@@ -41,6 +41,7 @@ public:
     double DISCOUNT_FACTOR;
     double VMR_THRESHOLD;
     double DISTANCE_THRESHOLD;
+    double OUTCOME_VARIANCE_THRESHOLD;
 
     /**
      * @brief Simulation parameters default constructor
@@ -183,16 +184,18 @@ public:
         catch(const libconfig::ParseException &e) {
             display_libconfig_parse_exception(e);
         }
-        v.reserve(4);
-        bool b0, b1, b2, b3;
+        v.reserve(5);
+        bool b0, b1, b2, b3, b4;
         if(cfg.lookupValue("b0",b0)
         && cfg.lookupValue("b1",b1)
         && cfg.lookupValue("b2",b2)
-        && cfg.lookupValue("b3",b3)) {
+        && cfg.lookupValue("b3",b3)
+        && cfg.lookupValue("b4",b4)) {
             v.push_back(b0);
             v.push_back(b1);
             v.push_back(b2);
             v.push_back(b3);
+            v.push_back(b4);
         } else {
             throw wrong_world_configuration_path();
         }
@@ -328,7 +331,8 @@ public:
         && cfg.lookupValue("uct_cst",UCT_CST)
         && cfg.lookupValue("discount_factor",DISCOUNT_FACTOR)
         && cfg.lookupValue("vmr_threshold",VMR_THRESHOLD)
-        && cfg.lookupValue("distance_threshold",DISTANCE_THRESHOLD)) {
+        && cfg.lookupValue("distance_threshold",DISTANCE_THRESHOLD)
+        && cfg.lookupValue("outcome_variance_threshold",OUTCOME_VARIANCE_THRESHOLD)) {
             /* Nothing to do */
         }
         else { // Error in config file
