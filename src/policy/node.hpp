@@ -61,7 +61,6 @@ public :
         parent(_parent)
     {
         root = false;
-        //value = 0.;//TRM
         visits_count = 0;
         sampled_states.push_back(_new_state);
         local_action_space = _local_action_space;
@@ -94,7 +93,7 @@ public :
 
     /** @brief Get the visits count of the node (non-root node) */
     unsigned get_visits_count() const {
-        //assert(!root);//TRM
+        assert(!root);
         return visits_count;
     }
 
@@ -130,7 +129,7 @@ public :
 
     /** @brief Get the number of sampled states (non-root node) */
     unsigned get_nb_sampled_states() const {
-        //assert(!root);//TRM
+        assert(!root);
         return sampled_states.size();
     }
 
