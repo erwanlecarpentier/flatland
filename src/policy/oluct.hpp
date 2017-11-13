@@ -53,8 +53,6 @@ public:
      * @return Return true if the test does not discard the tree.
      */
     bool state_distribution_vmr_test() {
-        //node * v_ptr = pl.root_node.get_child_at(pl.argmax_score(pl.root_node));//TRM
-        //std::vector<state> samples = v_ptr->get_states();//TRM
         std::vector<state> samples = pl.root_node.get_states();
         double one_over_n = 1. / ((double) samples.size());
         double vmr_x = 0.;
@@ -100,19 +98,12 @@ public:
      * @return Return true if the sub-tree is kept.
      */
     bool distance_to_state_distribution_test(const state &s) {
-        //node * v_ptr = pl.root_node.get_child_at(pl.argmax_score(pl.root_node));//TRM
-        //std::vector<state> samples = v_ptr->get_states();//TRM
         std::vector<state> samples = pl.root_node.get_states();
         Eigen::Vector4d s_vect(s.x,s.y,s.v,s.theta);
         std::vector<Eigen::Vector4d> data;
         for(auto &smp : samples) {
             data.emplace_back(smp.x,smp.y,smp.v,smp.theta);
         }
-        /*
-        std::cout << "   data size: " << data.size() << std::endl;//TRM
-        std::cout << "   --> DIST = " << mahalanobis_distance(s_vect,data,1e-50) << std::endl;//TRM
-        std::cout << "   test: " << is_less_than(mahalanobis_distance(s_vect,data,1e-30),distance_threshold) << std::endl;//TRM
-        */
         return is_less_than(mahalanobis_distance(s_vect,data,1e-30),distance_threshold);
     }
 
