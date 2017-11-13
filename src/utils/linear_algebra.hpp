@@ -40,6 +40,27 @@ Eigen::Vector4d mean4d_estimator(std::vector<Eigen::Vector4d> &data) {
 }
 
 /**
+ * @brief Variance mean ratio
+ *
+ * Compute the empirical variance mean ratio of the input data set.
+ * This method is implemented for 4 dimensions.
+ * @param {std::vector<Eigen::Vector4d> &} data; input data set
+ * @return Return the variance mean ratio.
+ */
+Eigen::Vector4d variance_mean_ratio(std::vector<Eigen::Vector4d> &data) {
+    Eigen::Vector4d m = mean4d_estimator(data);
+    Eigen::Vector4d vmr(0.,0.,0.,0.);
+    for(auto &v : data) {
+        vmr(0) += pow(v(0) - m(0), 2.);
+        vmr(1) += pow(v(1) - m(1), 2.);
+        vmr(2) += pow(v(2) - m(2), 2.);
+        vmr(3) += pow(v(3) - m(3), 2.);
+    }
+    vmr /= ((double) data.size());
+    return vmr;
+}
+
+/**
  * @brief Covariance 4D
  *
  * Compute the covariance estimator of the input data set.

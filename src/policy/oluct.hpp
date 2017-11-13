@@ -54,6 +54,12 @@ public:
      */
     bool state_distribution_vmr_test() {
         std::vector<state> samples = pl.root_node.get_states();
+        std::vector<Eigen::Vector4d> data;
+        for(auto &smp : samples) {
+            data.emplace_back(smp.x,smp.y,smp.v,smp.theta);
+        }
+        Eigen::Vector4d vmr = variance_mean_ratio(data);
+        /* //TRM
         double one_over_n = 1. / ((double) samples.size());
         double vmr_x = 0.;
         double vmr_y = 0.;
@@ -83,7 +89,8 @@ public:
         vmr_y *= one_over_n;
         vmr_v *= one_over_n;
         vmr_theta *= one_over_n;
-        double m_vmr = (vmr_x + vmr_y + vmr_v + vmr_theta) / 4.;
+        */
+        double m_vmr = (vmr(0) + vmr(1) + vmr(2) + vmr(3)) / 4.;
         return is_less_than(m_vmr,vmr_threshold);
     }
 
