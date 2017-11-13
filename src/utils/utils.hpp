@@ -39,6 +39,17 @@ constexpr bool is_equal_to(T1 a, T2 b) {
 }
 
 /**
+ * @brief Equality comparison
+ *
+ * Precision is given as an argument.
+ * @return Return true if a == b up to a given precision.
+ */
+template <class T1, class T2>
+constexpr bool is_equal_to(T1 a, T2 b, double precision) {
+    return std::fabs(a-b)<precision;
+}
+
+/**
  * @brief Strict inferiority comparison
  *
  * Template method.

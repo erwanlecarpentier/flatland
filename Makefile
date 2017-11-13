@@ -1,5 +1,5 @@
 CCC=g++
-INCLUDE = -I./src -I./src/environment -I./src/policy
+INCLUDE = -I./src -I./src/environment -I./src/policy -I./src/utils
 CCFLAGS=-std=c++11 -Wall -Wextra ${INCLUDE} -O2 -g
 LDFLAGS=-lm -lconfig++
 EXEC=exe
