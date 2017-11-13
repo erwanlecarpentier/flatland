@@ -34,7 +34,6 @@ public:
     double MODEL_STATE_GAUSSIAN_STDDEV;
     unsigned POLICY_SELECTOR;
     unsigned DEFAULT_POLICY_SELECTOR;
-    unsigned DECISION_CRITERION_SELECTOR;
     unsigned TREE_SEARCH_BUDGET;
     unsigned DEFAULT_POLICY_HORIZON;
     double UCT_CST;
@@ -170,6 +169,35 @@ public:
     }
 
     /**
+     * @brief Parse decision criterion
+     *
+     * Parse the decision criteria boolean.
+     * @param {std::vector<bool> &} v; vector containing every boolean
+     */
+    void parse_decision_criterion(std::vector<bool> &v) {
+        libconfig::Config cfg;
+        try {
+            cfg.readFile(MAIN_CFG_PATH.c_str());
+        }
+        catch(const libconfig::ParseException &e) {
+            display_libconfig_parse_exception(e);
+        }
+        v.reserve(4);
+        bool b0, b1, b2, b3;
+        if(cfg.lookupValue("b0",b0)
+        && cfg.lookupValue("b1",b1)
+        && cfg.lookupValue("b2",b2)
+        && cfg.lookupValue("b3",b3)) {
+            v.push_back(b0);
+            v.push_back(b1);
+            v.push_back(b2);
+            v.push_back(b3);
+        } else {
+            throw wrong_world_configuration_path();
+        }
+    }
+
+    /**
      * @brief Parse state
      *
      * Parse the initial state of the agent.
@@ -293,7 +321,6 @@ public:
         && cfg.lookupValue("model_state_gaussian_stddev",MODEL_STATE_GAUSSIAN_STDDEV)
         && cfg.lookupValue("policy_selector",POLICY_SELECTOR)
         && cfg.lookupValue("default_policy_selector",DEFAULT_POLICY_SELECTOR)
-        && cfg.lookupValue("decision_criterion_selector",DECISION_CRITERION_SELECTOR)
         && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)
         && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)
         && cfg.lookupValue("uct_cst",UCT_CST)

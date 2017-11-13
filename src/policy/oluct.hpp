@@ -11,9 +11,9 @@
 template <class DFTPLC>
 class oluct {
 public:
-    unsigned decision_criterion_selector;
+    std::vector<bool> decision_criteria_selector; ///< Vector containing the boolean values of the activation of each decision criterion
     environment * envt; ///< Pointer to an environment, used for action space reduction
-    uct<DFTPLC> pl;
+    uct<DFTPLC> pl; ///< Embedded UCT policy
     double vmr_threshold; ///< VMR threshold for the VMR test
     double distance_threshold;  ///< Threshold for the distance
 
@@ -21,13 +21,13 @@ public:
      * @brief Constructor
      *
      * Constructu using the given parameters
-     * @param {const parameters &} p; parameters
+     * @param {parameters &} p; parameters
      * @param {environment *} en; pointer to the environment, used for action space reduction
      */
-    oluct(const parameters &p, environment *en) :
+    oluct(parameters &p, environment *en) :
         pl(p,en)
     {
-        decision_criterion_selector = p.DECISION_CRITERION_SELECTOR;
+        p.parse_decision_criterion(decision_criteria_selector);
         vmr_threshold = p.VMR_THRESHOLD;
         distance_threshold = p.DISTANCE_THRESHOLD;
     }
@@ -40,6 +40,7 @@ public:
      * @return Return true if the test does not discard the tree.
      */
     bool action_validity_test(const state &s) {
+        std::cout << "validity\n";//TRM
         return pl.model.is_action_valid(s,pl.get_recommended_action(pl.root_node));
     }
 
@@ -53,6 +54,7 @@ public:
      * @return Return true if the test does not discard the tree.
      */
     bool state_distribution_vmr_test() {
+        std::cout << "vmr\n";//TRM
         std::vector<state> samples = pl.root_node.get_states();
         std::vector<Eigen::Vector4d> data;
         for(auto &smp : samples) {
@@ -74,6 +76,7 @@ public:
      * @return Return true if the sub-tree is kept.
      */
     bool distance_to_state_distribution_test(const state &s) {
+        std::cout << "dist\n";//TRM
         std::vector<state> samples = pl.root_node.get_states();
         Eigen::Vector4d s_vect(s.x,s.y,s.v,s.theta);
         std::vector<Eigen::Vector4d> data;
@@ -92,7 +95,18 @@ public:
      * @return Return true if the sub-tree is kept.
      */
     bool decision_criterion(const state &s) {
-        switch(decision_criterion_selector) {
+        bool keep_tree = true;
+        if(decision_criteria_selector[1]) {
+            keep_tree *= action_validity_test(s);
+        }
+        if(decision_criteria_selector[2]) {
+            keep_tree *= state_distribution_vmr_test();
+        }
+        if(decision_criteria_selector[3]) {
+            keep_tree *= distance_to_state_distribution_test(s);
+        }
+        return keep_tree;
+        /*switch(decision_criterion_selector) {//TRM
             default: { // Plain decision criterion (no test)
                 return true;
             }
@@ -106,6 +120,7 @@ public:
                 return distance_to_state_distribution_test(s);
             }
         }
+        */
     }
 
     /**
