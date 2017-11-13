@@ -115,6 +115,19 @@ public:
     }
 
     /**
+     * @brief Apply modulus on angle
+     */
+    void mod_angle(state &s) {
+        //std::cout << "\npi: " << M_PI << "\n" << s.theta << std::endl;//TRM
+        if(is_less_than(s.theta,-M_PI)) {
+            s.theta += 2. * M_PI;
+        } else if(is_greater_than(s.theta,M_PI)) {
+            s.theta -= 2. * M_PI;
+        }
+        //std::cout << s.theta << std::endl;//TRM
+    }
+
+    /**
      * @brief State transition
      *
      * State transition function, compute the resulting state from the application of the
@@ -150,6 +163,7 @@ public:
                 break;
             }
         }
+        mod_angle(s_p);
     }
 
     /**

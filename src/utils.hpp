@@ -1,7 +1,7 @@
 #ifndef UTILS_HPP_
 #define UTILS_HPP_
 
-constexpr double COMPARISON_THRESHOLD = 1e-8;
+constexpr double COMPARISON_THRESHOLD = 1e-20;
 
 /**
  * @brief Print
@@ -30,7 +30,7 @@ void printv(std::vector<T> v) {
  * @brief Equality comparison
  *
  * Template method.
- * @return Return true if a < b up to a certain precision defined with COMPARISON_THRESHOLD
+ * @return Return true if a == b up to a certain precision defined with COMPARISON_THRESHOLD
  * variable.
  */
 template <class T1, class T2>
