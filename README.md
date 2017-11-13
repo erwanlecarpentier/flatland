@@ -47,6 +47,7 @@ standard libraries, here is a complete list:
 - 'libconf.py' available at https://pypi.python.org/pypi/libconf (for plotting
 purpose only)
 - 'boost/ptr_container/ptr_vector.hpp' available at 'http://www.boost.org/'
+- 'Eigen/Dense' available at 'http://eigen.tuxfamily.org/'
 
 Edit: 30th of October 2017
 
