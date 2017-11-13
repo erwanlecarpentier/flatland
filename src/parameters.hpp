@@ -28,6 +28,7 @@ public:
     std::string GRID_PATH;
     std::string WORLD_PATH;
     std::string TRAJECTORY_OUTPUT_PATH;
+    bool IS_CRASH_TERMINAL;
     double MISSTEP_PROBABILITY;
     double STATE_GAUSSIAN_STDDEV;
     double MODEL_MISSTEP_PROBABILITY;
@@ -315,6 +316,7 @@ public:
         if(cfg.lookupValue("simulation_limit_time",SIMULATION_LIMIT_TIME)
         && cfg.lookupValue("world_path",WORLD_PATH)
         && cfg.lookupValue("trajectory_output_path",TRAJECTORY_OUTPUT_PATH)
+        && cfg.lookupValue("is_crash_terminal",IS_CRASH_TERMINAL)
         && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
         && cfg.lookupValue("state_gaussian_stddev",STATE_GAUSSIAN_STDDEV)
         && cfg.lookupValue("model_misstep_probability",MODEL_MISSTEP_PROBABILITY)

@@ -12,7 +12,7 @@
  */
 class environment {
 public:
-    bool is_continuous; ///< Is state space continuous
+    bool is_crash_terminal;
     world w; ///< world
     double misstep_probability; ///< Probability of misstep
     double state_gaussian_stddev; ///< Standard deviation of the Gaussian applied on the position
@@ -26,6 +26,7 @@ public:
      */
     environment(parameters &p) : w(p) {
         p.parse_actions(action_space);
+        is_crash_terminal = p.IS_CRASH_TERMINAL;
         misstep_probability = p.MISSTEP_PROBABILITY;
         state_gaussian_stddev = p.STATE_GAUSSIAN_STDDEV;
     }
@@ -54,7 +55,7 @@ public:
     /**
      * @brief Is state valid
      *
-     * Test if the state is valid (wall or not).
+     * Test if the agent is within a wall or not.
      * @param {const state &} s; given state
      * @return Return true if the world value is different than -1.
      */
@@ -147,8 +148,11 @@ public:
             if(!is_state_valid(s_p)) { // misstep led to a wall, state is unchanged
                 s_p = s;
             }
-        } else {
+        } else { // no misstep
             a->apply(s_p);
+            if(!is_state_valid(s_p) && !is_crash_terminal) { // action led to a wall, angle is reverted
+                s_p.theta += M_PI;
+            }
         }
         for(unsigned i=0; i<50; ++i) { // 50 trials for gaussian application - no gaussian if no valid result
             state _s_p = s_p;
@@ -240,8 +244,8 @@ public:
      */
     bool is_terminal(const state &s) {
         int world_value = world_value_at(s);
-        if(w.initial_number_of_goals == s.waypoints_reached_counter /* Every goal */
-        || world_value == -1 /* Wall */) {
+        if(w.initial_number_of_goals == s.waypoints_reached_counter /* Every goal reached */
+        ||((world_value == -1)*is_crash_terminal) /* Wall */) {
             return true;
         } else {
             return false;
