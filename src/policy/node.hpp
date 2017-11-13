@@ -92,6 +92,12 @@ public :
         root = true;
     }
 
+    /** @brief Get the visits count of the node (non-root node) */
+    unsigned get_visits_count() const {
+        //assert(!root);//TRM
+        return visits_count;
+    }
+
     /** @brief Get the number of children */
     unsigned get_nb_children() const {
         return children.size();
@@ -124,7 +130,7 @@ public :
 
     /** @brief Get the number of sampled states (non-root node) */
     unsigned get_nb_sampled_states() const {
-        assert(!root);
+        //assert(!root);//TRM
         return sampled_states.size();
     }
 
@@ -162,12 +168,6 @@ public :
     std::shared_ptr<action> get_incoming_action() const {
         assert(!root);
         return incoming_action;
-    }
-
-    /** @brief Get the visits count of the node (non-root node) */
-    unsigned get_visits_count() const {
-        assert(!root);
-        return visits_count;
     }
 
     /** @brief Set the action space */
@@ -263,7 +263,7 @@ public :
      *
      * Add a sample to the sampled outcome.
      * Node should not be root.
-     * @param {double} r; value to be added
+     * @param {double} r; outcome sample value to be added
      */
     void add_to_value(double r) {
         assert(!root);
@@ -282,6 +282,8 @@ public :
         assert(is_root());
         local_action_space = children[indice].get_action_space();
         sampled_states = children[indice].get_sampled_states();
+        visits_count = children[indice].get_visits_count();
+        sampled_outcomes = children[indice].get_sampled_outcomes();
         auto tmp = std::move(children[indice].children); // Temporary variable to prevent from overwriting
         for(auto &elt : tmp) {
             elt.parent = this;

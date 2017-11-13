@@ -81,7 +81,15 @@ public:
             }
         }
         variance /= pow(((double) outcomes.size()),2.);
-        is_less_than(variance,outcome_variance_threshold);
+        std::cout << "    nb children   : " << pl.root_node.get_nb_children() << std::endl;//TRM
+        std::cout << "    smpl states   : " << pl.root_node.get_nb_sampled_states() << std::endl;//TRM
+        std::cout << "    visit count   : " << pl.root_node.get_visits_count() << std::endl;//TRM
+        std::cout << "    value         : " << pl.root_node.get_value() << std::endl;//TRM
+        std::cout << "    smpl outcomes : " << outcomes.size() << std::endl;//TRM
+        std::cout << "    variance      : " << variance << std::endl;//TRM
+        std::cout << "    test          : " << is_less_than(variance,outcome_variance_threshold) << std::endl;//TRM
+        //return is_less_than(variance,outcome_variance_threshold);
+        return true;//TRM
     }
 
     /**
