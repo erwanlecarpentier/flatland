@@ -127,13 +127,14 @@ double mahalanobis_distance(
 {
 	Eigen::Vector4d mean = mean4d_estimator(data);
 	Eigen::Matrix4d cov  = cov4d_estimator(data,mean);
-	std::cout << std::endl;//TRM
-    /*for(auto &elt : data) {//TRM
+	/*std::cout << std::endl;//TRM
+    for(auto &elt : data) {//TRM
         std::cout << elt.transpose() << std::endl;
-    }*/
+    }
     std::cout << "v: " << v.transpose() << std::endl;//TRM
     std::cout << "m: " << mean.transpose() << std::endl;//TRM
     std::cout << "c:\n" << cov << std::endl;//TRM
+    */
 	return mahalanobis_distance(v,mean,cov,precision);
 }
 
