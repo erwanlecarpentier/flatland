@@ -9,7 +9,7 @@
 class node {
 private :
     bool root; ///< True if the node is root i.e. labeled by a unique state instead of a family of states
-    double value; ///< Value function estimate
+    std::vector<double> sampled_outcomes; ///< Sampled outcomes
     unsigned visits_count; ///< Number of visits during the tree expansion
     state s; ///<Unique labelling state for a root node
     std::shared_ptr<action> incoming_action; ///< Action of the parent node that led to this node
@@ -61,7 +61,7 @@ public :
         parent(_parent)
     {
         root = false;
-        value = 0.;
+        //value = 0.;//TRM
         visits_count = 0;
         states.push_back(_new_state);
         local_action_space = _local_action_space;
@@ -71,14 +71,15 @@ public :
     /**
      * @brief Clear method
      *
-     * Clear the value, the parent, the incoming action, the state/states, the visit count
-     * and the children vector of the node. Do not change the value of 'root' attribute,
-     * hence the status of the node. Do not clear action space vector, hence the available
-     * actions still remain in the same organisation order.
+     * Clear the sampled outcomes, the parent, the incoming action, the state/states,
+     * the visit count and the children vector of the node.
+     * Do not change the 'root' attribute, hence the status of the node.
+     * Do not clear action space vector, hence the available actions still remain in the same
+     * organisation order.
      */
     void clear_node() {
         parent = nullptr;
-        value = 0;
+        sampled_outcomes.clear();
         visits_count = 0;
         s.set_to_default();
         //incoming_action->set_to_default();
@@ -108,6 +109,10 @@ public :
 
     /** @brief Get the value of the node */
     double get_value() const {
+        double value = 0.;
+        for(auto &r : sampled_outcomes) {
+            value += r;
+        }
         return value / ((double) visits_count);
     }
 
@@ -251,12 +256,13 @@ public :
     /**
      * @brief Add to value
      *
-     * Add a value to the nodes value. Node should not be root.
+     * Add a sample to the sampled outcome.
+     * Node should not be root.
      * @param {double} r; value to be added
      */
     void add_to_value(double r) {
         assert(!root);
-        value += r;
+        sampled_outcomes.push_back(r);
     }
 
     /**
