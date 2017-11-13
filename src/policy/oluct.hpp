@@ -40,7 +40,6 @@ public:
      * @return Return true if the test does not discard the tree.
      */
     bool action_validity_test(const state &s) {
-        std::cout << "validity\n";//TRM
         return pl.model.is_action_valid(s,pl.get_recommended_action(pl.root_node));
     }
 
@@ -54,7 +53,6 @@ public:
      * @return Return true if the test does not discard the tree.
      */
     bool state_distribution_vmr_test() {
-        std::cout << "vmr\n";//TRM
         std::vector<state> samples = pl.root_node.get_states();
         std::vector<Eigen::Vector4d> data;
         for(auto &smp : samples) {
@@ -76,7 +74,6 @@ public:
      * @return Return true if the sub-tree is kept.
      */
     bool distance_to_state_distribution_test(const state &s) {
-        std::cout << "dist\n";//TRM
         std::vector<state> samples = pl.root_node.get_states();
         Eigen::Vector4d s_vect(s.x,s.y,s.v,s.theta);
         std::vector<Eigen::Vector4d> data;
@@ -106,21 +103,6 @@ public:
             keep_tree *= distance_to_state_distribution_test(s);
         }
         return keep_tree;
-        /*switch(decision_criterion_selector) {//TRM
-            default: { // Plain decision criterion (no test)
-                return true;
-            }
-            case 0: { // Plain with action validity test
-                return action_validity_test(s);
-            }
-            case 1: { // State distribution vmr test
-                return state_distribution_vmr_test();
-            }
-            case 2: { // Distance to state distribution test
-                return distance_to_state_distribution_test(s);
-            }
-        }
-        */
     }
 
     /**
