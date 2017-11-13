@@ -29,6 +29,7 @@ public:
     {
         decision_criterion_selector = p.DECISION_CRITERION_SELECTOR;
         vmr_threshold = p.VMR_THRESHOLD;
+        distance_threshold = p.DISTANCE_THRESHOLD;
     }
 
     /**

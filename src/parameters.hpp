@@ -40,6 +40,7 @@ public:
     double UCT_CST;
     double DISCOUNT_FACTOR;
     double VMR_THRESHOLD;
+    double DISTANCE_THRESHOLD;
 
     /**
      * @brief Simulation parameters default constructor
@@ -297,6 +298,7 @@ public:
         && cfg.lookupValue("uct_cst",UCT_CST)
         && cfg.lookupValue("discount_factor",DISCOUNT_FACTOR)
         && cfg.lookupValue("vmr_threshold",VMR_THRESHOLD)
+        && cfg.lookupValue("distance_threshold",DISTANCE_THRESHOLD)
         && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)) {
             /* Nothing to do */
         }
