@@ -59,37 +59,6 @@ public:
             data.emplace_back(smp.x,smp.y,smp.v,smp.theta);
         }
         Eigen::Vector4d vmr = variance_mean_ratio(data);
-        /* //TRM
-        double one_over_n = 1. / ((double) samples.size());
-        double vmr_x = 0.;
-        double vmr_y = 0.;
-        double vmr_v = 0.;
-        double vmr_theta = 0.;
-        double m_x = 0.;
-        double m_y = 0.;
-        double m_v = 0.;
-        double m_theta = 0.;
-        for(auto &s : samples) { // compute the means
-            m_x += s.x;
-            m_y += s.y;
-            m_v += s.v;
-            m_theta += s.theta;
-        }
-        m_x *= one_over_n;
-        m_y *= one_over_n;
-        m_v *= one_over_n;
-        m_theta *= one_over_n;
-        for(auto &s : samples) { // compute the vmr
-            vmr_x += pow(s.x - m_x, 2.);
-            vmr_y += pow(s.y - m_y, 2.);
-            vmr_v += pow(s.v - m_v, 2.);
-            vmr_theta += pow(s.theta - m_theta, 2.);
-        }
-        vmr_x *= one_over_n;
-        vmr_y *= one_over_n;
-        vmr_v *= one_over_n;
-        vmr_theta *= one_over_n;
-        */
         double m_vmr = (vmr(0) + vmr(1) + vmr(2) + vmr(3)) / 4.;
         return is_less_than(m_vmr,vmr_threshold);
     }
