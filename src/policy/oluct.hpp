@@ -14,7 +14,8 @@ public:
     unsigned decision_criterion_selector;
     environment * envt; ///< Pointer to an environment, used for action space reduction
     uct<DFTPLC> pl;
-    double vmr_threshold;
+    double vmr_threshold; ///< VMR threshold for the VMR test
+    double distance_threshold;  ///< Threshold for the distance
 
     /**
      * @brief Constructor
@@ -104,7 +105,7 @@ public:
         for(auto &smp : samples) {
             data.emplace_back(smp.x,smp.y,smp.v,smp.theta);
         }
-        return mahalanobis_distance(s_vect,data,1e-30);
+        return is_less_than(mahalanobis_distance(s_vect,data,1e-30),distance_threshold);
     }
 
     /**
