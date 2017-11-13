@@ -108,7 +108,9 @@ public:
         for(auto &smp : samples) {
             data.emplace_back(smp.x,smp.y,smp.v,smp.theta);
         }
-        std::cout << data.size() << " -> " <<mahalanobis_distance(s_vect,data,1e-50) << std::endl;
+        std::cout << "   data size: " << data.size() << std::endl;//TRM
+        std::cout << "   --> DIST = " << mahalanobis_distance(s_vect,data,1e-50) << std::endl;//TRM
+        std::cout << "   test: " << is_less_than(mahalanobis_distance(s_vect,data,1e-30),distance_threshold) << std::endl;//TRM
         return true;
         //return is_less_than(mahalanobis_distance(s_vect,data,1e-30),distance_threshold);
     }
