@@ -3,6 +3,7 @@
 
 #include <environment.hpp>
 #include <uct.hpp>
+#include <linear_algebra.hpp>
 
 /**
  * @brief OLUCT policy
