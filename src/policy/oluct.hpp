@@ -68,11 +68,20 @@ public:
     /**
      * @brief Outcome distribution variance test
      *
-     * TODO
+     * Test whether the variance of the outcome distribution at the node reached by the
+     * recommended action is small enough.
      * @return Return true if the test does not discard the tree.
      */
     bool outcome_distribution_variance_test() {
-        //TODO
+        std::vector<double> outcomes = pl.root_node.get_sampled_outcomes();
+        double variance = 0.;
+        for(unsigned i=0; i<outcomes.size(); ++i) {
+            for(unsigned j=0; j<i; ++j) {
+                variance += pow(outcomes[i] = outcomes[j], 2.);
+            }
+        }
+        variance /= pow(((double) outcomes.size()),2.);
+        is_less_than(variance,outcome_variance_threshold);
     }
 
     /**
@@ -161,7 +170,6 @@ public:
         const std::shared_ptr<action> & a,
         const state & s_p)
     {
-        /* OLUCT policy does not learn. */
         (void) s;
         (void) a;
         (void) s_p;

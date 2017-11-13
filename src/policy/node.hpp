@@ -133,6 +133,11 @@ public :
         return sampled_states;
     }
 
+    /** @brief Get a copy of the sampled outcomes of the node */
+    std::vector<double> get_sampled_outcomes() const {
+        return sampled_outcomes;
+    }
+
     /** @brief Get a copy of the last sampled state among the states family (non-root node) */
     state get_last_sampled_state() const {
         assert(!root);
