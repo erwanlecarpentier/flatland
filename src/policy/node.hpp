@@ -9,11 +9,11 @@
 class node {
 private :
     bool root; ///< True if the node is root i.e. labeled by a unique state instead of a family of states
-    std::vector<double> sampled_outcomes; ///< Sampled outcomes
     unsigned visits_count; ///< Number of visits during the tree expansion
     state s; ///<Unique labelling state for a root node
     std::shared_ptr<action> incoming_action; ///< Action of the parent node that led to this node
-    std::vector<state> states; ///< Sampled states for a standard node
+    std::vector<double> sampled_outcomes; ///< Sampled outcomes
+    std::vector<state> sampled_states; ///< Sampled states for a standard node
     std::vector<std::shared_ptr<action>> local_action_space; ///< Available actions at this node (bandit arms)
 
 public :
@@ -63,7 +63,7 @@ public :
         root = false;
         //value = 0.;//TRM
         visits_count = 0;
-        states.push_back(_new_state);
+        sampled_states.push_back(_new_state);
         local_action_space = _local_action_space;
         shuffle(local_action_space);
     }
@@ -79,11 +79,11 @@ public :
      */
     void clear_node() {
         parent = nullptr;
-        sampled_outcomes.clear();
         visits_count = 0;
         s.set_to_default();
         //incoming_action->set_to_default();
-        states.clear();
+        sampled_outcomes.clear();
+        sampled_states.clear();
         children.clear();
     }
 
@@ -125,18 +125,18 @@ public :
     /** @brief Get the number of sampled states (non-root node) */
     unsigned get_nb_sampled_states() const {
         assert(!root);
-        return states.size();
+        return sampled_states.size();
     }
 
     /** @brief Get a copy of the sampled states of the node */
-    std::vector<state> get_states() const {
-        return states;
+    std::vector<state> get_sampled_states() const {
+        return sampled_states;
     }
 
     /** @brief Get a copy of the last sampled state among the states family (non-root node) */
     state get_last_sampled_state() const {
         assert(!root);
-        return states.back();
+        return sampled_states.back();
     }
 
     /**
@@ -241,7 +241,7 @@ public :
      */
     void add_to_states(state &s) {
         assert(!root);
-        states.push_back(s);
+        sampled_states.push_back(s);
     }
 
     /**
@@ -276,7 +276,7 @@ public :
     void move_to_child(unsigned indice, const state &new_state) {
         assert(is_root());
         local_action_space = children[indice].get_action_space();
-        states = children[indice].get_states();
+        sampled_states = children[indice].get_sampled_states();
         auto tmp = std::move(children[indice].children); // Temporary variable to prevent from overwriting
         for(auto &elt : tmp) {
             elt.parent = this;

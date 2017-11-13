@@ -58,7 +58,7 @@ public:
         if(v.is_root()) {
             return model.is_terminal(v.get_state());
         } else {
-            for(auto &s: v.get_states()) {
+            for(auto &s: v.get_sampled_states()) {
                 if(!model.is_terminal(s)) {
                     return false;
                 }

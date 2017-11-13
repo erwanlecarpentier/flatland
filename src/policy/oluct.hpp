@@ -53,7 +53,7 @@ public:
      * @return Return true if the test does not discard the tree.
      */
     bool state_distribution_vmr_test() {
-        std::vector<state> samples = pl.root_node.get_states();
+        std::vector<state> samples = pl.root_node.get_sampled_states();
         std::vector<Eigen::Vector4d> data;
         for(auto &smp : samples) {
             data.emplace_back(smp.x,smp.y,smp.v,smp.theta);
@@ -61,6 +61,16 @@ public:
         Eigen::Vector4d vmr = variance_mean_ratio(data);
         double m_vmr = (vmr(0) + vmr(1) + vmr(2) + vmr(3)) / 4.;
         return is_less_than(m_vmr,vmr_threshold);
+    }
+
+    /**
+     * @brief Outcome distribution variance test
+     *
+     * TODO
+     * @return Return true if the test does not discard the tree.
+     */
+    bool outcome_distribution_variance_test() {
+        //TODO
     }
 
     /**
@@ -74,7 +84,7 @@ public:
      * @return Return true if the sub-tree is kept.
      */
     bool distance_to_state_distribution_test(const state &s) {
-        std::vector<state> samples = pl.root_node.get_states();
+        std::vector<state> samples = pl.root_node.get_sampled_states();
         Eigen::Vector4d s_vect(s.x,s.y,s.v,s.theta);
         std::vector<Eigen::Vector4d> data;
         for(auto &smp : samples) {
