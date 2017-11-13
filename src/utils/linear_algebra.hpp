@@ -4,6 +4,24 @@
 #include <Eigen/Dense>
 
 /**
+ * @brief Equality comparison
+ *
+ * Equality comparison between 4D vectors.
+ * @param {Eigen::Vector4d &} v; 1st input vector
+ * @param {Eigen::Vector4d &} w; 2nd input vector
+ * @return Return true is both vectors are equal.
+ */
+bool are_equal(Eigen::Vector4d &v, Eigen::Vector4d &w) {
+	Eigen::Vector4d v_w = v - w;
+	return (
+		is_equal_to(v_w(0),0.)
+	 && is_equal_to(v_w(1),0.)
+	 && is_equal_to(v_w(2),0.)
+	 && is_equal_to(v_w(3),0.)
+	);
+}
+
+/**
  * @brief Mean 4D
  *
  * Compute the mean estimator of the input data set.
@@ -79,6 +97,9 @@ double mahalanobis_distance(
 	Eigen::Matrix4d &cov,
 	double precision = 1e-30)
 {
+	if(are_equal(v,mean)) {
+		return 0.;
+	}
 	Eigen::Vector4d vm = v-mean;
 	if(is_equal_to(cov.determinant(),0.,precision)) {
 		return 9e99;
@@ -106,6 +127,12 @@ double mahalanobis_distance(
 {
 	Eigen::Vector4d mean = mean4d_estimator(data);
 	Eigen::Matrix4d cov  = cov4d_estimator(data,mean);
+	std::cout << std::endl; //TRM
+    for(auto &elt : data) {//TRM
+        std::cout << elt.transpose() << std::endl;
+    }
+    std::cout << "v: " << v.transpose() << std::endl;//TRM
+    std::cout << "m: " << mean.transpose() << std::endl;//TRM
 	return mahalanobis_distance(v,mean,cov,precision);
 }
 

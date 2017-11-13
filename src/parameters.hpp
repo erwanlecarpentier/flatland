@@ -295,11 +295,11 @@ public:
         && cfg.lookupValue("default_policy_selector",DEFAULT_POLICY_SELECTOR)
         && cfg.lookupValue("decision_criterion_selector",DECISION_CRITERION_SELECTOR)
         && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)
+        && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)
         && cfg.lookupValue("uct_cst",UCT_CST)
         && cfg.lookupValue("discount_factor",DISCOUNT_FACTOR)
         && cfg.lookupValue("vmr_threshold",VMR_THRESHOLD)
-        && cfg.lookupValue("distance_threshold",DISTANCE_THRESHOLD)
-        && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)) {
+        && cfg.lookupValue("distance_threshold",DISTANCE_THRESHOLD)) {
             /* Nothing to do */
         }
         else { // Error in config file
