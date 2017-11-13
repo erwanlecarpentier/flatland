@@ -67,23 +67,23 @@ Eigen::Matrix4d cov4d_estimator(std::vector<Eigen::Vector4d> &data) {
  * An additional parameter is added: the precision with which the determinant of
  * the covariance matrix is considered to be zero.
  * If the determinant is zero, a 'big' value is returned.
- * @param {Eigen::Vector4d &} vector; input vector
+ * @param {Eigen::Vector4d &} v; input vector
  * @param {Eigen::Vector4d &} mean; mean of the distribution or estimator
  * @param {Eigen::Matrix4d &} cov; covariance of the distribution or estimator
  * @param {double} precision; precision of the determinant
  * @return Return the Mahalanobis distance.
  */
 double mahalanobis_distance(
-	Eigen::Vector4d &vector,
+	Eigen::Vector4d &v,
 	Eigen::Vector4d &mean,
 	Eigen::Matrix4d &cov,
-	double precision = 1e-20)
+	double precision = 1e-30)
 {
-	Eigen::Vector4d v = vector-mean;
+	Eigen::Vector4d vm = v-mean;
 	if(is_equal_to(cov.determinant(),0.,precision)) {
 		return 9e99;
 	} else {
-		return sqrt(v.transpose() * cov.inverse() * v);
+		return sqrt(vm.transpose() * cov.inverse() * vm);
 	}
 }
 
@@ -100,13 +100,13 @@ double mahalanobis_distance(
  * @return Return the estimator of the 4x4 covariance matrix of the input data set.
  */
 double mahalanobis_distance(
-	Eigen::Vector4d &vector,
+	Eigen::Vector4d &v,
 	std::vector<Eigen::Vector4d> &data,
-	double precision = 1e-20)
+	double precision = 1e-30)
 {
 	Eigen::Vector4d mean = mean4d_estimator(data);
 	Eigen::Matrix4d cov  = cov4d_estimator(data,mean);
-	return mahalanobis_distance(vector,mean,cov,precision);
+	return mahalanobis_distance(v,mean,cov,precision);
 }
 
 #endif // LINEAR_ALGEBRA_HPP_

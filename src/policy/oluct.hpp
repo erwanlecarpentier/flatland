@@ -99,7 +99,12 @@ public:
     bool distance_to_state_distribution_test(const state &s) {
         node * v_ptr = pl.root_node.get_child_at(pl.argmax_score(pl.root_node));
         std::vector<state> samples = v_ptr->get_states();
-        //TODO
+        Eigen::Vector4d s_vect(s.x,s.y,s.v,s.theta);
+        std::vector<Eigen::Vector4d> data;
+        for(auto &smp : samples) {
+            data.emplace_back(smp.x,smp.y,smp.v,smp.theta);
+        }
+        return mahalanobis_distance(s_vect,data,1e-30);
     }
 
     /**
