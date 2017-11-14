@@ -41,36 +41,46 @@ constexpr bool is_equal_to(T1 a, T2 b) {
 /**
  * @brief Equality comparison
  *
- * Precision is given as an argument.
- * @return Return true if a == b up to a given precision.
+ * Test if the input arguments are equal.
+ * Template method.
+ * @param {T1} a; 1st argument
+ * @param {T2} b; 2nd argument
+ * @param {double} precision; precision of the test
+ * @return Return true if the input arguments are equal.
  */
 template <class T1, class T2>
-constexpr bool is_equal_to(T1 a, T2 b, double precision) {
+constexpr bool is_equal_to(T1 a, T2 b, double precision = COMPARISON_THRESHOLD) {
     return std::fabs(a-b)<precision;
 }
 
 /**
  * @brief Strict inferiority comparison
  *
+ * Test if the 1st input arguments is strictly inferior to the 2nd one.
  * Template method.
- * @return Return true if a < b up to a certain precision defined with COMPARISON_THRESHOLD
- * variable.
+ * @param {T1} a; 1st argument
+ * @param {T2} b; 2nd argument
+ * @param {double} precision; precision of the test
+ * @return Return true if the 1st input arguments is strictly inferior to the 2nd one.
  */
 template <class T1, class T2>
-constexpr bool is_less_than(T1 a, T2 b) {
-    return a<(b-COMPARISON_THRESHOLD);
+constexpr bool is_less_than(T1 a, T2 b, double precision = COMPARISON_THRESHOLD) {
+    return a<(b-precision);
 }
 
 /**
  * @brief Strict superiority comparison
  *
+ * Test if the 1st input arguments is strictly superior to the 2nd one.
  * Template method.
- * @return Return true if a < b up to a certain precision defined with COMPARISON_THRESHOLD
- * variable.
+ * @param {T1} a; 1st argument
+ * @param {T2} b; 2nd argument
+ * @param {double} precision; precision of the test
+ * @return Return true if the 1st input arguments is strictly superior to the 2nd one.
  */
 template <class T1, class T2>
-constexpr bool is_greater_than(T1 a, T2 b) {
-    return a>(b+COMPARISON_THRESHOLD);
+constexpr bool is_greater_than(T1 a, T2 b, double precision = COMPARISON_THRESHOLD) {
+    return a>(b+precision);
 }
 
 /**
