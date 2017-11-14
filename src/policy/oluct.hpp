@@ -66,25 +66,6 @@ public:
     }
 
     /**
-     * @brief Outcome distribution variance test
-     *
-     * Test whether the variance of the outcome distribution at the node reached by the
-     * recommended action is small enough.
-     * @return Return true if the test does not discard the tree.
-     */
-    bool outcome_distribution_variance_test() {
-        std::vector<double> outcomes = pl.root_node.get_sampled_outcomes();
-        double variance = 0.;
-        for(unsigned i=0; i<outcomes.size(); ++i) {
-            for(unsigned j=0; j<i; ++j) {
-                variance += pow(outcomes[i] = outcomes[j], 2.);
-            }
-        }
-        variance /= pow(((double) outcomes.size()),2.);
-        return is_less_than(variance,outcome_variance_threshold);
-    }
-
-    /**
      * @brief Distance to state distribution test
      *
      * Compute the distances between the current state and every states of the sampled state
@@ -102,6 +83,25 @@ public:
             data.emplace_back(smp.x,smp.y,smp.v,smp.theta);
         }
         return is_less_than(mahalanobis_distance(s_vect,data,1e-30),distance_threshold);
+    }
+
+    /**
+     * @brief Outcome distribution variance test
+     *
+     * Test whether the variance of the outcome distribution at the node reached by the
+     * recommended action is small enough.
+     * @return Return true if the test does not discard the tree.
+     */
+    bool outcome_distribution_variance_test() {
+        std::vector<double> outcomes = pl.root_node.get_sampled_outcomes();
+        double variance = 0.;
+        for(unsigned i=0; i<outcomes.size(); ++i) {
+            for(unsigned j=0; j<i; ++j) {
+                variance += pow(outcomes[i] = outcomes[j], 2.);
+            }
+        }
+        variance /= pow(((double) outcomes.size()),2.);
+        return is_less_than(variance,outcome_variance_threshold);
     }
 
     /**

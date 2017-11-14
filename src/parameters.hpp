@@ -197,7 +197,7 @@ public:
             v.push_back(b3);
             v.push_back(b4);
         } else {
-            throw wrong_world_configuration_path();
+            throw wrong_syntax_configuration_file_exception();
         }
     }
 

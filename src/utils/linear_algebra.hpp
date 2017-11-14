@@ -137,9 +137,10 @@ double mahalanobis_distance(
  * An additional parameter is added: the precision with which the determinant of
  * the covariance matrix is considered to be zero.
  * If the determinant is zero, a 'big' value is returned.
+ * @param {Eigen::Vector4d &} v; input vector
  * @param {std::vector<Eigen::Vector4d> &} data; input data set
- * @param {Eigen::Vector4d &} mean; mean of the distribution or estimator
- * @return Return the estimator of the 4x4 covariance matrix of the input data set.
+ * @param {double} precision; precision of the determinant
+ * @return Return the Mahalanobis distance.
  */
 double mahalanobis_distance(
 	Eigen::Vector4d &v,
