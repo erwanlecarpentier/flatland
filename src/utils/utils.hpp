@@ -29,18 +29,6 @@ void printv(std::vector<T> v) {
 /**
  * @brief Equality comparison
  *
- * Template method.
- * @return Return true if a == b up to a certain precision defined with COMPARISON_THRESHOLD
- * variable.
- */
-template <class T1, class T2>
-constexpr bool is_equal_to(T1 a, T2 b) {
-    return std::fabs(a-b)<COMPARISON_THRESHOLD;
-}
-
-/**
- * @brief Equality comparison
- *
  * Test if the input arguments are equal.
  * Template method.
  * @param {T1} a; 1st argument

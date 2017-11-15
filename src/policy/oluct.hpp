@@ -42,7 +42,8 @@ public:
      * @return Return true if the test does not discard the tree.
      */
     bool action_validity_test(const state &s) {
-        return pl.model.is_action_valid(s,pl.get_recommended_action(pl.root_node));
+        unsigned indice = 0;
+        return pl.model.is_action_valid(s,pl.get_recommended_action(pl.root_node,indice));
     }
 
     /**
@@ -68,7 +69,7 @@ public:
     /**
      * @brief Distance to state distribution test
      *
-     * Compute the distances between the current state and every states of the sampled state
+     * Compute the distances between the current state and the mean of the sampled state
      * distribution.
      * Reject the tree if the minimum distance is greater than a selected threshold.
      * The used distance is the Mahalanobis distance (edit 10/11/2017).
@@ -152,8 +153,9 @@ public:
         if(!pl.root_node.is_fully_expanded() || !decision_criterion(s)) {
             pl.build_uct_tree(s);
         }
-        std::shared_ptr<action> ra = pl.get_recommended_action(pl.root_node);
-        pl.root_node.move_to_child(pl.argmax_score(pl.root_node),s);
+        unsigned indice = 0;
+        std::shared_ptr<action> ra = pl.get_recommended_action(pl.root_node,indice);
+        pl.root_node.move_to_child(indice,s);
         return ra;
 	}
 

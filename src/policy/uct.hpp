@@ -269,13 +269,16 @@ public:
      * @brief Get the recommended action at a certain node
      *
      * This is the policy decision after the tree construction (recommended action).
-     * It gets the greedy action wrt the values of the subsequent nodes.
+     * Get the greedy action wrt the values of the subsequent nodes.
+     * The indice of the selected action given as argument is modified consequently.
      * @param {const node &} v; root node of the tree
-     * @return Return the action with the highest score (leading to the child with the higher
-     * value).
+     * @param {unsigned &} indice; indice of the selected action
+     * @return Return the action with the highest score (leading to the child node with the
+     * higher value).
      */
-    std::shared_ptr<action> get_recommended_action(const node &v) {
-        return v.get_action_at(argmax_score(v));
+    std::shared_ptr<action> get_recommended_action(const node &v, unsigned &indice) {
+        indice = argmax_score(v);
+        return v.get_action_at(indice);
     }
 
     /**
@@ -299,7 +302,8 @@ public:
      */
 	std::shared_ptr<action> operator()(const state &s) {
         build_uct_tree(s);
-        return get_recommended_action(root_node);
+        unsigned indice = 0;
+        return get_recommended_action(root_node,indice);
 	}
 
     /**
