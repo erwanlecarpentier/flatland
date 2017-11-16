@@ -36,7 +36,7 @@
  */
 template <class PLC>
 void single_run(
-    parameters &p,
+    const parameters &p,
     bool prnt,
     bool bckp,
     std::vector<std::vector<double>> &backup_vector)
@@ -86,7 +86,7 @@ void single_run(
  * @brief Run switch
  *
  * Run a single simulation using the given parameters.
- * Applies the switch between the different policies and environments.
+ * Applies the switch between the different policies.
  * @param {parameters &} p; parameters of the simulation
  * @param {bool} prnt; set to true for display
  * @param {bool} bckp; set to true for backup
@@ -94,7 +94,7 @@ void single_run(
  * simulation records its backed up values
  */
 void run_switch(
-    parameters &p,
+    const parameters &p,
     bool prnt,
     bool bckp,
     std::vector<std::vector<double>> &backup_vector)
@@ -169,13 +169,17 @@ void run(
     }
 }
 
+void test() {
+    run(10,"config/main.cfg","data/test.csv");
+}
+
 /**
  * @brief Main function
  */
 int main() {
     try {
         srand(time(NULL));
-        run(1,"config/main.cfg","data/test.csv");
+        run(2,"config/main.cfg","data/test.csv");
     }
     catch(const std::exception &e) {
         std::cerr << "Error in main(): standard exception caught: " << e.what() << std::endl;

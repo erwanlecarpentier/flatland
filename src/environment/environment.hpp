@@ -22,9 +22,9 @@ public:
      * @brief Default constructor
      *
      * Default constructor initialising the parameters via a 'parameters' object.
-     * @param {parameters &} p; parameters
+     * @param {const parameters &} p; parameters
      */
-    environment(parameters &p) : w(p) {
+    environment(const parameters &p) : w(p) {
         p.parse_actions(action_space);
         is_crash_terminal = p.IS_CRASH_TERMINAL;
         misstep_probability = p.MISSTEP_PROBABILITY;

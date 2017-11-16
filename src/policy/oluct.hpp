@@ -22,10 +22,10 @@ public:
      * @brief Constructor
      *
      * Constructu using the given parameters
-     * @param {parameters &} p; parameters
+     * @param {const parameters &} p; parameters
      * @param {environment *} en; pointer to the environment, used for action space reduction
      */
-    oluct(parameters &p, environment *en) :
+    oluct(const parameters &p, environment *en) :
         pl(p,en)
     {
         p.parse_decision_criterion(decision_criteria_selector);

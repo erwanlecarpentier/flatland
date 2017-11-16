@@ -58,7 +58,7 @@ public:
      *
      * @param {const libconfig::ParseException &} e; displayed exception
      */
-    void display_libconfig_parse_exception(const libconfig::ParseException &e) {
+    void display_libconfig_parse_exception(const libconfig::ParseException &e) const {
         std::cerr << "Error in parameters(const char *cfg_path): ParseException ";
         std::cerr << "in file " << e.getFile() << " ";
         std::cerr << "at line " << e.getLine() << ": ";
@@ -71,7 +71,7 @@ public:
      * Parse the actions given as parameters
      * @param {std::vector<std::shared_ptr<action>> &} action_space; resulting action space
      */
-    void parse_actions(std::vector<std::shared_ptr<action>> &action_space) {
+    void parse_actions(std::vector<std::shared_ptr<action>> &action_space) const {
         libconfig::Config cfg;
         try {
             cfg.readFile(MAIN_CFG_PATH.c_str());
@@ -156,7 +156,7 @@ public:
      * @param {std::vector<std::vector<int>> &} grid; grid world
      * @deprecated Grid world is no more implemented this way
      */
-    void parse_grid(std::vector<std::vector<int>> &grid) {
+    void parse_grid(std::vector<std::vector<int>> &grid) const {
         grid.clear();
         std::ifstream fi;
         fi.open(GRID_PATH);
@@ -176,7 +176,7 @@ public:
      * Parse the decision criteria boolean.
      * @param {std::vector<bool> &} v; vector containing every boolean
      */
-    void parse_decision_criterion(std::vector<bool> &v) {
+    void parse_decision_criterion(std::vector<bool> &v) const {
         libconfig::Config cfg;
         try {
             cfg.readFile(MAIN_CFG_PATH.c_str());
@@ -207,7 +207,7 @@ public:
      * Parse the initial state of the agent.
      * @param {state &} s; reference to the state of the agent
      */
-    void parse_state(state &s) {
+    void parse_state(state &s) const {
         libconfig::Config cfg;
         try {
             cfg.readFile(MAIN_CFG_PATH.c_str());
@@ -238,7 +238,7 @@ public:
         double &xsize,
         double &ysize,
         boost::ptr_vector<shape> &elements,
-        std::vector<circle> &goals)
+        std::vector<circle> &goals) const
     {
         libconfig::Config cworld_cfg;
         try {

@@ -22,12 +22,12 @@ public:
      * @brief Default constructor
      *
      * Default constructor initialising the parameters via a 'parameters' object.
-     * @param {parameters &} p; parameters
+     * @param {const parameters &} p; parameters
      * @param {environment *} en; pointer to the environment, used for action space reduction /
      * termination criterion / generative model
      */
     agent(
-        parameters &p,
+        const parameters &p,
         environment *en) :
         policy(p,en)
     {

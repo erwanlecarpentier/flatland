@@ -26,9 +26,9 @@ public:
      * @brief Constructor
      *
      * Constructor wrt the given parameters.
-     * @param {parameters &} p; parameters
+     * @param {const parameters &} p; parameters
      */
-    world(parameters &p){
+    world(const parameters &p){
         trajectory_output_path = p.TRAJECTORY_OUTPUT_PATH;
         p.parse_world(xsize,ysize,walls,goals);
         initial_number_of_goals = goals.size();
