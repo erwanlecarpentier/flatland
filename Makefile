@@ -21,5 +21,5 @@ trajectory :
 	python3 plot/trajectory.py
 
 graph :
-	python3 plot/comparison.py
+	python3 plot/multi.py
 

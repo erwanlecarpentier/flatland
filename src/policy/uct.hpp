@@ -56,8 +56,6 @@ public:
      */
     bool is_node_terminal(node &v) {
         if(v.is_root()) {
-            //std::cout << "is terminal of: ";//TRM
-            //v.get_state().print();//TRM
             return model.is_terminal(v.get_state());
         } else {
             for(auto &s: v.get_sampled_states()) {
@@ -152,13 +150,11 @@ public:
      */
     node * tree_policy(node &v) {
         if(is_node_terminal(v)) { // terminal
-            //std::cout << "terminal" << std::endl;//TRM
             sample_new_state(&v);
             return &v;
         } else if(!v.is_fully_expanded()) { // expand node
             return expand(v);
         } else { // apply UCT tree policy
-            //std::cout << "pi_UCT" << std::endl;//TRM
             node * v_p = uct_child(v);
             sample_new_state(v_p);
             return tree_policy(*v_p);

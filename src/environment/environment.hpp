@@ -244,9 +244,6 @@ public:
      */
     bool is_terminal(const state &s) {
         int world_value = world_value_at(s);
-        //std::cout << "world value for terminal   : " << world_value << std::endl;//TRM
-        //std::cout << "init nb goals for terminal : " << w.initial_number_of_goals << std::endl;//TRM
-        //std::cout << "nb waypoints for terminal  : " << s.waypoints_reached_counter << std::endl;//TRM
         if(w.initial_number_of_goals == s.waypoints_reached_counter /* Every goal reached */
         ||((world_value == -1)*is_crash_terminal) /* Wall */) {
             return true;

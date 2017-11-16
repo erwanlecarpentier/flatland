@@ -143,14 +143,16 @@ void run_switch(
  * @param {unsigned} nbsim; number of simulations
  * @param {const parameters &} p; parameters
  * @param {const char *} output_path; ouput path for backup
+ * @param {bool} prnt; set to true if print
+ * @param {bool} bckp; set to true if backup
  */
 void run(
     unsigned nbsim,
     const parameters &p,
-    const char *output_path)
+    const char *output_path,
+    bool prnt = true,
+    bool bckp = true)
 {
-    bool prnt = true; // set to true if print
-    bool bckp = true; // set to true if backup
     std::vector<std::vector<double>> backup_vector; // backup container
     std::vector<std::string> names = { // set backup variables names
         "score",
@@ -162,7 +164,6 @@ void run(
         initialize_backup(names,output_path,sep);
     }
     for(unsigned i=0; i<nbsim; ++i) { // run nbsim different simulations
-        //parameters p(config_path); // load parameters//TRM
         run_switch(p,prnt,bckp,backup_vector);
     }
     if(bckp) { // save all
@@ -170,18 +171,36 @@ void run(
     }
 }
 
-void test() {
-    parameters p("config/main.cfg");
-    run(2,p,"data/test.csv");
+void test(char * n) {
+    std::vector<double> mp_range = {.0, .05, .1, .15, .2, .25, .3, .35, .4, .45, .5};
+    std::string name(n);
+    unsigned nbsim = 100;
+    for(auto &mp : mp_range) { // for every misstep probability
+        std::string cfg_path = "config/backup/continuous/" + name + ".cfg";
+        std::string bkp_path = "data/" + name + std::to_string((int)(mp*100.)) + ".csv";
+        std::cout << "Output: " << bkp_path << std::endl;
+        parameters p(cfg_path.c_str());
+        p.MISSTEP_PROBABILITY = mp;
+        p.MODEL_MISSTEP_PROBABILITY = mp;
+        run(nbsim,p,bkp_path.c_str(),false,true);
+    }
 }
 
 /**
  * @brief Main function
  */
-int main() {
+int main(int argc, char* argv[]) {
     try {
+        std::clock_t c_start = std::clock();
         srand(time(NULL));
-        test();
+        //parameters p("config/main.cfg");
+        //run(1,p,"test.csv",true,true);
+        if(argc == 2) {
+            test(argv[1]);
+        }
+        std::clock_t c_end = std::clock();
+        double time_elapsed_ms = 1000. * (c_end - c_start) / CLOCKS_PER_SEC;
+        std::cout << "Program run in " << time_elapsed_ms << "ms" << std::endl;
     }
     catch(const std::exception &e) {
         std::cerr << "Error in main(): standard exception caught: " << e.what() << std::endl;

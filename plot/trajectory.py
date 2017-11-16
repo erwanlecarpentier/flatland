@@ -55,7 +55,7 @@ for i in range(world_config.nb_circles):
 
 xs = main_config.initial_state_x;
 ys = main_config.initial_state_y;
-g = mpatches.Circle((xs,ys),0.03,edgecolor='none',facecolor=RED)
+g = mpatches.Circle((xs,ys),0.1,edgecolor='none',facecolor=RED)
 ax.add_patch(g)
 
 # Plot goal --------------------------------------------------------------------
