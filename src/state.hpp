@@ -19,12 +19,14 @@ public:
         double _x = 0.,
         double _y = 0.,
         double _v = 1.,
-        double _theta = 0.) :
+        double _theta = 0.,
+        unsigned _waypoints_reached_counter = 0) :
         x(_x),
         y(_y),
         v(_v),
-        theta(_theta)
-    { }
+        theta(_theta),
+        waypoints_reached_counter(_waypoints_reached_counter)
+    {}
 
     /**
      * @brief Set to default
@@ -36,6 +38,7 @@ public:
         y = 0.;
         v = 0.;
         theta = 0.;
+        waypoints_reached_counter = 0;
     }
 
     /**

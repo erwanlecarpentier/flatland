@@ -219,9 +219,10 @@ public:
         && cfg.lookupValue("initial_state_y",s.y)
         && cfg.lookupValue("initial_state_v",s.v)
         && cfg.lookupValue("initial_state_theta",s.theta)) {
+            s.waypoints_reached_counter = 0;
             s.theta *= TO_RAD;
         } else {
-            throw wrong_world_configuration_path();
+            throw wrong_syntax_configuration_file_exception();
         }
     }
 

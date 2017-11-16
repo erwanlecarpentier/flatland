@@ -70,11 +70,12 @@ void single_run(
         ag.s.print();
         en.print(ag.s);
         en.save_trajectory();
+        std::cout << "Finish\n";
     }
     if(bckp) {
         std::vector<double> simbackup = {
-            (double) t, //score
-            time_elapsed_ms // computational cost
+            (double) t, /* score */
+            time_elapsed_ms /* computational cost */
         };
         std::vector<double> agbackup = ag.policy.get_backup(); // agent backup
         simbackup.insert(simbackup.end(),agbackup.begin(),agbackup.end());
@@ -140,15 +141,14 @@ void run_switch(
  * Perform multiple simulation run.
  * All the parameters are fetched in this method.
  * @param {unsigned} nbsim; number of simulations
- * @param {const char *} config_path; configuration path
+ * @param {const parameters &} p; parameters
  * @param {const char *} output_path; ouput path for backup
  */
 void run(
     unsigned nbsim,
-    const char *config_path,
+    const parameters &p,
     const char *output_path)
 {
-    parameters p(config_path); // load parameters
     bool prnt = true; // set to true if print
     bool bckp = true; // set to true if backup
     std::vector<std::vector<double>> backup_vector; // backup container
@@ -162,6 +162,7 @@ void run(
         initialize_backup(names,output_path,sep);
     }
     for(unsigned i=0; i<nbsim; ++i) { // run nbsim different simulations
+        //parameters p(config_path); // load parameters//TRM
         run_switch(p,prnt,bckp,backup_vector);
     }
     if(bckp) { // save all
@@ -170,7 +171,8 @@ void run(
 }
 
 void test() {
-    run(10,"config/main.cfg","data/test.csv");
+    parameters p("config/main.cfg");
+    run(2,p,"data/test.csv");
 }
 
 /**
@@ -179,7 +181,7 @@ void test() {
 int main() {
     try {
         srand(time(NULL));
-        run(2,"config/main.cfg","data/test.csv");
+        test();
     }
     catch(const std::exception &e) {
         std::cerr << "Error in main(): standard exception caught: " << e.what() << std::endl;
