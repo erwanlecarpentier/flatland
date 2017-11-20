@@ -39,6 +39,7 @@ public:
     unsigned DEFAULT_POLICY_HORIZON;
     double UCT_CST;
     double DISCOUNT_FACTOR;
+    double SDM_RATIO;
     double VMR_THRESHOLD;
     double DISTANCE_THRESHOLD;
     double OUTCOME_VARIANCE_THRESHOLD;
@@ -331,9 +332,10 @@ public:
         && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)
         && cfg.lookupValue("uct_cst",UCT_CST)
         && cfg.lookupValue("discount_factor",DISCOUNT_FACTOR)
-        && cfg.lookupValue("vmr_threshold",VMR_THRESHOLD)
-        && cfg.lookupValue("distance_threshold",DISTANCE_THRESHOLD)
-        && cfg.lookupValue("outcome_variance_threshold",OUTCOME_VARIANCE_THRESHOLD)) {
+        && cfg.lookupValue("sdm_ratio",SDM_RATIO)
+        && cfg.lookupValue("sdv_threshold",SDV_THRESHOLD)
+        && cfg.lookupValue("sdsd_threshold",SDSD_THRESHOLD)
+        && cfg.lookupValue("rdv_threshold",RDV_THRESHOLD)) {
             /* Nothing to do */
         }
         else { // Error in config file
