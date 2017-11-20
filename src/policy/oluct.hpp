@@ -14,6 +14,7 @@ public:
     std::vector<bool> decision_criteria_selector; ///< Vector containing the boolean values of the activation of each decision criterion
     environment * envt; ///< Pointer to an environment, used for action space reduction
     uct<DFTPLC> pl; ///< Embedded UCT policy
+    double sdm_ratio; ///< SDM ratio (State Modality test)
     double vmr_threshold; ///< VMR threshold for the VMR test
     double distance_threshold;  ///< Threshold for the distance
     double outcome_variance_threshold;  ///< Threshold for the distance
@@ -29,9 +30,10 @@ public:
         pl(p,en)
     {
         p.parse_decision_criterion(decision_criteria_selector);
-        vmr_threshold = p.VMR_THRESHOLD;
-        distance_threshold = p.DISTANCE_THRESHOLD;
-        outcome_variance_threshold = p.OUTCOME_VARIANCE_THRESHOLD;
+        sdm_ratio = p.SDM_RATIO;
+        vmr_threshold = p.SDV_THRESHOLD;
+        distance_threshold = p.SDSD_THRESHOLD;
+        outcome_variance_threshold = p.RDV_THRESHOLD;
     }
 
     /**
@@ -103,6 +105,73 @@ public:
         }
         variance /= pow(((double) outcomes.size()),2.);
         return is_less_than(variance,outcome_variance_threshold);
+    }
+
+    bool are_states_equal(const state &a, const state &b) const {
+        if(is_equal_to(a.x,b.x)
+        && is_equal_to(a.y,b.y)
+        && is_equal_to(a.v,b.v)
+        && is_equal_to(a.theta,b.theta)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @brief State multimodality test decision criterion
+     *
+     * Keep the sub-tree if there is only one state mode, up to a certain precision.
+     * Also discard the tree if the current state does not lie in this mode.
+     * The test is implemented for the discrete case.
+     * @param {const state &} s; current state of the agent
+     * @return Return true if the test does not discard the tree.
+     */
+    bool state_multimodality_test(const state &s) {
+        std::vector<state> modes_values;
+        std::vector<unsigned> modes_counters;
+        for(auto &si : p.root_node.get_sampled_states()) {
+            bool is_new_mode = true;
+            for(auto &m : modes_values) {
+                if(are_states_equal(si,m)) {
+                    is_new_mode = false;
+                }
+            }
+            if(is_new_mode) {
+                modes_values.push_back(si);
+                modes_counters.push_back(1);
+            } else {
+                for(unsigned j=0; j<modes_values.size(); ++j) {
+                    if(are_states_equal(si,modes_values[j])) {
+                        modes_counters.at(j)++;
+                    }
+                }
+            }
+        }
+        if(modes_values.size() == 1) { // mono-modal
+            if(are_states_equal(s,modes_values[0])) { // state within the unique mode
+                return true;
+            } else { // state out of the unique mode
+                return false;
+            }
+        } else { // multi-modal
+            std::vector<double> modes_ratio;
+            for(auto &elt: modes_counters) { // build modes ratio vector
+                modes_ratio.push_back(((double) elt) / ((double)p.root_node.get_sampled_states().size()));
+            }
+            unsigned state_mode_indice = 0;
+            for(unsigned j=0; j<modes_values.size(); ++j) {
+                if(are_states_equal(s,modes_values[j])) {
+                    state_mode_indice = j;
+                    break;
+                }
+            }
+            if(is_less_than(modes_ratio.at(state_mode_indice),sdm_ratio)) {
+                return false;
+            } else {
+                return true;
+            }
+        }
     }
 
     /**
