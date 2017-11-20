@@ -40,9 +40,9 @@ public:
     double UCT_CST;
     double DISCOUNT_FACTOR;
     double SDM_RATIO;
-    double VMR_THRESHOLD;
-    double DISTANCE_THRESHOLD;
-    double OUTCOME_VARIANCE_THRESHOLD;
+    double SDV_THRESHOLD;
+    double SDSD_THRESHOLD;
+    double RDV_THRESHOLD;
 
     /**
      * @brief Simulation parameters default constructor
