@@ -15,9 +15,9 @@ public:
     environment * envt; ///< Pointer to an environment, used for action space reduction
     uct<DFTPLC> pl; ///< Embedded UCT policy
     double sdm_ratio; ///< SDM ratio (State Modality test)
-    double vmr_threshold; ///< VMR threshold for the VMR test
-    double distance_threshold;  ///< Threshold for the distance
-    double outcome_variance_threshold;  ///< Threshold for the distance
+    double sdv_threshold; ///< VMR threshold for the VMR test
+    double sdsd_threshold;  ///< Threshold for the distance
+    double rdv_threshold;  ///< Threshold for the distance
 
     /**
      * @brief Constructor
@@ -31,9 +31,9 @@ public:
     {
         p.parse_decision_criterion(decision_criteria_selector);
         sdm_ratio = p.SDM_RATIO;
-        vmr_threshold = p.SDV_THRESHOLD;
-        distance_threshold = p.SDSD_THRESHOLD;
-        outcome_variance_threshold = p.RDV_THRESHOLD;
+        sdv_threshold = p.SDV_THRESHOLD;
+        sdsd_threshold = p.SDSD_THRESHOLD;
+        rdv_threshold = p.RDV_THRESHOLD;
     }
 
     /**
@@ -65,7 +65,7 @@ public:
         }
         Eigen::Vector4d vmr = variance_mean_ratio(data);
         double m_vmr = (vmr(0) + vmr(1) + vmr(2) + vmr(3)) / 4.;
-        return is_less_than(m_vmr,vmr_threshold);
+        return is_less_than(m_vmr,sdv_threshold);
     }
 
     /**
@@ -85,7 +85,7 @@ public:
         for(auto &smp : samples) {
             data.emplace_back(smp.x,smp.y,smp.v,smp.theta);
         }
-        return is_less_than(mahalanobis_distance(s_vect,data,1e-30),distance_threshold);
+        return is_less_than(mahalanobis_distance(s_vect,data,1e-30),sdsd_threshold);
     }
 
     /**
@@ -104,7 +104,7 @@ public:
             }
         }
         variance /= pow(((double) outcomes.size()),2.);
-        return is_less_than(variance,outcome_variance_threshold);
+        return is_less_than(variance,rdv_threshold);
     }
 
     bool are_states_equal(const state &a, const state &b) const {
