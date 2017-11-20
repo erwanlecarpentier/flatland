@@ -13,10 +13,10 @@ GREEN = '#00cc66';
 LIGHTBLUE = '#6699ff';
 GREY = '#4d4d4d';
 
-cworldpath = os.path.join(CURDIR, '../config/world.cfg')
+cworldpath = os.path.join(CURDIR, '../config/backup/continuous/cheese_world.cfg')
 with io.open(cworldpath) as f:
 	world_config = libconf.load(f)
-mainpath = os.path.join(CURDIR, '../config/main.cfg')
+mainpath = os.path.join(CURDIR, '../config/backup/continuous/uct.cfg')
 with io.open(mainpath) as g:
 	main_config = libconf.load(g)
 
@@ -72,10 +72,13 @@ for i in range(world_config.nb_goals):
 
 # Plot trajectory --------------------------------------------------------------
 
-traj_path = "data/trajectory.csv";
+traj_path = "data/trajectory_uct.csv";
 data = pd.read_csv(traj_path,sep = ',');
 x = data["x"];
 y = data["y"];
+lbsize = 24
+ax.tick_params(axis='x', labelsize=lbsize)
+ax.tick_params(axis='y', labelsize=lbsize)
 ax.plot(x,y,color=LIGHTBLUE);
 
 plt.show()
