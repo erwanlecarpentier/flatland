@@ -130,7 +130,7 @@ public:
     bool state_multimodality_test(const state &s) {
         std::vector<state> modes_values;
         std::vector<unsigned> modes_counters;
-        for(auto &si : p.root_node.get_sampled_states()) {
+        for(auto &si : pl.root_node.get_sampled_states()) {
             bool is_new_mode = true;
             for(auto &m : modes_values) {
                 if(are_states_equal(si,m)) {
@@ -157,7 +157,7 @@ public:
         } else { // multi-modal
             std::vector<double> modes_ratio;
             for(auto &elt: modes_counters) { // build modes ratio vector
-                modes_ratio.push_back(((double) elt) / ((double)p.root_node.get_sampled_states().size()));
+                modes_ratio.push_back(((double) elt) / ((double)pl.root_node.get_sampled_states().size()));
             }
             unsigned state_mode_indice = 0;
             for(unsigned j=0; j<modes_values.size(); ++j) {
@@ -188,12 +188,15 @@ public:
             keep_tree *= action_validity_test(s);
         }
         if(decision_criteria_selector[2]) {
-            keep_tree *= state_distribution_vmr_test();
+            keep_tree *= state_multimodality_test(s);
         }
         if(decision_criteria_selector[3]) {
-            keep_tree *= distance_to_state_distribution_test(s);
+            keep_tree *= state_distribution_vmr_test();
         }
         if(decision_criteria_selector[4]) {
+            keep_tree *= distance_to_state_distribution_test(s);
+        }
+        if(decision_criteria_selector[5]) {
             keep_tree *= outcome_distribution_variance_test();
         }
         return keep_tree;
