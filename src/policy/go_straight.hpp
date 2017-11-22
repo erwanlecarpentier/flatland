@@ -44,7 +44,7 @@ public:
      */
 	std::shared_ptr<action> operator()(const state &s) {
         (void) s;
-        return std::shared_ptr<action>(new navigation_action(1.,.2,0.,0.));
+        return std::shared_ptr<action>(new navigation_action(1.,100.,0.,0.));
 	}
 
     /**

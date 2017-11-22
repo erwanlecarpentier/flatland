@@ -37,8 +37,7 @@ public:
         s.v *= fv;
         if(is_greater_than(s.v,vmax)) { // above maximum velocity
             s.v = vmax;
-        }
-        if(is_less_than(s.v,vmin)) { // under minimum velocity
+        } else if(is_less_than(s.v,vmin)) { // under minimum velocity
             s.v = vmin;
         }
         s.theta += dtheta;

@@ -176,7 +176,7 @@ void test(char * n) {
     std::string name(n);
     unsigned nbsim = 100;
     for(auto &mp : mp_range) { // for every misstep probability
-        std::string cfg_path = "config/backup/continuous/" + name + ".cfg";
+        std::string cfg_path = "config/backup/discrete/" + name + ".cfg";
         std::string bkp_path = "data/" + name + std::to_string((int)(mp*100.)) + ".csv";
         std::cout << "Output: " << bkp_path << std::endl;
         parameters p(cfg_path.c_str());
@@ -193,10 +193,11 @@ int main(int argc, char* argv[]) {
     try {
         std::clock_t c_start = std::clock();
         srand(time(NULL));
-        //parameters p("config/main.cfg");
-        //run(1,p,"test.csv",true,true);
-        if(argc == 2) {
+        if(argc == 2) { // run test method with given path as input
             test(argv[1]);
+        } else { // run single simulation
+            parameters p("config/main.cfg");
+            run(1,p,"data/test.csv",true,true);
         }
         std::clock_t c_end = std::clock();
         double time_elapsed_ms = 1000. * (c_end - c_start) / CLOCKS_PER_SEC;
