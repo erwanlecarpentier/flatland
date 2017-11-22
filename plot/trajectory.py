@@ -13,10 +13,10 @@ GREEN = '#00cc66';
 LIGHTBLUE = '#6699ff';
 GREY = '#4d4d4d';
 
-cworldpath = os.path.join(CURDIR, '../config/backup/discrete/discrete_world.cfg')
+cworldpath = os.path.join(CURDIR, '../config/world.cfg')
 with io.open(cworldpath) as f:
 	world_config = libconf.load(f)
-mainpath = os.path.join(CURDIR, '../config/backup/discrete/uct.cfg')
+mainpath = os.path.join(CURDIR, '../config/main.cfg')
 with io.open(mainpath) as g:
 	main_config = libconf.load(g)
 
