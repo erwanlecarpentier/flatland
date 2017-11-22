@@ -16,6 +16,9 @@ public:
     world w; ///< world
     double misstep_probability; ///< Probability of misstep
     double state_gaussian_stddev; ///< Standard deviation of the Gaussian applied on the position
+    double void_reward;
+    double wall_reward;
+    double goal_reward;
     std::vector<std::shared_ptr<action>> action_space; ///< Full space of the actions available in the environment
 
     /**
@@ -29,6 +32,9 @@ public:
         is_crash_terminal = p.IS_CRASH_TERMINAL;
         misstep_probability = p.MISSTEP_PROBABILITY;
         state_gaussian_stddev = p.STATE_GAUSSIAN_STDDEV;
+        void_reward = p.VOID_REWARD;
+        wall_reward = p.WALL_REWARD;
+        goal_reward = p.GOAL_REWARD;
     }
 
     /**
@@ -186,13 +192,13 @@ public:
         (void) s_p;
         switch(world_value_at(s)) {
             case 1: { // Goal reached
-                return 1.;
+                return goal_reward;
             }
             case -1: { // Wall reached
-                return -1.;
+                return wall_reward;
             }
             default: {
-                return 0.;
+                return void_reward;
             }
         }
     }

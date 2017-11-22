@@ -9,6 +9,7 @@
 #include <cartesian_action.hpp>
 #include <navigation_action.hpp>
 #include <circle.hpp>
+#include <environment.hpp>
 #include <exceptions.hpp>
 #include <rectangle.hpp>
 #include <shape.hpp>
@@ -20,21 +21,28 @@ constexpr double TO_RAD = 0.01745329251; ///< degrees to radians
  * @brief Simulation parameters
  *
  * Contains all the simulations parameters.
+ * The fact that the parameters are stored in the attributes of this object and then copied
+ * into the parsed object allows to dynamically modify them inside the code so.
+ * This is useful when one wants to run simulations on a range of different parameters.
  */
 class parameters {
 public:
-    unsigned SIMULATION_LIMIT_TIME;
     std::string MAIN_CFG_PATH;
     std::string GRID_PATH;
     std::string WORLD_PATH;
     std::string TRAJECTORY_OUTPUT_PATH;
+    // Simulation parameters:
+    unsigned SIMULATION_LIMIT_TIME;
+    unsigned POLICY_SELECTOR;
+    unsigned DEFAULT_POLICY_SELECTOR;
+    // Environment parameters:
     bool IS_CRASH_TERMINAL;
     double MISSTEP_PROBABILITY;
     double STATE_GAUSSIAN_STDDEV;
-    double MODEL_MISSTEP_PROBABILITY;
-    double MODEL_STATE_GAUSSIAN_STDDEV;
-    unsigned POLICY_SELECTOR;
-    unsigned DEFAULT_POLICY_SELECTOR;
+    double VOID_REWARD;
+    double WALL_REWARD;
+    double GOAL_REWARD;
+    // Policy parameters:
     unsigned TREE_SEARCH_BUDGET;
     unsigned DEFAULT_POLICY_HORIZON;
     double UCT_CST;
@@ -43,6 +51,9 @@ public:
     double SDV_THRESHOLD;
     double SDSD_THRESHOLD;
     double RDV_THRESHOLD;
+    // Model parameters:
+    double MODEL_MISSTEP_PROBABILITY;
+    double MODEL_STATE_GAUSSIAN_STDDEV;
 
     /**
      * @brief Simulation parameters default constructor
@@ -324,6 +335,9 @@ public:
         && cfg.lookupValue("is_crash_terminal",IS_CRASH_TERMINAL)
         && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
         && cfg.lookupValue("state_gaussian_stddev",STATE_GAUSSIAN_STDDEV)
+        && cfg.lookupValue("void_reward",VOID_REWARD)
+        && cfg.lookupValue("wall_reward",WALL_REWARD)
+        && cfg.lookupValue("goal_reward",GOAL_REWARD)
         && cfg.lookupValue("model_misstep_probability",MODEL_MISSTEP_PROBABILITY)
         && cfg.lookupValue("model_state_gaussian_stddev",MODEL_STATE_GAUSSIAN_STDDEV)
         && cfg.lookupValue("policy_selector",POLICY_SELECTOR)

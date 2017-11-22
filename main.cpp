@@ -13,7 +13,6 @@
 
 #include <action.hpp>
 #include <agent.hpp>
-#include <world.hpp>
 #include <environment.hpp>
 #include <parameters.hpp>
 #include <random.hpp>
@@ -23,6 +22,7 @@
 #include <save.hpp>
 #include <state.hpp>
 #include <utils.hpp>
+#include <world.hpp>
 
 /**
  * @brief Single run
