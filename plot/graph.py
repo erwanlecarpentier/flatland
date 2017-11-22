@@ -42,6 +42,11 @@ def plot_error_bar(ax, rng, mean, stddev, cl, mrk, fcc, lw, ls):
 	ax.fill_between(rng, up, dw, color=cl, alpha=0.05)
 	return l
 
+def plot_relative_means(ax, rng, mean, stddev, cl, mrk, fcc, lw, ls, uct_lo_mea):
+	values = [a - b for a, b in zip(mean, uct_lo_mea)]
+	l = ax.plot(rng, values, color=cl, marker=mrk, linewidth=lw, linestyle=ls, markersize=8, markerfacecolor=fcc)
+	return l
+
 def extract(path, failure_probability_range, take_log):
 	lomns = []
 	lostd = []
@@ -67,23 +72,33 @@ def extract(path, failure_probability_range, take_log):
 		castd.append(ca.std())
 	return [lomns, lostd, cpmns, cpstd, camns, castd]
 
-def plot(path, args, color, mrk, fcc, lw, ls):
+def plot(path, args, color, mrk, fcc, lw, ls, uct_lo_mea):
 	fp_range        = args[0]
 	fp_range_val = args[1]
 	take_log        = args[2]
 	ax1             = args[3]
 	ax2             = args[4]
 	ax3             = args[5]
+	ax4             = args[6]
 	[lo_mea, lo_std, cp_mea, cp_std, ca_mea, ca_std] = extract(path,fp_range,take_log)
 	l = plot_error_bar(ax1, fp_range_val, lo_mea, lo_std, color, mrk, fcc, lw, ls)
-	l = plot_error_bar(ax2, fp_range_val, cp_mea, cp_std, color, mrk, fcc, lw, ls)
-	l = plot_error_bar(ax3, fp_range_val, ca_mea, ca_std, color, mrk, fcc, lw, ls)
+	l = plot_relative_means(ax2, fp_range_val, lo_mea, lo_std, color, mrk, fcc, lw, ls, uct_lo_mea)
+	l = plot_error_bar(ax3, fp_range_val, cp_mea, cp_std, color, mrk, fcc, lw, ls)
+	l = plot_error_bar(ax4, fp_range_val, ca_mea, ca_std, color, mrk, fcc, lw, ls)
 	return l
+
+def apply_label(ax, xlab, ylab, ylab_log, font, take_log):
+	ax.set_xlabel(xlab, fontproperties=font)
+	if take_log:
+		ax.set_ylabel(ylab_log, fontproperties=font)
+	else:
+		ax.set_ylabel(ylab, fontproperties=font)
 
 # Variables --------------------------------------------------------------------
 
 # Take the log of the data or not
 take_log = False
+discrete = False
 
 # Different failure probabilities (wrt the files names)
 fp_range = ["0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50"]
@@ -95,17 +110,22 @@ fp_range_val = [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
 
 plt.close('all')
 
-f, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex=True)
+f, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, sharex=True, figsize=(9.5,12.6))
 
-#root_path = 'data/';
-root_path = 'data/backup/continuous/';
+if discrete:
+	root_path = 'data/backup/discrete/'
+else:
+	root_path = 'data/backup/continuous/'
+[uct_lo_mea, uct_lo_std, uct_cp_mea, uct_cp_std, uct_ca_mea, uct_ca_std] = extract(root_path + 'uct',fp_range,take_log)
 lw = 2.3
-args = [fp_range, fp_range_val, take_log, ax1, ax2, ax3]
-l1 = plot(root_path + 'oluct0', args, PL1, 's', PL1,    lw, '-')
-l2 = plot(root_path + 'oluct2', args, PL3, '^', PL3,    lw, '-.')
-l3 = plot(root_path + 'oluct3', args, PL4, 'o', 'none', lw, '--')
-l4 = plot(root_path + 'oluct4', args, PL5, 's', 'none', lw, '-')
-l0 = plot(root_path + 'uct',    args, PL0, 'o', PL0,    lw, '-')
+args = [fp_range, fp_range_val, take_log, ax1, ax2, ax3, ax4]
+l1 = plot(root_path + 'oluct0', args, PL1, 's', PL1,    lw, '-', uct_lo_mea)
+if discrete:
+	l2 = plot(root_path + 'oluct1', args, PL2, 's', PL2,    lw, '-', uct_lo_mea)
+l3 = plot(root_path + 'oluct2', args, PL3, '^', 'none', lw, '-.', uct_lo_mea)
+l4 = plot(root_path + 'oluct3', args, PL4, 'o', 'none', lw, '--', uct_lo_mea)
+l5 = plot(root_path + 'oluct4', args, PL5, 's', 'none', lw, '-', uct_lo_mea)
+l0 = plot(root_path + 'uct',    args, PL0, 'o', PL0,    lw, '-', uct_lo_mea)
 
 
 # Label ------------------------------------------------------------------------
@@ -113,43 +133,33 @@ l0 = plot(root_path + 'uct',    args, PL0, 'o', PL0,    lw, '-')
 font = FontProperties()
 font.set_family('serif')
 font.set_style('normal')
-font.set_size('xx-large') # medium
+font.set_size('x-large')
 font.set_weight('light')
 
 labsz = 15
 xlab = 'Transition misstep probability'
-ylab1 = 'Loss (time steps\nto reach all\nthe waypoints)'
-ylab1_log = 'Log of the loss\n(time steps to reach all the waypoints)'
-ylab2 = 'Computational cost (ms)'
-ylab2_log = 'Log of the\ncomputational cost (ms)'
-ylab3 = 'Number of call'
-ylab3_log = 'Log of the\nnumber of call'
+ylab1 = 'Loss (time steps to\nreach all the waypoints)'
+ylab1_log = 'Log of the loss\n(time steps to\nreach all the waypoints)'
+ylab2 = 'Mean loss\nrelatively to UCT'
+ylab2_log = 'Log of the\nmean loss\nrelatively to UCT'
+ylab3 = 'Computational\ncost (ms)'
+ylab3_log = 'Log of the\ncomputational\ncost (ms)'
+ylab4 = 'Number of calls'
+ylab4_log = 'Log of the\nnumber of calls'
 
-ax1.set_xlabel(xlab, fontproperties=font)
-if take_log:
-	ax1.set_ylabel(ylab1_log, fontproperties=font)
-else:
-	ax1.set_ylabel(ylab1, fontproperties=font)
-
-ax2.set_xlabel(xlab, fontproperties=font)
-if take_log:
-	ax2.set_ylabel(ylab2_log, fontproperties=font)
-else:
-	ax2.set_ylabel(ylab2, fontproperties=font)
-
-ax3.set_xlabel(xlab, fontproperties=font)
-if take_log:
-	ax3.set_ylabel(ylab3_log, fontproperties=font)
-else:
-	ax3.set_ylabel(ylab3, fontproperties=font)
+apply_label(ax1,xlab,ylab1,ylab1_log,font,take_log)
+apply_label(ax2,xlab,ylab2,ylab2_log,font,take_log)
+apply_label(ax3,xlab,ylab3,ylab3_log,font,take_log)
+apply_label(ax4,xlab,ylab4,ylab4_log,font,take_log)
 
 # Legend -----------------------------------------------------------------------
+if discrete:
+	l = [l0,l1,l2,l3,l4,l5]
+	lg = ['Vanilla UCT', 'Plain OLUCT', 'SDM-OLUCT', 'SDV-OLUCT', 'SDSD-OLUCT', 'RDV-OLUCT']
+else:
+	l = [l0,l1,l3,l4,l5]
+	lg = ['Vanilla UCT', 'Plain OLUCT', 'SDV-OLUCT', 'SDSD-OLUCT', 'RDV-OLUCT']
 
-l = [l0,l1,l2,l3,l4]
-lg = ['Vanilla UCT', 'Plain OLUCT', 'SDV-OLUCT', 'SDSD-OLUCT', 'RDV-OLUCT']
-#ax1.legend(l, lg, numpoints=1, loc='upper left', prop=font)
-#ax2.legend(l, lg, numpoints=1, loc='upper left', prop=font)
-#ax3.legend(l, lg, numpoints=1, loc='upper left', prop=font)
-ax3.legend(l, lg, numpoints=1, prop=font, bbox_to_anchor=(0., -0.6, 1., .102), loc='lower center', ncol=3, mode="expand", borderaxespad=0., frameon=False)
+ax4.legend(l, lg, numpoints=1, prop=font, bbox_to_anchor=(0., -0.6, 1., .102), loc='lower center', ncol=3, mode="expand", borderaxespad=0., frameon=False)
 
 plt.show()
