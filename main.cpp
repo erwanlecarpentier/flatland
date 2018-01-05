@@ -55,10 +55,13 @@ void single_run(
             en.print(ag.s);
         }
         ag.step();
+        en.step(ag.s);
+        /* //TRM replaces by en.step(ag.s)
         if(en.is_waypoint_reached(ag.s)) {
             en.remove_waypoints_at(ag.s);
             ag.waypoint_reached();
         }
+        */
         if(en.is_terminal(ag.s)) { // terminal state reached
             break;
         }

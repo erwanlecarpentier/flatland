@@ -52,6 +52,14 @@ public:
         }
     }
 
+
+    /**
+     * @brief Remove waypoints at given position
+     *
+     * Remove all the waypoints at the position of the given state.
+     * @param {const state &} s; given state
+     * @return Return the number of removed waypoints.
+     */
     unsigned remove_waypoints_at(const state &s) {
         std::vector<unsigned> matching_goals_indices;
         unsigned counter = 0;

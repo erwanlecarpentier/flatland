@@ -60,10 +60,10 @@ ax.add_patch(g)
 
 # Plot goal --------------------------------------------------------------------
 
-for i in range(world_config.nb_goals):
-	xn = "x_goal" + str(i);
-	yn = "y_goal" + str(i);
-	rn = "r_goal" + str(i);
+for i in range(world_config.nb_wp):
+	xn = "x_wp" + str(i);
+	yn = "y_wp" + str(i);
+	rn = "r_wp" + str(i);
 	x = world_config[xn];
 	y = world_config[yn];
 	r = world_config[rn];

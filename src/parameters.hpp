@@ -245,13 +245,13 @@ public:
      * @param {double &} xsize;
      * @param {double &} ysize;
      * @param {boost::ptr_vector<shape> &} walls;
-     * @param {std::vector<circle> &} goals;
+     * @param {std::vector<circle> &} wp; waypoints
      */
     void parse_world(
         double &xsize,
         double &ysize,
         boost::ptr_vector<shape> &elements,
-        std::vector<circle> &goals) const
+        std::vector<circle> &wp) const
     {
         libconfig::Config cworld_cfg;
         try {
@@ -265,9 +265,9 @@ public:
         && cworld_cfg.lookupValue("ysize",ysize)
         && cworld_cfg.lookupValue("nb_rectangles",nbr)
         && cworld_cfg.lookupValue("nb_circles",nbc)
-        && cworld_cfg.lookupValue("nb_goals",nbg)) {
+        && cworld_cfg.lookupValue("nb_wp",nbg)) {
             elements.reserve(nbr + nbc);
-            goals.reserve(nbg);
+            wp.reserve(nbg);
         } else {
             throw wrong_world_configuration_path();
         }
@@ -299,15 +299,15 @@ public:
                 throw wrong_world_configuration_path();
             }
         }
-        for(unsigned i=0; i<nbg; ++i) { // parse goals
-            std::string xname = "x_goal" + std::to_string(i);
-            std::string yname = "y_goal" + std::to_string(i);
-            std::string rname = "r_goal"  + std::to_string(i);
+        for(unsigned i=0; i<nbg; ++i) { // parse waypoints
+            std::string xname = "x_wp" + std::to_string(i);
+            std::string yname = "y_wp" + std::to_string(i);
+            std::string rname = "r_wp" + std::to_string(i);
             double x = 0., y = 0., r = 0.;
             if(cworld_cfg.lookupValue(xname,x)
             && cworld_cfg.lookupValue(yname,y)
             && cworld_cfg.lookupValue(rname,r)) {
-                goals.emplace_back(circle(std::tuple<double,double>{x,y},r));
+                wp.emplace_back(circle(std::tuple<double,double>{x,y},r));
             } else {
                 throw wrong_world_configuration_path();
             }

@@ -222,6 +222,14 @@ public:
         r = reward_function(s,a,s_p);
     }
 
+
+    /**
+     * @brief Is waypoint reached
+     *
+     * Test if at least one waypoint is reached at the given state.
+     * @param {const state &} s; given state
+     * @return Return true if at least one waypoint is reached at the given state.
+     */
     bool is_waypoint_reached(const state &s) {
         if(world_value_at(s) == +1) {
             return true;
@@ -233,9 +241,9 @@ public:
     /**
      * @brief Remove waypoint
      *
-     * Remove the waypoints of the environment at the position of s
-     * @param {const state &} s; state
-     * @return Return the number of reached waypoints
+     * Remove the waypoints of the environment at the position of the given state.
+     * @param {const state &} s; given state
+     * @return Return the number of reached waypoints.
      */
     unsigned remove_waypoints_at(const state &s) {
         return w.remove_waypoints_at(s);
@@ -250,11 +258,25 @@ public:
      */
     bool is_terminal(const state &s) {
         int world_value = world_value_at(s);
-        if(w.initial_number_of_goals == s.waypoints_reached_counter /* Every goal reached */
-        ||((world_value == -1)*is_crash_terminal) /* Wall */) {
+        // TODO: set terminal when every goals are reached
+        //if(w.initial_number_of_goals == s.waypoints_reached_counter /* Every goal reached */
+        //||((world_value == -1)*is_crash_terminal) /* Wall */) { //TRM
+        if(((world_value == -1)*is_crash_terminal) /* Wall */) {
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * @brief Step
+     *
+     * Go to the next state of the environment.
+     * @param {const state &} s; state of the agent (can potentially influence future state)
+     */
+    void step(const state &s) {
+        if(is_waypoint_reached(s)) { // Waypoints case
+            remove_waypoints_at(s);
         }
     }
 
