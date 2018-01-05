@@ -12,6 +12,7 @@
 #include <environment.hpp>
 #include <exceptions.hpp>
 #include <rectangle.hpp>
+#include <reward_model.hpp>
 #include <shape.hpp>
 #include <state.hpp>
 
@@ -245,13 +246,14 @@ public:
      * @param {double &} xsize;
      * @param {double &} ysize;
      * @param {boost::ptr_vector<shape> &} walls;
-     * @param {std::vector<circle> &} wp; waypoints
+     * @param {reward_model &} rwm; reward model
      */
     void parse_world(
         double &xsize,
         double &ysize,
         boost::ptr_vector<shape> &elements,
-        std::vector<circle> &wp) const
+        //std::vector<circle> &wp) const //TRM
+        reward_model &rwm) const
     {
         libconfig::Config cworld_cfg;
         try {
@@ -260,16 +262,14 @@ public:
         catch(const libconfig::ParseException &e) {
             display_libconfig_parse_exception(e);
         }
-        unsigned nbr = 0, nbc = 0, nbg = 0;
+        unsigned nbr = 0, nbc = 0;
         if(cworld_cfg.lookupValue("xsize",xsize)
         && cworld_cfg.lookupValue("ysize",ysize)
         && cworld_cfg.lookupValue("nb_rectangles",nbr)
-        && cworld_cfg.lookupValue("nb_circles",nbc)
-        && cworld_cfg.lookupValue("nb_wp",nbg)) {
+        && cworld_cfg.lookupValue("nb_circles",nbc)) {
             elements.reserve(nbr + nbc);
-            wp.reserve(nbg);
         } else {
-            throw wrong_world_configuration_path();
+            throw wrong_syntax_configuration_file_exception();
         }
         for(unsigned i=0; i<nbr; ++i) { // parse rectangle walls
             std::string xn = "x_rect" + std::to_string(i);
@@ -283,7 +283,7 @@ public:
             && cworld_cfg.lookupValue(wn,w)) {
                 elements.push_back(new rectangle(std::tuple<double,double>{x,y},w,h));
             } else {
-                throw wrong_world_configuration_path();
+                throw wrong_syntax_configuration_file_exception();
             }
         }
         for(unsigned i=0; i<nbc; ++i) { // parse circle walls
@@ -296,20 +296,39 @@ public:
             && cworld_cfg.lookupValue(rn,r)) {
                 elements.push_back(new circle(std::tuple<double,double>{x,y},r));
             } else {
-                throw wrong_world_configuration_path();
+                throw wrong_syntax_configuration_file_exception();
             }
         }
-        for(unsigned i=0; i<nbg; ++i) { // parse waypoints
-            std::string xname = "x_wp" + std::to_string(i);
-            std::string yname = "y_wp" + std::to_string(i);
-            std::string rname = "r_wp" + std::to_string(i);
-            double x = 0., y = 0., r = 0.;
-            if(cworld_cfg.lookupValue(xname,x)
-            && cworld_cfg.lookupValue(yname,y)
-            && cworld_cfg.lookupValue(rname,r)) {
-                wp.emplace_back(circle(std::tuple<double,double>{x,y},r));
-            } else {
-                throw wrong_world_configuration_path();
+        // parse reward model
+        unsigned rwm_selector = 0;
+        if(!cworld_cfg.lookupValue("reward_model_selector",rwm_selector)) {
+            throw wrong_syntax_configuration_file_exception();
+        }
+        switch(rwm_selector) {
+            case 0: { // heatmap reward model
+                //TODO: parse heatmap reward model
+                break;
+            }
+            default: { // waypoints reward model
+                unsigned nbwp = 0;
+                if(cworld_cfg.lookupValue("nb_waypoints",nbwp)) {
+                    rwm.waypoints.reserve(nbwp);
+                } else {
+                    throw wrong_syntax_configuration_file_exception();
+                }
+                for(unsigned i=0; i<nbwp; ++i) { // parse waypoints
+                    std::string xname = "x_wp" + std::to_string(i);
+                    std::string yname = "y_wp" + std::to_string(i);
+                    std::string rname = "r_wp" + std::to_string(i);
+                    double x = 0., y = 0., r = 0.;
+                    if(cworld_cfg.lookupValue(xname,x)
+                    && cworld_cfg.lookupValue(yname,y)
+                    && cworld_cfg.lookupValue(rname,r)) {
+                        rwm.waypoints.emplace_back(circle(std::tuple<double,double>{x,y},r));
+                    } else {
+                        throw wrong_syntax_configuration_file_exception();
+                    }
+                }
             }
         }
     }

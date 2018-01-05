@@ -1,9 +1,10 @@
 #ifndef WORLD_HPP_
 #define WORLD_HPP_
 
+#include <shape.hpp>
 #include <circle.hpp>
 #include <rectangle.hpp>
-#include <shape.hpp>
+#include <reward_model.hpp>
 #include <save.hpp>
 
 /**
@@ -17,10 +18,11 @@ public:
     double xsize; ///< Horizontal dimension of the environment
     double ysize; ///< Vertical dimension of the environment
     boost::ptr_vector<shape> walls; ///< Walls of the environment
-    std::vector<circle> goals; ///< Goals (waypoints) of the environment
+    //std::vector<circle> goals; ///< Goals (waypoints) of the environment //TRM
+    reward_model rwm; ///< Reward model of the environment
     std::vector<std::vector<double>> trajectory; ///< Matrix of the trajectory for backup
     std::string trajectory_output_path; ///< Output path for the trajectory
-    unsigned initial_number_of_goals; ///< Initial number of goals
+    //unsigned initial_number_of_goals; ///< Initial number of goals //TRM TODO: rwm must be able to say if it is terminal
 
     /**
      * @brief Constructor
@@ -28,10 +30,10 @@ public:
      * Constructor wrt the given parameters.
      * @param {const parameters &} p; parameters
      */
-    world(const parameters &p){
+    world(const parameters &p) {
         trajectory_output_path = p.TRAJECTORY_OUTPUT_PATH;
-        p.parse_world(xsize,ysize,walls,goals);
-        initial_number_of_goals = goals.size();
+        p.parse_world(xsize,ysize,walls,rwm);
+        //initial_number_of_goals = goals.size(); //TRM
         initialize_backup(std::vector<std::string>{"x","y"},trajectory_output_path,",");
     }
 
@@ -63,13 +65,13 @@ public:
     unsigned remove_waypoints_at(const state &s) {
         std::vector<unsigned> matching_goals_indices;
         unsigned counter = 0;
-        for(unsigned i=0; i<goals.size(); ++i) { // Goal checking
-            if(goals[i].is_within(s.x, s.y)) {
+        for(unsigned i=0; i<rwm.waypoints.size(); ++i) { // Goal checking
+            if(rwm.waypoints[i].is_within(s.x, s.y)) {
                 ++counter;
                 matching_goals_indices.push_back(i);
             }
         }
-        remove_elements(goals,matching_goals_indices);
+        remove_elements(rwm.waypoints,matching_goals_indices);
         return counter;
     }
 
@@ -92,7 +94,7 @@ public:
                 return -1;
             }
         }
-        for(auto &g : goals) {
+        for(auto &g : rwm.waypoints) {
             if(g.is_within(s.x,s.y)) {
                 return +1;
             }

@@ -60,7 +60,7 @@ ax.add_patch(g)
 
 # Plot goal --------------------------------------------------------------------
 
-for i in range(world_config.nb_wp):
+for i in range(world_config.nb_waypoints):
 	xn = "x_wp" + str(i);
 	yn = "y_wp" + str(i);
 	rn = "r_wp" + str(i);
