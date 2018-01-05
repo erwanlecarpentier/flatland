@@ -311,8 +311,11 @@ public:
             }
             default: { // waypoints reward model
                 unsigned nbwp = 0;
-                if(cworld_cfg.lookupValue("nb_waypoints",nbwp)) {
+                double wprwd = 1.;
+                if(cworld_cfg.lookupValue("nb_waypoints",nbwp)
+                && cworld_cfg.lookupValue("waypoint_reward",wprwd)) {
                     rwm.waypoints.reserve(nbwp);
+                    rwm.waypoint_reward = wprwd;
                 } else {
                     throw wrong_syntax_configuration_file_exception();
                 }
@@ -354,9 +357,7 @@ public:
         && cfg.lookupValue("is_crash_terminal",IS_CRASH_TERMINAL)
         && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
         && cfg.lookupValue("state_gaussian_stddev",STATE_GAUSSIAN_STDDEV)
-        && cfg.lookupValue("void_reward",VOID_REWARD)
         && cfg.lookupValue("wall_reward",WALL_REWARD)
-        && cfg.lookupValue("goal_reward",GOAL_REWARD)
         && cfg.lookupValue("model_misstep_probability",MODEL_MISSTEP_PROBABILITY)
         && cfg.lookupValue("model_state_gaussian_stddev",MODEL_STATE_GAUSSIAN_STDDEV)
         && cfg.lookupValue("policy_selector",POLICY_SELECTOR)

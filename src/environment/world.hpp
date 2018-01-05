@@ -76,31 +76,26 @@ public:
     }
 
     /**
-     * @brief World value
+     * @brief Is wall encountered
      *
-     * Evaluate the world at the given state.
+     * Test whether a wall is encountered at the given position
      * @param {const state &} s; given state
-     * @return Return the value of the world.
+     * @return Return true if a wall is encountered.
      */
-    int get_value_at(const state &s) {
+    int is_wall_encountered_at(const state &s) {
         if(is_less_than(s.x,0.)
         || is_less_than(s.y,0.)
         || is_greater_than(s.x,xsize)
-        || is_greater_than(s.y,ysize)) { // Border checking
-            return -1;
+        || is_greater_than(s.y,ysize)) { // 1st: border checking
+            return true;
         }
-        for(unsigned i=0; i<walls.capacity(); ++i) { // Wall checking is performed first
+        for(unsigned i=0; i<walls.capacity(); ++i) { // 2nd: wall checking
             if(walls[i].is_within(s.x, s.y)) {
-                return -1;
+                return true;
             }
         }
-        for(auto &g : rwm.waypoints) {
-            if(g.is_within(s.x,s.y)) {
-                return +1;
-            }
-        }
-        return 0;
-    }
+        return false;
+   }
 
     /**
      * @brief Print environment

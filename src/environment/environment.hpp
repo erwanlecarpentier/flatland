@@ -16,9 +16,9 @@ public:
     world w; ///< world
     double misstep_probability; ///< Probability of misstep
     double state_gaussian_stddev; ///< Standard deviation of the Gaussian applied on the position
-    double void_reward;
+    //double void_reward;//TRM
     double wall_reward;
-    double goal_reward;
+    //double goal_reward;//TRM
     std::vector<std::shared_ptr<action>> action_space; ///< Full space of the actions available in the environment
 
     /**
@@ -32,9 +32,9 @@ public:
         is_crash_terminal = p.IS_CRASH_TERMINAL;
         misstep_probability = p.MISSTEP_PROBABILITY;
         state_gaussian_stddev = p.STATE_GAUSSIAN_STDDEV;
-        void_reward = p.VOID_REWARD;
+        //void_reward = p.VOID_REWARD;//TRM
         wall_reward = p.WALL_REWARD;
-        goal_reward = p.GOAL_REWARD;
+        //goal_reward = p.GOAL_REWARD;//TRM
     }
 
     /**
@@ -54,9 +54,11 @@ public:
      * @param {const state &} s; given state
      * @return Return the value of the world.
      */
+    /*
     int world_value_at(const state &s) {
         return w.get_value_at(s);
     }
+    */
 
     /**
      * @brief Is state valid
@@ -66,7 +68,8 @@ public:
      * @return Return true if the world value is different than -1.
      */
     bool is_state_valid(const state &s) {
-        return (world_value_at(s) != -1);
+        //return (world_value_at(s) != -1);//TRM
+        return !w.is_wall_encountered_at(s);
     }
 
     /**
@@ -188,6 +191,7 @@ public:
         const std::shared_ptr<action> &a,
         const state &s_p)
     {
+        /* //TRM
         (void) a;
         (void) s_p;
         switch(world_value_at(s)) {
@@ -200,6 +204,12 @@ public:
             default: {
                 return void_reward;
             }
+        }
+        */
+        if(w.is_wall_encountered_at(s)) { //TODO maybe unify world and reward_model classes if no polymorphism
+            return wall_reward;
+        } else {
+            return w.rwm.get_reward_value_at(s,a,s_p);
         }
     }
 
@@ -230,8 +240,9 @@ public:
      * @param {const state &} s; given state
      * @return Return true if at least one waypoint is reached at the given state.
      */
-    bool is_waypoint_reached(const state &s) {
-        if(world_value_at(s) == +1) {
+    bool is_waypoint_reached(const state &s) { //TODO change this function
+        if(!w.is_wall_encountered_at(s)
+        &&  w.rwm.is_waypoint_reached(s)) {
             return true;
         } else {
             return false;
@@ -257,11 +268,11 @@ public:
      * @return Return true if the test is terminal, else false.
      */
     bool is_terminal(const state &s) {
-        int world_value = world_value_at(s);
+        //int world_value = world_value_at(s);//TRM
         // TODO: set terminal when every goals are reached
         //if(w.initial_number_of_goals == s.waypoints_reached_counter /* Every goal reached */
         //||((world_value == -1)*is_crash_terminal) /* Wall */) { //TRM
-        if(((world_value == -1)*is_crash_terminal) /* Wall */) {
+        if((w.is_wall_encountered_at(s) && is_crash_terminal) /* Wall */) {
             return true;
         } else {
             return false;
@@ -275,8 +286,27 @@ public:
      * @param {const state &} s; state of the agent (can potentially influence future state)
      */
     void step(const state &s) {
-        if(is_waypoint_reached(s)) { // Waypoints case
-            remove_waypoints_at(s);
+        /*
+        switch(w.rwm.reward_model_selector) {
+            case 0: { // heatmap reward model
+                //TODO
+                break;
+            }
+            default: { // waypoints reward model
+                //TODO
+            }
+        }
+        */
+        switch(w.rwm.reward_model_selector) {
+            case 0: { // heatmap reward model
+                //TODO
+                break;
+            }
+            default: { // waypoints reward model
+                if(is_waypoint_reached(s)) { // Waypoints case
+                    remove_waypoints_at(s);
+                }
+            }
         }
     }
 
