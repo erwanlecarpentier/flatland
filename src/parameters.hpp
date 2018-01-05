@@ -222,7 +222,7 @@ public:
     void parse_state(state &s) const {
         libconfig::Config cfg;
         try {
-            cfg.readFile(MAIN_CFG_PATH.c_str());
+            cfg.readFile(WORLD_PATH.c_str());
         }
         catch(const libconfig::ParseException &e) {
             display_libconfig_parse_exception(e);
