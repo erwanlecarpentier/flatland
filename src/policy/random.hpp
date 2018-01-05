@@ -28,12 +28,15 @@ public:
      * Nothing to do for random policy
      * @param {const state &} s; state
      * @return Return the number of reached waypoints.
+     * @deprecated
      */
+    /* TRM
     unsigned remove_waypoints_at(const state &s) {
-        /* Nothing to do for random policy */
+        // Nothing to do for random policy
         (void) s;
         return 0;
     }
+    */
 
     /**
      * @brief Policy operator

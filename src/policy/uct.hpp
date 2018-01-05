@@ -288,10 +288,13 @@ public:
      * UCT has to do it on its own because it has its own independent model.
      * @param {const state &} s; state
      * @return Return the number of reached waypoints.
+     * @deprecated
      */
+    /* TRM
     unsigned remove_waypoints_at(const state &s) {
         return model.remove_waypoints_at(s);
     }
+    */
 
     /**
      * @brief Policy operator
@@ -301,6 +304,8 @@ public:
      * @return Return the undertaken action at s.
      */
 	std::shared_ptr<action> operator()(const state &s) {
+        model.step(s); //TODO check if the model is correctly updated
+        //TODO: update the model inside the tree for wp -> probably adding table of reached wp in state
         build_uct_tree(s);
         unsigned indice = 0;
         return get_recommended_action(root_node,indice);
