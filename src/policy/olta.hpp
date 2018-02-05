@@ -203,21 +203,6 @@ public:
     }
 
     /**
-     * @brief Remove waypoint
-     *
-     * Remove the waypoints of the environment model at the position of s.
-     * OLTA simply forwards this instruction to its underlying UCT policy.
-     * @param {const state &} s; state
-     * @return Return the number of reached waypoints.
-     * @deprecated
-     */
-    /* TRM deprecated
-    unsigned remove_waypoints_at(const state &s) {
-        return pl.remove_waypoints_at(s);
-    }
-    */
-
-    /**
      * @brief Policy operator
      *
      * Policy operator for the undertaken action at given state.
@@ -230,7 +215,6 @@ public:
         }
         unsigned indice = 0;
         std::shared_ptr<action> ra = pl.get_recommended_action(pl.root_node,indice);
-        //pl.save_recommended_trajectory(s);//TRM
         pl.root_node.move_to_child(indice,s);
         return ra;
 	}

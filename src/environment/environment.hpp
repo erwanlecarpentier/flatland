@@ -8,7 +8,7 @@
 /**
  * @brief Environment
  *
- * Environment template class.
+ * Environment class.
  */
 class environment {
 public:
@@ -16,9 +16,7 @@ public:
     world w; ///< world
     double misstep_probability; ///< Probability of misstep
     double state_gaussian_stddev; ///< Standard deviation of the Gaussian applied on the position
-    //double void_reward;//TRM
     double wall_reward;
-    //double goal_reward;//TRM
     std::vector<std::shared_ptr<action>> action_space; ///< Full space of the actions available in the environment
 
     /**
@@ -32,9 +30,7 @@ public:
         is_crash_terminal = p.IS_CRASH_TERMINAL;
         misstep_probability = p.MISSTEP_PROBABILITY;
         state_gaussian_stddev = p.STATE_GAUSSIAN_STDDEV;
-        //void_reward = p.VOID_REWARD;//TRM
         wall_reward = p.WALL_REWARD;
-        //goal_reward = p.GOAL_REWARD;//TRM
     }
 
     /**
@@ -48,19 +44,6 @@ public:
     }
 
     /**
-     * @brief World value
-     *
-     * Evaluate the world at the given state.
-     * @param {const state &} s; given state
-     * @return Return the value of the world.
-     */
-    /*
-    int world_value_at(const state &s) {
-        return w.get_value_at(s);
-    }
-    */
-
-    /**
      * @brief Is state valid
      *
      * Test if the agent is within a wall or not.
@@ -68,7 +51,6 @@ public:
      * @return Return true if the world value is different than -1.
      */
     bool is_state_valid(const state &s) {
-        //return (world_value_at(s) != -1);//TRM
         return !w.is_wall_encountered_at(s);
     }
 
@@ -191,21 +173,6 @@ public:
         const std::shared_ptr<action> &a,
         const state &s_p)
     {
-        /* //TRM
-        (void) a;
-        (void) s_p;
-        switch(world_value_at(s)) {
-            case 1: { // Goal reached
-                return goal_reward;
-            }
-            case -1: { // Wall reached
-                return wall_reward;
-            }
-            default: {
-                return void_reward;
-            }
-        }
-        */
         if(w.is_wall_encountered_at(s)) { //TODO maybe unify world and reward_model classes if no polymorphism
             return wall_reward;
         } else {
@@ -250,17 +217,6 @@ public:
     }
 
     /**
-     * @brief Remove waypoint
-     *
-     * Remove the waypoints of the environment at the position of the given state.
-     * @param {const state &} s; given state
-     * @return Return the number of reached waypoints.
-     */
-    unsigned remove_waypoints_at(const state &s) {
-        return w.remove_waypoints_at(s);
-    }
-
-    /**
      * @brief Is terminal
      *
      * Test if the given state is terminal.
@@ -268,11 +224,8 @@ public:
      * @return Return true if the test is terminal, else false.
      */
     bool is_terminal(const state &s) {
-        //int world_value = world_value_at(s);//TRM
-        // TODO: set terminal when every goals are reached
-        //if(w.initial_number_of_goals == s.waypoints_reached_counter /* Every goal reached */
-        //||((world_value == -1)*is_crash_terminal) /* Wall */) { //TRM
-        if((w.is_wall_encountered_at(s) && is_crash_terminal) /* Wall */) {
+        if((w.is_wall_encountered_at(s) && is_crash_terminal) /* Wall */
+        || w.rwm.is_terminal(s) /* Reward model says terminal eg waypoints reached*/) {
             return true;
         } else {
             return false;
@@ -283,31 +236,10 @@ public:
      * @brief Step
      *
      * Go to the next state of the environment.
-     * @param {const state &} s; state of the agent (can potentially influence future state)
+     * @param {const state &} s; state of the agent
      */
     void step(const state &s) {
-        /*
-        switch(w.rwm.reward_model_selector) {
-            case 0: { // heatmap reward model
-                //TODO
-                break;
-            }
-            default: { // waypoints reward model
-                //TODO
-            }
-        }
-        */
-        switch(w.rwm.reward_model_selector) {
-            case 0: { // heatmap reward model
-                //TODO
-                break;
-            }
-            default: { // waypoints reward model
-                if(is_waypoint_reached(s)) { // Waypoints case
-                    remove_waypoints_at(s);
-                }
-            }
-        }
+        w.rwm.update_reward_model(s);
     }
 
     /**

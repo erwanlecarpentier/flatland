@@ -21,7 +21,6 @@ public:
     unsigned expd_counter; ///< Counter of the number of expanded nodes
     unsigned nb_calls; ///< Number of calls to the generative model
     DFTPLC dflt_policy; ///< Default policy
-    unsigned counter = 0; //TRM (for recommended trajectory plot)
 
     /**
      * @brief Constructor
@@ -281,45 +280,6 @@ public:
         indice = argmax_score(v);
         return v.get_action_at(indice);
     }
-
-    void save_recommended_trajectory(state s) { //TRM
-        std::vector<std::vector<double>> rec_traj;
-        rec_traj.push_back(std::vector<double>{s.x, s.y});
-        node buffer = root_node;
-        unsigned indice = 0;
-        unsigned tlimit = 10;
-        print("about to traj");
-        for(unsigned t=0; t<tlimit; t++) {
-            std::shared_ptr<action> a = get_recommended_action(buffer,indice);
-            state s_p;
-            generative_model(s,a,s_p);
-            s = s_p;
-            rec_traj.push_back(std::vector<double>{s.x, s.y});
-            if(!(root_node.children.size()>indice)) {
-                break;
-            }
-            buffer = root_node.children[indice];
-        }
-        std::string path = "data/rectraj" + std::to_string(counter) + ".csv";
-        initialize_backup(std::vector<std::string>{"x","y"},path,",");
-        save_matrix(rec_traj,path,",",std::ofstream::app);
-        counter++;
-    }
-
-    /**
-     * @brief Remove waypoint
-     *
-     * Remove the waypoints of the environment model at the position of s.
-     * UCT has to do it on its own because it has its own independent model.
-     * @param {const state &} s; state
-     * @return Return the number of reached waypoints.
-     * @deprecated
-     */
-    /* TRM
-    unsigned remove_waypoints_at(const state &s) {
-        return model.remove_waypoints_at(s);
-    }
-    */
 
     /**
      * @brief Policy operator
