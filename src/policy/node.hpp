@@ -12,7 +12,7 @@ private :
     unsigned visits_count; ///< Number of visits during the tree expansion
     state s; ///<Unique labelling state for a root node
     std::shared_ptr<action> incoming_action; ///< Action of the parent node that led to this node
-    std::vector<double> sampled_outcomes; ///< Sampled outcomes
+    std::vector<double> sampled_outcomes; ///< Sampled outcomes (returns)
     std::vector<state> sampled_states; ///< Sampled states for a standard node
     std::vector<std::shared_ptr<action>> local_action_space; ///< Available actions at this node (bandit arms)
 

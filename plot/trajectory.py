@@ -13,12 +13,12 @@ GREEN = '#00cc66';
 LIGHTBLUE = '#6699ff';
 GREY = '#4d4d4d';
 
-cworldpath = os.path.join(CURDIR, '../config/world.cfg')
-with io.open(cworldpath) as f:
-	world_config = libconf.load(f)
 mainpath = os.path.join(CURDIR, '../config/main.cfg')
 with io.open(mainpath) as g:
 	main_config = libconf.load(g)
+cworldpath = os.path.join(CURDIR, '.'+main_config.world_path)
+with io.open(cworldpath) as f:
+	world_config = libconf.load(f)
 
 # Create figure and axes
 fig,ax = plt.subplots(1)
@@ -79,7 +79,7 @@ y = data["y"];
 lbsize = 24
 ax.tick_params(axis='x', labelsize=lbsize)
 ax.tick_params(axis='y', labelsize=lbsize)
-ax.plot(x,y,color=LIGHTBLUE);
+ax.plot(x,y,color=RED);
 
 plt.show()
 

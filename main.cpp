@@ -17,8 +17,8 @@
 #include <parameters.hpp>
 #include <random.hpp>
 #include <go_straight.hpp>
-#include <uct.hpp>
 #include <oluct.hpp>
+#include <olta.hpp>
 #include <save.hpp>
 #include <state.hpp>
 #include <utils.hpp>
@@ -111,11 +111,11 @@ void run_switch(
         case 1: { // UCT policy
             switch(p.DEFAULT_POLICY_SELECTOR) {
                 case 0: { // Go-straight policy
-                    single_run<uct<go_straight>>(p,prnt,bckp,backup_vector);
+                    single_run<oluct<go_straight>>(p,prnt,bckp,backup_vector);
                     break;
                 }
                 default: { // Random policy
-                    single_run<uct<random_policy>>(p,prnt,bckp,backup_vector);
+                    single_run<oluct<random_policy>>(p,prnt,bckp,backup_vector);
                 }
             }
             break;
@@ -123,11 +123,11 @@ void run_switch(
         case 2: { // OLUCT policy
             switch(p.DEFAULT_POLICY_SELECTOR) {
                 case 0: { // Go-straight policy
-                    single_run<oluct<go_straight>>(p,prnt,bckp,backup_vector);
+                    single_run<olta<go_straight>>(p,prnt,bckp,backup_vector);
                     break;
                 }
                 default: { // Random policy
-                    single_run<oluct<random_policy>>(p,prnt,bckp,backup_vector);
+                    single_run<olta<random_policy>>(p,prnt,bckp,backup_vector);
                 }
             }
             break;

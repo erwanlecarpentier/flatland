@@ -42,8 +42,8 @@ def plot_error_bar(ax, rng, mean, stddev, cl, mrk, fcc, lw, ls):
 	ax.fill_between(rng, up, dw, color=cl, alpha=0.05)
 	return l
 
-def plot_relative_means(ax, rng, mean, stddev, cl, mrk, fcc, lw, ls, uct_lo_mea):
-	values = [a - b for a, b in zip(mean, uct_lo_mea)]
+def plot_relative_means(ax, rng, mean, stddev, cl, mrk, fcc, lw, ls, oluct_lo_mea):
+	values = [a - b for a, b in zip(mean, oluct_lo_mea)]
 	l = ax.plot(rng, values, color=cl, marker=mrk, linewidth=lw, linestyle=ls, markersize=8, markerfacecolor=fcc)
 	return l
 
@@ -72,7 +72,7 @@ def extract(path, failure_probability_range, take_log):
 		castd.append(ca.std())
 	return [lomns, lostd, cpmns, cpstd, camns, castd]
 
-def plot(path, args, color, mrk, fcc, lw, ls, uct_lo_mea):
+def plot(path, args, color, mrk, fcc, lw, ls, oluct_lo_mea):
 	fp_range        = args[0]
 	fp_range_val = args[1]
 	take_log        = args[2]
@@ -82,7 +82,7 @@ def plot(path, args, color, mrk, fcc, lw, ls, uct_lo_mea):
 	ax4             = args[6]
 	[lo_mea, lo_std, cp_mea, cp_std, ca_mea, ca_std] = extract(path,fp_range,take_log)
 	l = plot_error_bar(ax1, fp_range_val, lo_mea, lo_std, color, mrk, fcc, lw, ls)
-	l = plot_relative_means(ax2, fp_range_val, lo_mea, lo_std, color, mrk, fcc, lw, ls, uct_lo_mea)
+	l = plot_relative_means(ax2, fp_range_val, lo_mea, lo_std, color, mrk, fcc, lw, ls, oluct_lo_mea)
 	l = plot_error_bar(ax3, fp_range_val, cp_mea, cp_std, color, mrk, fcc, lw, ls)
 	l = plot_error_bar(ax4, fp_range_val, ca_mea, ca_std, color, mrk, fcc, lw, ls)
 	return l
@@ -110,22 +110,23 @@ fp_range_val = [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
 
 plt.close('all')
 
-f, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, sharex=True, figsize=(9.5,12.6))
+f, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, sharex=True, figsize=(8.0,15.0))
+ax1.set_xlim(0.0, 0.5)
 
 if discrete:
 	root_path = 'data/backup/discrete/'
 else:
 	root_path = 'data/backup/continuous/'
-[uct_lo_mea, uct_lo_std, uct_cp_mea, uct_cp_std, uct_ca_mea, uct_ca_std] = extract(root_path + 'uct',fp_range,take_log)
+[oluct_lo_mea, oluct_lo_std, oluct_cp_mea, oluct_cp_std, oluct_ca_mea, oluct_ca_std] = extract(root_path + 'oluct',fp_range,take_log)
 lw = 2.3
 args = [fp_range, fp_range_val, take_log, ax1, ax2, ax3, ax4]
-l1 = plot(root_path + 'oluct0', args, PL1, 's', PL1,    lw, '-', uct_lo_mea)
+l1 = plot(root_path + 'olta0', args, PL1, 's', PL1,    lw, '-', oluct_lo_mea)
 if discrete:
-	l2 = plot(root_path + 'oluct1', args, PL2, 's', PL2,    lw, '-', uct_lo_mea)
-l3 = plot(root_path + 'oluct2', args, PL3, '^', 'none', lw, '-.', uct_lo_mea)
-l4 = plot(root_path + 'oluct3', args, PL4, 'o', 'none', lw, '--', uct_lo_mea)
-l5 = plot(root_path + 'oluct4', args, PL5, 's', 'none', lw, '-', uct_lo_mea)
-l0 = plot(root_path + 'uct',    args, PL0, 'o', PL0,    lw, '-', uct_lo_mea)
+	l2 = plot(root_path + 'olta1', args, PL2, 's', PL2,    lw, '-', oluct_lo_mea)
+l3 = plot(root_path + 'olta2', args, PL3, '^', 'none', lw, '-.', oluct_lo_mea)
+l4 = plot(root_path + 'olta3', args, PL4, 'o', 'none', lw, '--', oluct_lo_mea)
+l5 = plot(root_path + 'olta4', args, PL5, 's', 'none', lw, '-', oluct_lo_mea)
+l0 = plot(root_path + 'oluct',    args, PL0, 'o', PL0,    lw, '-', oluct_lo_mea)
 
 
 # Label ------------------------------------------------------------------------
@@ -136,15 +137,15 @@ font.set_style('normal')
 font.set_size('x-large')
 font.set_weight('light')
 
-labsz = 15
+labsz = 13
 xlab = 'Transition misstep probability'
-ylab1 = 'Loss (time steps to\nreach all the waypoints)'
-ylab1_log = 'Log of the loss\n(time steps to\nreach all the waypoints)'
-ylab2 = 'Mean loss\nrelatively to UCT'
-ylab2_log = 'Log of the\nmean loss\nrelatively to UCT'
+ylab1 = 'Loss (time steps\nto reach all the\nwaypoints)'
+ylab1_log = 'Log of the loss\n(time steps to\nreach all the\nwaypoints)'
+ylab2 = 'Mean loss\nrelatively to\nOLUCT'
+ylab2_log = 'Log of the\nmean loss\nrelatively to\nOLUCT'
 ylab3 = 'Computational\ncost (ms)'
 ylab3_log = 'Log of the\ncomputational\ncost (ms)'
-ylab4 = 'Number of calls'
+ylab4 = 'Number of\ncalls'
 ylab4_log = 'Log of the\nnumber of calls'
 
 apply_label(ax1,xlab,ylab1,ylab1_log,font,take_log)
@@ -155,11 +156,11 @@ apply_label(ax4,xlab,ylab4,ylab4_log,font,take_log)
 # Legend -----------------------------------------------------------------------
 if discrete:
 	l = [l0,l1,l2,l3,l4,l5]
-	lg = ['Vanilla UCT', 'Plain OLUCT', 'SDM-OLUCT', 'SDV-OLUCT', 'SDSD-OLUCT', 'RDV-OLUCT']
+	lg = ['OLUCT', 'Plain OLTA', 'SDM-OLTA', 'SDV-OLTA', 'SDSD-OLTA', 'RDV-OLTA']
 else:
 	l = [l0,l1,l3,l4,l5]
-	lg = ['Vanilla UCT', 'Plain OLUCT', 'SDV-OLUCT', 'SDSD-OLUCT', 'RDV-OLUCT']
+	lg = ['OLUCT', 'Plain OLTA', 'SDV-OLTA', 'SDSD-OLTA', 'RDV-OLTA']
 
-ax4.legend(l, lg, numpoints=1, prop=font, bbox_to_anchor=(0., -0.6, 1., .102), loc='lower center', ncol=3, mode="expand", borderaxespad=0., frameon=False)
+ax4.legend(l, lg, numpoints=1, prop=font, bbox_to_anchor=(0., -0.8, 1., .102), loc='lower center', ncol=3, mode="expand", borderaxespad=0., frameon=False)
 
 plt.show()

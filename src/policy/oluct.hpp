@@ -2,8 +2,8 @@
 #define OLUCT_POLICY_HPP_
 
 #include <environment.hpp>
-#include <uct.hpp>
-#include <linear_algebra.hpp>
+#include <node.hpp>
+#include <random.hpp>
 
 /**
  * @brief OLUCT policy
@@ -11,209 +11,313 @@
 template <class DFTPLC>
 class oluct {
 public:
-    std::vector<bool> decision_criteria_selector; ///< Vector containing the boolean values of the activation of each decision criterion
-    environment * envt; ///< Pointer to an environment, used for action space reduction
-    uct<DFTPLC> pl; ///< Embedded UCT policy
-    double sdm_ratio; ///< SDM ratio (State Modality test)
-    double sdv_threshold; ///< VMR threshold for the VMR test
-    double sdsd_threshold;  ///< Threshold for the distance
-    double rdv_threshold;  ///< Threshold for the distance
+    typedef DFTPLC DFTPLC_type;
+    environment model; ///< Copy of the environment, used for action space reduction, termination criterion and generative model, also its attributes may be changed according to the used configuration
+    node root_node; ///< Root node of the tree
+    double uct_cst; ///< UCT constant within UCT formula
+    double discount_factor; ///< MDP discount factor
+    unsigned horizon; ///< Horizon for default policy
+    unsigned budget; ///< Algorithm budget (number of expanded nodes)
+    unsigned expd_counter; ///< Counter of the number of expanded nodes
+    unsigned nb_calls; ///< Number of calls to the generative model
+    DFTPLC dflt_policy; ///< Default policy
+    unsigned counter = 0; //TRM (for recommended trajectory plot)
 
     /**
      * @brief Constructor
      *
-     * Constructu using the given parameters
+     * Make use of the input parameters.
      * @param {const parameters &} p; parameters
-     * @param {environment *} en; pointer to the environment, used for action space reduction
+     * @param {environment *} en; pointer to the environment, used for action space reduction,
+     * termination criterion and generative model
      */
     oluct(const parameters &p, environment *en) :
-        pl(p,en)
+        model(*en),
+        root_node(state(),model.action_space), // initialise with default state
+        dflt_policy(p,en)
     {
-        p.parse_decision_criterion(decision_criteria_selector);
-        sdm_ratio = p.SDM_RATIO;
-        sdv_threshold = p.SDV_THRESHOLD;
-        sdsd_threshold = p.SDSD_THRESHOLD;
-        rdv_threshold = p.RDV_THRESHOLD;
+        model.misstep_probability = p.MODEL_MISSTEP_PROBABILITY;
+        model.state_gaussian_stddev = p.MODEL_STATE_GAUSSIAN_STDDEV;
+        budget = p.TREE_SEARCH_BUDGET;
+        expd_counter = 0;
+        nb_calls = 0;
+        uct_cst = p.UCT_CST;
+        discount_factor = p.DISCOUNT_FACTOR;
+        horizon = p.DEFAULT_POLICY_HORIZON;
     }
 
     /**
-     * @brief Action validity test
+     * @brief Terminal node test
      *
-     * Test whether the recommended action is valid or not.
-     * @param {const state &} s; the current state of the agent
-     * @return Return true if the test does not discard the tree.
+     * A node is considered terminal if all of its states are terminal states.
+     * Still another state will be sampled in the tree policy method.
+     * If the node is root, only the labelling state is tested.
+     * @param {node &} v; tested node
+     * @return Return 'true' if the node is considered terminal.
      */
-    bool action_validity_test(const state &s) {
-        unsigned indice = 0;
-        return pl.model.is_action_valid(s,pl.get_recommended_action(pl.root_node,indice));
-    }
-
-    /**
-     * @brief State distribution VMR test
-     *
-     * Test whether the Variance-Mean-Ratio (VMR) of the state distribution at the node
-     * reached by the recommended action is small enough.
-     * Only the diagonal of the covariance matrix is tested.
-     * The test is based on the VMR for the variances to be comparable.
-     * @return Return true if the test does not discard the tree.
-     */
-    bool state_distribution_vmr_test() {
-        std::vector<state> samples = pl.root_node.get_sampled_states();
-        std::vector<Eigen::Vector4d> data;
-        for(auto &smp : samples) {
-            data.emplace_back(smp.x,smp.y,smp.v,smp.theta);
-        }
-        Eigen::Vector4d vmr = variance_mean_ratio(data);
-        double m_vmr = (vmr(0) + vmr(1) + vmr(2) + vmr(3)) / 4.;
-        return is_less_than(m_vmr,sdv_threshold);
-    }
-
-    /**
-     * @brief Distance to state distribution test
-     *
-     * Compute the distances between the current state and the mean of the sampled state
-     * distribution.
-     * Reject the tree if the minimum distance is greater than a selected threshold.
-     * The used distance is the Mahalanobis distance (edit 10/11/2017).
-     * @param {const state &} s; the current state of the agent
-     * @return Return true if the sub-tree is kept.
-     */
-    bool distance_to_state_distribution_test(const state &s) {
-        std::vector<state> samples = pl.root_node.get_sampled_states();
-        Eigen::Vector4d s_vect(s.x,s.y,s.v,s.theta);
-        std::vector<Eigen::Vector4d> data;
-        for(auto &smp : samples) {
-            data.emplace_back(smp.x,smp.y,smp.v,smp.theta);
-        }
-        return is_less_than(mahalanobis_distance(s_vect,data,1e-30),sdsd_threshold);
-    }
-
-    /**
-     * @brief Outcome distribution variance test
-     *
-     * Test whether the variance of the outcome distribution at the node reached by the
-     * recommended action is small enough.
-     * @return Return true if the test does not discard the tree.
-     */
-    bool outcome_distribution_variance_test() {
-        std::vector<double> outcomes = pl.root_node.get_sampled_outcomes();
-        double variance = 0.;
-        for(unsigned i=0; i<outcomes.size(); ++i) {
-            for(unsigned j=0; j<i; ++j) {
-                variance += pow(outcomes[i] = outcomes[j], 2.);
-            }
-        }
-        variance /= pow(((double) outcomes.size()),2.);
-        return is_less_than(variance,rdv_threshold);
-    }
-
-    bool are_states_equal(const state &a, const state &b) const {
-        if(is_equal_to(a.x,b.x)
-        && is_equal_to(a.y,b.y)
-        && is_equal_to(a.v,b.v)
-        && is_equal_to(a.theta,b.theta)) {
-            return true;
+    bool is_node_terminal(node &v) {
+        if(v.is_root()) {
+            return model.is_terminal(v.get_state());
         } else {
-            return false;
+            for(auto &s: v.get_sampled_states()) {
+                if(!model.is_terminal(s)) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 
     /**
-     * @brief State multimodality test decision criterion
+     * @brief Generative model
      *
-     * Keep the sub-tree if there is only one state mode, up to a certain precision.
-     * Also discard the tree if the current state does not lie in this mode.
-     * The test is implemented for the discrete case.
+     * Perform a call to the generative model.
+     * @param {const state &} s; state
+     * @param {std::shared_ptr<action>} a; copy of the action
+     * @param {state &} s_p; next state
+     */
+    void generative_model(
+        const state &s,
+        std::shared_ptr<action> a,
+        state &s_p)
+    {
+        model.state_transition(s,a,s_p);
+        ++nb_calls;
+    }
+
+    /**
+     * @brief State sampling
+     *
+     * Sample a new state w.r.t. to the incoming action and the parents state and add it to
+     * the node.
+     * @param {node *} v; pointer to the node
+     */
+    void sample_new_state(node * v) {
+        assert(!v->is_root());
+        std::shared_ptr<action> a = v->get_incoming_action();
+        state s = (v->parent)->get_state_or_last();
+        state s_p;
+        generative_model(s,a,s_p);
+        v->add_to_states(s_p);
+    }
+
+    /**
+     * @brief Expansion method
+     *
+     * Expand the node i.e. create a new leaf node.
+     * @param {node &} v; reference on the expanded node
+     * @return Return a pointer to the created leaf node
+     */
+    node * expand(node &v) {
+        std::shared_ptr<action> nodes_action = v.get_next_expansion_action();
+        state nodes_state = v.get_state_or_last();
+        state new_state;
+        generative_model(nodes_state,nodes_action,new_state);
+        v.create_child(
+            nodes_action,
+            new_state,
+            model.action_space //TODO: warning - stochastic case
+        );
+        return v.get_last_child();
+    }
+
+    /**
+     * @brief UCT child
+     *
+     * UCT selection method for the tree policy.
+     * @param {node &} v; parent node
+     * @return Return the selected child according to the UCT formula
+     */
+    node * uct_child(node &v) {
+        std::vector<double> uct_scores;
+        for(auto &elt : v.children) {
+            assert(elt.get_visits_count() != 0 && expd_counter > 0);
+            uct_scores.emplace_back(
+                elt.get_value() + 2 * uct_cst *
+                sqrt(log((double) expd_counter)/ ((double) elt.get_visits_count()))
+            );
+        }
+        unsigned ind = argmax(uct_scores);
+        return &v.children.at(ind);
+    }
+
+    /**
+     * @brief Tree policy
+     *
+     * Apply the tree policy.
+     * Recursive method.
+     * @param {node &} v;
+     * @return Return a pointer to the created leaf node or to the current node if terminal.
+     */
+    node * tree_policy(node &v) {
+        if(is_node_terminal(v)) { // terminal
+            sample_new_state(&v);
+            return &v;
+        } else if(!v.is_fully_expanded()) { // expand node
+            return expand(v);
+        } else { // apply UCT tree policy
+            node * v_p = uct_child(v);
+            sample_new_state(v_p);
+            return tree_policy(*v_p);
+        }
+    }
+
+    /**
+     * @brief Default policy
+     *
+     * Compute the total return by running an episode with the default policy.
+     * The simulation starts from the last sampled state of the input node.
+     * @param {node *} ptr; pointer to the input node
+     * @return Return the sampled total return.
+     */
+    double default_policy(node * ptr) {
+        state s = ptr->get_last_sampled_state();
+        if(is_node_terminal(*ptr)) {
+            std::shared_ptr<action> a(new navigation_action()); // default action
+            return model.reward_function(s,a,s);
+        }
+        double total_return = 0.;
+        std::shared_ptr<action> a = dflt_policy(s);
+        for(unsigned t=0; t<horizon; ++t) {
+            state s_p;
+            generative_model(s,a,s_p);
+            total_return += pow(discount_factor,(double)t) * model.reward_function(s,a,s_p);
+            if(model.is_terminal(s)) { // Termination criterion
+                break;
+            }
+            s = s_p;
+            a = dflt_policy(s);
+        }
+        return total_return;
+    }
+
+    /**
+     * @brief Backup method
+     *
+     * Increment all the visited nodes visits counters and update their values w.r.t. the
+     * given discounted return.
+     * This method is recursive.
+     * @param {double &} total_return; return to be backed up, iteratively discounted
+     * @param {node *} ptr; pointer to the node, first the leaf node, then to the parents
+     */
+    void backup(double &total_return, node * ptr) {
+        ptr->increment_visits_count();
+        ptr->add_to_value(total_return);
+        total_return *= discount_factor; // apply the discount for the parent node
+        total_return += model.reward_function( // add the reward of the transition
+            ptr->parent->get_state_or_last(),
+            ptr->get_incoming_action(),
+            ptr->get_last_sampled_state()
+        );
+        if(!ptr->parent->is_root()) {
+            backup(total_return,ptr->parent);
+        }
+    }
+
+    void print_tree_base() {
+        std::cout << std::endl;
+        std::cout << "nbch: " << root_node.get_nb_children() << std::endl;
+        std::cout << "V: ";
+        for(auto &ch : root_node.children) {
+            std::cout << ch.get_value() << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "A:\n";
+        for(auto &ch : root_node.children) {
+            ch.get_incoming_action()->print();
+        }
+    }
+
+    /**
+     * @brief Build OLUCT tree
+     *
+     * Build a tree wrt vanilla UCT algorithm.
+     * The tree is kept in memory.
      * @param {const state &} s; current state of the agent
-     * @return Return true if the test does not discard the tree.
      */
-    bool state_multimodality_test(const state &s) {
-        std::vector<state> modes_values;
-        std::vector<unsigned> modes_counters;
-        for(auto &si : pl.root_node.get_sampled_states()) {
-            bool is_new_mode = true;
-            for(auto &m : modes_values) {
-                if(are_states_equal(si,m)) {
-                    is_new_mode = false;
-                }
-            }
-            if(is_new_mode) {
-                modes_values.push_back(si);
-                modes_counters.push_back(1);
-            } else {
-                for(unsigned j=0; j<modes_values.size(); ++j) {
-                    if(are_states_equal(si,modes_values[j])) {
-                        modes_counters.at(j)++;
-                    }
-                }
-            }
-        }
-        if(modes_values.size() == 1) { // mono-modal
-            if(are_states_equal(s,modes_values[0])) { // state within the unique mode
-                return true;
-            } else { // state out of the unique mode
-                return false;
-            }
-        } else { // multi-modal
-            std::vector<double> modes_ratio;
-            for(auto &elt: modes_counters) { // build modes ratio vector
-                modes_ratio.push_back(((double) elt) / ((double)pl.root_node.get_sampled_states().size()));
-            }
-            unsigned state_mode_indice = 0;
-            for(unsigned j=0; j<modes_values.size(); ++j) {
-                if(are_states_equal(s,modes_values[j])) {
-                    state_mode_indice = j;
-                    break;
-                }
-            }
-            if(is_less_than(modes_ratio.at(state_mode_indice),sdm_ratio)) {
-                return false;
-            } else {
-                return true;
-            }
+    void build_oluct_tree(const state &s) {
+        root_node.clear_node();
+        root_node.set_as_root();
+        root_node.set_state(s);
+        root_node.set_action_space(model.get_action_space(s));
+        root_node.shuffle_action_space();
+        expd_counter = 0;
+        for(unsigned i=0; i<budget; ++i) {
+            node *ptr = tree_policy(root_node);
+            double total_return = default_policy(ptr);
+            backup(total_return,ptr);
+            ++expd_counter;
         }
     }
 
     /**
-     * @brief Switch on decision criterion
+     * @brief Argmax of the score
      *
-     * Select the decision criterion according to the chosen algorithm.
-     * The tested tree is the current tree saved in the parameters.
-     * @param {const state &} s; the current state of the agent
-     * @return Return true if the sub-tree is kept.
+     * Get the indice of the child achieving the best score.
+     * The score here has to be understood as the value estimate.
+     * @param {const node &} v; node of the tree
+     * @return Return the indice of the child achieving the best score.
      */
-    bool decision_criterion(const state &s) {
-        bool keep_tree = true;
-        if(decision_criteria_selector[1]) {
-            keep_tree *= action_validity_test(s);
+    unsigned argmax_score(const node &v) {
+        std::vector<double> values;
+        for(auto &ch: v.children) {
+            values.push_back(ch.get_value());
         }
-        if(decision_criteria_selector[2]) {
-            keep_tree *= state_multimodality_test(s);
+        return argmax(values);
+    }
+
+    /**
+     * @brief Get the recommended action at a certain node
+     *
+     * This is the policy decision after the tree construction (recommended action).
+     * Get the greedy action wrt the values of the subsequent nodes.
+     * The indice of the selected action given as argument is modified consequently.
+     * @param {const node &} v; root node of the tree
+     * @param {unsigned &} indice; indice of the selected action
+     * @return Return the action with the highest score (leading to the child node with the
+     * higher value).
+     */
+    std::shared_ptr<action> get_recommended_action(const node &v, unsigned &indice) {
+        indice = argmax_score(v);
+        return v.get_action_at(indice);
+    }
+
+    void save_recommended_trajectory(state s) { //TRM
+        std::vector<std::vector<double>> rec_traj;
+        rec_traj.push_back(std::vector<double>{s.x, s.y});
+        node buffer = root_node;
+        unsigned indice = 0;
+        unsigned tlimit = 10;
+        print("about to traj");
+        for(unsigned t=0; t<tlimit; t++) {
+            std::shared_ptr<action> a = get_recommended_action(buffer,indice);
+            state s_p;
+            generative_model(s,a,s_p);
+            s = s_p;
+            rec_traj.push_back(std::vector<double>{s.x, s.y});
+            if(!(root_node.children.size()>indice)) {
+                break;
+            }
+            buffer = root_node.children[indice];
         }
-        if(decision_criteria_selector[3]) {
-            keep_tree *= state_distribution_vmr_test();
-        }
-        if(decision_criteria_selector[4]) {
-            keep_tree *= distance_to_state_distribution_test(s);
-        }
-        if(decision_criteria_selector[5]) {
-            keep_tree *= outcome_distribution_variance_test();
-        }
-        return keep_tree;
+        std::string path = "data/rectraj" + std::to_string(counter) + ".csv";
+        initialize_backup(std::vector<std::string>{"x","y"},path,",");
+        save_matrix(rec_traj,path,",",std::ofstream::app);
+        counter++;
     }
 
     /**
      * @brief Remove waypoint
      *
      * Remove the waypoints of the environment model at the position of s.
-     * OLUCT simply forwards this instruction to its underlying UCT policy.
+     * UCT has to do it on its own because it has its own independent model.
      * @param {const state &} s; state
      * @return Return the number of reached waypoints.
      * @deprecated
      */
-    /* TRM deprecated
+    /* TRM
     unsigned remove_waypoints_at(const state &s) {
-        return pl.remove_waypoints_at(s);
+        return model.remove_waypoints_at(s);
     }
     */
 
@@ -225,13 +329,11 @@ public:
      * @return Return the undertaken action at s.
      */
 	std::shared_ptr<action> operator()(const state &s) {
-        if(!pl.root_node.is_fully_expanded() || !decision_criterion(s)) {
-            pl.build_uct_tree(s);
-        }
+        model.step(s); //TODO check if the model is correctly updated
+        //TODO: update the model inside the tree for wp -> probably adding table of reached wp in state
+        build_oluct_tree(s);
         unsigned indice = 0;
-        std::shared_ptr<action> ra = pl.get_recommended_action(pl.root_node,indice);
-        pl.root_node.move_to_child(indice,s);
-        return ra;
+        return get_recommended_action(root_node,indice);
 	}
 
     /**
@@ -259,8 +361,8 @@ public:
      * @return Return a vector containing the values to be saved.
      */
     std::vector<double> get_backup() {
-        return pl.get_backup();
+        return std::vector<double>{(double)nb_calls};
     }
 };
 
-#endif // OLUCT_POLICY_HPP_
+#endif // UCT_POLICY_HPP_
