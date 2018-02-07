@@ -4,7 +4,7 @@ CCFLAGS=-std=c++11 -Wall -Wextra ${INCLUDE} -O2 -g
 LDFLAGS=-lm -lconfig++
 EXEC=exe
 
-all : clean compile run
+all : clean compile run trajectory
 
 fast : run trajectory
 
@@ -19,7 +19,4 @@ run :
 
 trajectory :
 	python3 plot/trajectory.py
-
-graph :
-	python3 plot/graph.py
 
