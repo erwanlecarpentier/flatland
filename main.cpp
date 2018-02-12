@@ -19,6 +19,7 @@
 #include <go_straight.hpp>
 #include <oluct.hpp>
 #include <olta.hpp>
+#include <uct/uct.hpp>
 #include <save.hpp>
 #include <state.hpp>
 #include <utils.hpp>
@@ -56,12 +57,6 @@ void single_run(
         }
         ag.step();
         en.step(ag.s);
-        /* //TRM replaces by en.step(ag.s)
-        if(en.is_waypoint_reached(ag.s)) {
-            en.remove_waypoints_at(ag.s);
-            ag.waypoint_reached();
-        }
-        */
         if(en.is_terminal(ag.s)) { // terminal state reached
             break;
         }
@@ -108,7 +103,21 @@ void run_switch(
             single_run<go_straight>(p,prnt,bckp,backup_vector);
             break;
         }
+        /*
         case 1: { // UCT policy
+            switch(p.default_policy_selector) {
+                case 0: { // go-straight policy
+                    single_run<olta<go_straight>>(p,prnt,bckp,backup_vector);
+                    break;
+                }
+                default: { // random policy
+                    single_run<olta<random_policy>>(p,prnt,bckp,backup_vector);
+                }
+            }
+            break;
+        }
+        */
+        case 2: { // OLUCT policy
             switch(p.DEFAULT_POLICY_SELECTOR) {
                 case 0: { // Go-straight policy
                     single_run<oluct<go_straight>>(p,prnt,bckp,backup_vector);
@@ -120,7 +129,7 @@ void run_switch(
             }
             break;
         }
-        case 2: { // OLUCT policy
+        case 3: { // OLTA policy
             switch(p.DEFAULT_POLICY_SELECTOR) {
                 case 0: { // Go-straight policy
                     single_run<olta<go_straight>>(p,prnt,bckp,backup_vector);

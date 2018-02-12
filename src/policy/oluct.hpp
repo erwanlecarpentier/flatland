@@ -129,11 +129,11 @@ public:
      */
     node * uct_child(node &v) {
         std::vector<double> uct_scores;
-        for(auto &elt : v.children) {
-            assert(elt.get_visits_count() != 0 && expd_counter > 0);
+        for(auto &c : v.children) {
+            assert(c.get_visits_count() != 0 && expd_counter > 0);
             uct_scores.emplace_back(
-                elt.get_value() + 2 * uct_cst *
-                sqrt(log((double) expd_counter)/ ((double) elt.get_visits_count()))
+                c.get_value() + 2 * uct_cst *
+                sqrt(log((double) expd_counter)/ ((double) c.get_visits_count()))
             );
         }
         unsigned ind = argmax(uct_scores);
@@ -230,7 +230,7 @@ public:
     /**
      * @brief Build OLUCT tree
      *
-     * Build a tree wrt vanilla UCT algorithm.
+     * Build a tree wrt the OLUCT algorithm.
      * The tree is kept in memory.
      * @param {const state &} s; current state of the agent
      */
@@ -289,7 +289,7 @@ public:
      * @return Return the undertaken action at s.
      */
 	std::shared_ptr<action> operator()(const state &s) {
-        model.step(s); //TODO check if the model is correctly updated
+        model.step(s);
         //TODO: update the model inside the tree for wp -> probably adding table of reached wp in state
         build_oluct_tree(s);
         unsigned indice = 0;
