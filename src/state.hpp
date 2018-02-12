@@ -29,6 +29,17 @@ public:
     {}
 
     /**
+     * @brief Is terminal
+     *
+     * In the current implementation, both the environment and the state are queried for
+     * termination criterion
+     * @return Return true if the test is terminal, else false.
+     */
+    bool is_terminal() const {
+        return false;
+    }
+
+    /**
      * @brief Set to default
      *
      * Set the attributes to default values.

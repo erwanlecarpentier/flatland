@@ -122,7 +122,7 @@ public :
     }
 
     /** @brief Get the state of the node (root node) */
-    state get_state() const {
+    const state & get_state() const {
         assert(root);
         return s;
     }

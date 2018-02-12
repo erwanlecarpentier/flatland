@@ -1,13 +1,11 @@
 #ifndef UCT_HPP_
 #define UCT_HPP_
 
-// Standard libraries
 #include<cassert>
 #include<vector>
 #include<memory>
 #include<numeric>
 
-// My libraries
 #include<uct/cnode.hpp>
 #include<uct/dnode.hpp>
 #include<utils.hpp>
@@ -52,7 +50,7 @@ public:
      * Sample a return with the default policy
      */
     double sample_return(ST &s) {
-        if(s.is_terminal()) {
+        if(model.is_terminal(s)) {
             return 0.;
         }
         double total_return = 0.;
@@ -62,7 +60,7 @@ public:
             ST s_p;
             model.state_transition(s,a,s_p);
             total_return += pow(discount_factor,(double)t) * model.reward_function(s,a,s_p);
-            if(s_p.is_terminal()) {
+            if(model.is_terminal(s_p)) {
                 break;
             }
             s = s_p;
@@ -114,7 +112,7 @@ public:
      * @brief Search tree
      */
     double search_tree(dnode<ST,AC> * v) {
-        if(v->is_terminal()) { // terminal node
+        if(model.is_terminal(v->s)) { // terminal node
             return 0.;
         } else if(!v->is_fully_expanded()) { // leaf node, expand it
             return evaluate(v);
@@ -134,7 +132,7 @@ public:
             return q;
         }
         /* // Original implementation (slower)
-        if(v->is_terminal()) { // terminal node
+        if(model.is_terminal(v->s)) { // terminal node
             return 0.;
         } else if(v->is_leaf()) { // leaf node, expand it
             return evaluate(v->s);
@@ -190,6 +188,32 @@ public:
         dnode<ST,AC> root(s,s.get_available_actions(),nullptr);
         build_uct_tree(root);
         a = recommended_action(root);
+    }
+
+    /**
+     * @brief Process reward
+     *
+     * Process the resulting reward from transition (s,a,s_p)
+     * @param {state &} s; state
+     * @param {std::shared_ptr<action> &} a; action
+     * @param {state &} s_p; next state
+     */
+    void process_reward(
+        const state & s,
+        const std::shared_ptr<action> & a,
+        const state & s_p)
+    {
+        /* No reward processing for UCT policy */
+    }
+
+    /**
+     * @brief Get backup
+     *
+     * Get the backed-up values.
+     * @return Return a vector containing the values to be saved.
+     */
+    std::vector<double> get_backup() {
+        return std::vector<double>{(double)global_counter};
     }
 };
 

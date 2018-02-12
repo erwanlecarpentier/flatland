@@ -8,10 +8,10 @@
 /**
  * @brief OLUCT policy
  */
-template <class DFTPLC>
+template <class PL>
 class oluct {
 public:
-    typedef DFTPLC DFTPLC_type;
+    typedef PL PL_type;
     environment model; ///< Copy of the environment, used for action space reduction, termination criterion and generative model, also its attributes may be changed according to the used configuration
     node root_node; ///< Root node of the tree
     double uct_cst; ///< UCT constant within UCT formula
@@ -20,7 +20,7 @@ public:
     unsigned budget; ///< Algorithm budget (number of expanded nodes)
     unsigned expd_counter; ///< Counter of the number of expanded nodes
     unsigned nb_calls; ///< Number of calls to the generative model
-    DFTPLC dflt_policy; ///< Default policy
+    PL dflt_policy; ///< Default policy
 
     /**
      * @brief Constructor

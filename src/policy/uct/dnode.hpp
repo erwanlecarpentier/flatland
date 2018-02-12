@@ -66,13 +66,6 @@ public:
     }
 
     /**
-     * @brief Is terminal
-     */
-    bool is_terminal() {
-        return s.is_terminal();
-    }
-
-    /**
      * @brief Is fully expanded
      *
      * Node is a leaf.

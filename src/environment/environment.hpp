@@ -220,16 +220,17 @@ public:
      * @brief Is terminal
      *
      * Test if the given state is terminal.
-     * @param {const state &} s; given state
+     * In the current implementation, both the environment and the state are queried for
+     * termination criterion
+     * @param {state &} s; given state
      * @return Return true if the test is terminal, else false.
      */
     bool is_terminal(const state &s) {
-        if((w.is_wall_encountered_at(s) && is_crash_terminal) /* Wall */
-        || w.rwm.is_terminal(s) /* Reward model says terminal eg waypoints reached*/) {
-            return true;
-        } else {
-            return false;
-        }
+        return (
+            (w.is_wall_encountered_at(s) && is_crash_terminal) /* Wall */
+            || w.rwm.is_terminal(s) /* Reward model says terminal eg waypoints reached*/
+            || s.is_terminal() /* State is terminal */
+        );
     }
 
     /**

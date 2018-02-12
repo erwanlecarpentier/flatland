@@ -105,13 +105,13 @@ void run_switch(
         }
         /*
         case 1: { // UCT policy
-            switch(p.default_policy_selector) {
+            switch(p.DEFAULT_POLICY_SELECTOR) {
                 case 0: { // go-straight policy
-                    single_run<olta<go_straight>>(p,prnt,bckp,backup_vector);
+                    single_run<uct<state,action,environment,go_straight>>(p,prnt,bckp,backup_vector);
                     break;
                 }
                 default: { // random policy
-                    single_run<olta<random_policy>>(p,prnt,bckp,backup_vector);
+                    single_run<uct<state,action,environment,random_policy>>(p,prnt,bckp,backup_vector);
                 }
             }
             break;
