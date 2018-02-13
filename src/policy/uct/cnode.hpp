@@ -1,17 +1,16 @@
 #ifndef CNODE_HPP_
 #define CNODE_HPP_
 
-template <class ST, class AC> class dnode; // forward declaration
+class dnode; // forward declaration
 
 /**
  * @brief Chance node class
  */
-template <class ST, class AC>
 class cnode {
 public:
-    ST s; ///< Labelling state
-    AC a; ///< Labelling action
-    std::vector<std::unique_ptr<dnode<ST,AC>>> children; ///< Child nodes
+    state s; ///< Labelling state
+    std::shared_ptr<action> a; ///< Labelling action
+    std::vector<std::unique_ptr<dnode>> children; ///< Child nodes
     std::vector<double> sampled_returns; ///< Sampled returns
     //unsigned nvis; ///< Number of visits //TRM?
 
@@ -19,8 +18,8 @@ public:
      * @brief Constructor
      */
     cnode(
-        ST _s,
-        AC _a) :
+        state _s,
+        std::shared_ptr<action> _a) :
         s(_s),
         a(_a)
     {
@@ -30,8 +29,14 @@ public:
     /**
      * @brief Create Child
      */
-    dnode<ST,AC> * create_child(ST _s, std::vector<AC> _actions) {
-        children.emplace_back(std::unique_ptr<dnode<ST,AC>>(new dnode<ST,AC>(_s,_actions,this)));
+    /* //TRM outdated
+    dnode * create_child(state _s, std::vector<std::shared_ptr<action>> _actions) {
+        children.emplace_back(std::unique_ptr<dnode>(new dnode(_s,_actions,this)));
+        return children.back().get();
+    }
+    */
+
+    dnode * get_last_child() {
         return children.back().get();
     }
 
@@ -47,11 +52,12 @@ public:
      * @brief Is state already sampled
      *
      * Equality operator.
-     * @param {ST &} s; sampled state
+     * @param {state &} s; sampled state
      * @param {unsigned &} ind; indice modified to the value of the indice of the existing
      * decision node with state s if the comparison succeeds.
      */
-    bool is_state_already_sampled(ST &s, unsigned &ind) {
+    /*
+    bool is_state_already_sampled(state &s, unsigned &ind) {
         for(unsigned i=0; i<children.size(); ++i) {
             if(s.is_equal_to(children[i]->s)) {
                 ind = i;
@@ -60,6 +66,7 @@ public:
         }
         return false;
     }
+    */
 };
 
 #endif // CNODE_HPP_

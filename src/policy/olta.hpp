@@ -108,10 +108,10 @@ public:
     }
 
     bool are_states_equal(const state &a, const state &b) const {
-        if(is_equal_to(a.x,b.x)
-        && is_equal_to(a.y,b.y)
-        && is_equal_to(a.v,b.v)
-        && is_equal_to(a.theta,b.theta)) {
+        if(are_equal(a.x,b.x)
+        && are_equal(a.y,b.y)
+        && are_equal(a.v,b.v)
+        && are_equal(a.theta,b.theta)) {
             return true;
         } else {
             return false;

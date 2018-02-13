@@ -36,6 +36,7 @@ public:
     unsigned SIMULATION_LIMIT_TIME;
     unsigned POLICY_SELECTOR;
     unsigned DEFAULT_POLICY_SELECTOR;
+    unsigned ACTIONS_SELECTOR;
     // Environment parameters:
     bool IS_CRASH_TERMINAL;
     double MISSTEP_PROBABILITY;
@@ -63,7 +64,7 @@ public:
      * @deprecated
      */
     parameters() {
-        /* Set some default parameters in this constructor */
+        /* Set default parameters in this constructor */
     }
 
     /**
@@ -92,9 +93,7 @@ public:
         catch(const libconfig::ParseException &e) {
             display_libconfig_parse_exception(e);
         }
-        unsigned selector = 0;
-        assert(cfg.lookupValue("action_definition_selector",selector));
-        switch(selector) {
+        switch(ACTIONS_SELECTOR) {
             case 0: { // Polar actions, turned to cartesian actions
                 unsigned nbac = 0;
                 assert(cfg.lookupValue("nb_actions",nbac));
@@ -360,6 +359,7 @@ public:
         && cfg.lookupValue("wall_reward",WALL_REWARD)
         && cfg.lookupValue("model_misstep_probability",MODEL_MISSTEP_PROBABILITY)
         && cfg.lookupValue("model_state_gaussian_stddev",MODEL_STATE_GAUSSIAN_STDDEV)
+        && cfg.lookupValue("action_definition_selector",ACTIONS_SELECTOR)
         && cfg.lookupValue("policy_selector",POLICY_SELECTOR)
         && cfg.lookupValue("default_policy_selector",DEFAULT_POLICY_SELECTOR)
         && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)

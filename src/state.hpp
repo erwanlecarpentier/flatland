@@ -1,6 +1,8 @@
 #ifndef STATE_HPP_
 #define STATE_HPP_
 
+#include<utils.hpp>
+
 /**
  * @brief State class
  */
@@ -50,6 +52,22 @@ public:
         v = 0.;
         theta = 0.;
         waypoints_reached_counter = 0;
+    }
+
+    /**
+     * @brief Equality operator
+     *
+     * @param {const state &} _s; state to which we compare
+     * @return Return true if the states are equal.
+     */
+    bool is_equal_to(const state &_s) const {
+        return (
+            are_equal(x,_s.x)
+        &&  are_equal(y,_s.y)
+        &&  are_equal(v,_s.v)
+        &&  are_equal(theta,_s.theta)
+        &&  waypoints_reached_counter == _s.waypoints_reached_counter
+        );
     }
 
     /**

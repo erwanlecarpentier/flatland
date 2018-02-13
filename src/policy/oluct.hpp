@@ -282,10 +282,10 @@ public:
     }
 
     /**
-     * @brief Policy operator
+     * @brief OLUCT policy operator
      *
      * Policy operator for the undertaken action at given state.
-     * @param {const state &} s; given state
+     * @param {const state &} s; current state of the agent
      * @return Return the undertaken action at s.
      */
 	std::shared_ptr<action> operator()(const state &s) {

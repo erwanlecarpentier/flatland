@@ -14,10 +14,10 @@
 bool are_equal(Eigen::Vector4d &v, Eigen::Vector4d &w) {
 	Eigen::Vector4d v_w = v - w;
 	return (
-		is_equal_to(v_w(0),0.)
-	 && is_equal_to(v_w(1),0.)
-	 && is_equal_to(v_w(2),0.)
-	 && is_equal_to(v_w(3),0.)
+		are_equal(v_w(0),0.)
+	 && are_equal(v_w(1),0.)
+	 && are_equal(v_w(2),0.)
+	 && are_equal(v_w(3),0.)
 	);
 }
 
@@ -122,7 +122,7 @@ double mahalanobis_distance(
 		return 0.;
 	}
 	Eigen::Vector4d vm = v-mean;
-	if(is_equal_to(cov.determinant(),0.,precision)) {
+	if(are_equal(cov.determinant(),0.,precision)) {
 		return 9e99;
 	} else {
 		return sqrt(std::max(0.,(vm.transpose() * cov.inverse() * vm)(0)));

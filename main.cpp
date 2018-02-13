@@ -103,20 +103,18 @@ void run_switch(
             single_run<go_straight>(p,prnt,bckp,backup_vector);
             break;
         }
-        /*
         case 1: { // UCT policy
             switch(p.DEFAULT_POLICY_SELECTOR) {
                 case 0: { // go-straight policy
-                    single_run<uct<state,action,environment,go_straight>>(p,prnt,bckp,backup_vector);
+                    single_run<uct<environment,go_straight>>(p,prnt,bckp,backup_vector);
                     break;
                 }
                 default: { // random policy
-                    single_run<uct<state,action,environment,random_policy>>(p,prnt,bckp,backup_vector);
+                    single_run<uct<environment,random_policy>>(p,prnt,bckp,backup_vector);
                 }
             }
             break;
         }
-        */
         case 2: { // OLUCT policy
             switch(p.DEFAULT_POLICY_SELECTOR) {
                 case 0: { // Go-straight policy

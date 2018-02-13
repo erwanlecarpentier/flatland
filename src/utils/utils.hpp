@@ -37,7 +37,7 @@ void printv(std::vector<T> v) {
  * @return Return true if the input arguments are equal.
  */
 template <class T1, class T2>
-constexpr bool is_equal_to(T1 a, T2 b, double precision = COMPARISON_THRESHOLD) {
+constexpr bool are_equal(const T1 a, const T2 b, double precision = COMPARISON_THRESHOLD) {
     return std::fabs(a-b)<precision;
 }
 
@@ -52,7 +52,7 @@ constexpr bool is_equal_to(T1 a, T2 b, double precision = COMPARISON_THRESHOLD) 
  * @return Return true if the 1st input arguments is strictly inferior to the 2nd one.
  */
 template <class T1, class T2>
-constexpr bool is_less_than(T1 a, T2 b, double precision = COMPARISON_THRESHOLD) {
+constexpr bool is_less_than(const T1 a, const T2 b, double precision = COMPARISON_THRESHOLD) {
     return a<(b-precision);
 }
 
@@ -67,7 +67,7 @@ constexpr bool is_less_than(T1 a, T2 b, double precision = COMPARISON_THRESHOLD)
  * @return Return true if the 1st input arguments is strictly superior to the 2nd one.
  */
 template <class T1, class T2>
-constexpr bool is_greater_than(T1 a, T2 b, double precision = COMPARISON_THRESHOLD) {
+constexpr bool is_greater_than(const T1 a, const T2 b, double precision = COMPARISON_THRESHOLD) {
     return a>(b+precision);
 }
 

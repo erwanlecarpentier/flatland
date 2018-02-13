@@ -23,8 +23,8 @@ public:
         dy(_dy)
     {
         _v = sqrt(dx * dx + dy * dy);
-        if(is_equal_to(dx,0.)) {
-            if(is_equal_to(dy,0.)) {
+        if(are_equal(dx,0.)) {
+            if(are_equal(dy,0.)) {
                 _theta = 0.; // default for no action
             } else if(is_less_than(dy,0.)) {
                 _theta = - M_PI / 2.;
@@ -32,7 +32,7 @@ public:
                 _theta = + M_PI / 2.;
             }
         } else if(is_less_than(dx,0.)) {
-            if(is_equal_to(dy,0.)) {
+            if(are_equal(dy,0.)) {
                 _theta = M_PI;
             } else if(is_less_than(dy,0.)) {
                 _theta = atan(dy / dx) - M_PI;
@@ -40,7 +40,7 @@ public:
                 _theta = atan(dy / dx) + M_PI;
             }
         } else {
-            if(is_equal_to(dy,0.)) {
+            if(are_equal(dy,0.)) {
                 _theta = 0.;
             } else {
                 _theta = atan(dy / dx);
