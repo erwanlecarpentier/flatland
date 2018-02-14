@@ -29,29 +29,6 @@ public:
 
     /**
      * @brief Constructor
-     * @deprecated
-     */
-    /*
-    uct(
-        MD _model,
-        PL _default_policy,
-        double _discount_factor,
-        double _uct_parameter,
-        unsigned _budget,
-        unsigned _horizon) :
-        model(_model),
-        default_policy(_default_policy),
-        discount_factor(_discount_factor),
-        uct_parameter(_uct_parameter),
-        budget(_budget),
-        horizon(_horizon)
-    {
-        global_counter = 0;
-    }
-    */
-
-    /**
-     * @brief Constructor
      */
     uct(const parameters &p, environment *en) :
         model(*en),
@@ -67,9 +44,11 @@ public:
     /**
      * @brief Sample return
      *
-     * Sample a return with the default policy
+     * Sample a return with the default policy starting at the input state.
+     * @param {state} s; input state
+     * @return Return the sampled return.
      */
-    double sample_return(state &s) {
+    double sample_return(state s) {
         if(model.is_terminal(s)) {
             return 0.;
         }
@@ -90,17 +69,24 @@ public:
 
     /**
      * @brief Update value
+     *
+     * Update the value of a chance node by stacking a new sampled value.
+     * @param {cnode *} ptr; pointer to the updated chance node
+     * @param {double} q; new sampled value
      */
-    void update_value(cnode * ptr, double q) {
+    void update_value(cnode * ptr, double q) const {
         ptr->sampled_returns.push_back(q);
     }
 
     /**
-     * @brief Select child wrt UCT tree policy
+     * @brief Select child
      *
+     * Select child of a decision node wrt the UCT tree policy.
      * The node must be fully expanded.
+     * @param {dnode *} v; decision node
+     * @return Return to the select child, which is a chance node.
      */
-    cnode * select_child(dnode * v) {
+    cnode * select_child(dnode * v) const {
         std::vector<double> children_uct_scores;
         for(auto &c : v->children) {
             children_uct_scores.emplace_back(
@@ -115,8 +101,10 @@ public:
     /**
      * @brief Evaluate
      *
-     * Create a new child node (chance node) and sample a return value with the default
+     * Create a new child node to a decision node and sample a return value with the default
      * policy.
+     * @param {dnode *} v; pointer to the decision node
+     * @return Return the sampled value.
      */
     double evaluate(dnode * v) {
         state s_p;
@@ -136,7 +124,7 @@ public:
      * @param {unsigned &} ind; indice modified to the value of the indice of the existing
      * decision node with state s if the comparison succeeds.
      */
-    bool is_state_already_sampled(cnode * ptr, state &s, unsigned &ind) {
+    bool is_state_already_sampled(cnode * ptr, state &s, unsigned &ind) const {
         for(unsigned i=0; i<ptr->children.size(); ++i) {
             if(s.is_equal_to(ptr->children[i]->s)) {
                 ind = i;
@@ -148,6 +136,11 @@ public:
 
     /**
      * @brief Search tree
+     *
+     * Search within the tree, starting from the input decision node.
+     * Recursive method.
+     * @param {dnode *} v; input decision node
+     * @return Return the sampled return at the given decision node
      */
     double search_tree(dnode * v) {
         if(model.is_terminal(v->s)) { // terminal node
@@ -190,6 +183,9 @@ public:
 
     /**
      * @brief Build UCT tree
+     *
+     * Build a tree at the input root node.
+     * @param {dnode &} root; reference to the input root node
      */
     void build_uct_tree(dnode &root) {
         for(unsigned i=0; i<budget; ++i) {
@@ -201,9 +197,11 @@ public:
     /**
      * @brief Argmax value
      *
+     * Get the indice of the child with the maximum value of an input decision node.
+     * @param {const dnode &} v; input decision node
      * @return Return the indice of the child with the maximum value
      */
-    unsigned argmax_value(const dnode &v) {
+    unsigned argmax_value(const dnode &v) const {
         std::vector<double> values;
         for(auto &ch: v.children) {
             values.emplace_back(ch->get_value());
@@ -213,6 +211,10 @@ public:
 
     /**
      * @brief Recommended action
+     *
+     * Get the recommended action from an input decision node.
+     * @param {const dnode &} v; input decision node
+     * @return Return the recommended action at the input decision node.
      */
     std::shared_ptr<action> recommended_action(const dnode &v) {
         return v.children.at(argmax_value(v))->a;
@@ -256,7 +258,7 @@ public:
      * Get the backed-up values.
      * @return Return a vector containing the values to be saved.
      */
-    std::vector<double> get_backup() {
+    std::vector<double> get_backup() const {
         return std::vector<double>{(double)global_counter};
     }
 };

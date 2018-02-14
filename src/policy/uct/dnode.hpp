@@ -31,6 +31,8 @@ public:
     /**
      * @brief Create Child
      *
+     * Create a child (hence a chance node).
+     * The action of the child is randomly selected.
      * @return Return the sampled action.
      * @warning Remove the sampled action from the actions vector.
      */
@@ -46,8 +48,11 @@ public:
 
     /**
      * @brief Get children values
+     *
+     * Get an ordered vector containing all the values of the children.
+     * * @return Return the vector containing all the children values.
      */
-    std::vector<double> get_children_values() {
+    std::vector<double> get_children_values() const {
         std::vector<double> children_values;
         for(auto &c : children) {
             children_values.emplace_back(c->get_value());
@@ -57,9 +62,12 @@ public:
 
     /**
      * @brief Get value
+     *
+     * Get the value of the node.
+     * This is the maximum value of its children.
+     * @return Return the value of the node.
      */
-    double get_value() {
-        //assert(nvis > 0); // must have been visited at least once//TRM?
+    double get_value() const {
         std::vector<double> children_values = get_children_values();
         return children.at(argmax(children_values))->get_value();
     }
@@ -67,9 +75,11 @@ public:
     /**
      * @brief Is fully expanded
      *
+     * Test whether the node is fully expanded ie if every actions have been sampled.
      * Node is a leaf.
+     * @return Return a boolean answer to the test.
      */
-    bool is_fully_expanded() {
+    bool is_fully_expanded() const {
         return (actions.size() == 0);
     }
 };
