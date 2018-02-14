@@ -120,6 +120,23 @@ inline T rand_element(const std::vector<T> &v) {
 }
 
 /**
+ * @brief Remove elements
+ *
+ * Remove the given elements of the input vector.
+ * @param {std::vector<T> &} v; input vector
+ * @param {std::vector<unsigned> &} indices; indices of the vectors to be removed
+ */
+template <class T>
+void remove_elements(std::vector<T> &v, std::vector<unsigned> &indices) {
+    for (unsigned i=0; i<indices.size(); ++i) {
+        v.erase(v.begin() + indices[i]);
+        for(unsigned j=i+1; j<indices.size(); ++j) {
+            --indices[j];
+        }
+    }
+}
+
+/**
  * @brief Argmax
  *
  * Get the indice of the maximum element in the input vector, ties are broken arbitrarily.
@@ -189,6 +206,17 @@ double normal_double(double mean, double stddev) {
     std::default_random_engine generator(rd());
     std::normal_distribution<double> distribution(mean,stddev);
     return distribution(generator);
+}
+
+/**
+ * @brief Sigmoid function
+ *
+ * @param {const double} x; point to evaluate the sigmoid
+ * @param {const double} x_max; point the sigmoid is 0.99
+ * @param {const double} x_middle; point the sigmoid is 0.5
+ */
+inline double sigmoid(const double x, const double x_max, const double x_middle = 0.) {
+    return 1./(1. + exp(-(x-x_middle)/(x_max*.217622180186)));
 }
 
 #endif // UTILS_HPP_

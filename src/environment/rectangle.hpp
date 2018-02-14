@@ -34,7 +34,7 @@ public:
      * @param {double} y; y coordinate
      * @return Return true if the given position is within the shape.
      */
-    bool is_within(double x, double y) override {
+    bool is_within(double x, double y) const override {
         return is_less_than(
             fabs(x - std::get<0>(center)),
             width / 2.

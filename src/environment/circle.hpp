@@ -33,7 +33,7 @@ public:
      * @param {double} y; y coordinate
      * @return Return true if the given position is within the shape.
      */
-    bool is_within(double x, double y) override {
+    bool is_within(double x, double y) const override {
         return is_less_than(
             pow(x - std::get<0>(center), 2.) + pow(y - std::get<1>(center), 2.),
             radius * radius

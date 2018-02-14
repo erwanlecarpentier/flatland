@@ -180,7 +180,8 @@ public:
             state s_p;
             model.state_transition(v->s,ptr->a,s_p);
             double r = model.reward_function(v->s,ptr->a,s_p);
-            double q = r + discount_factor * search_tree(ptr->create_child(s_p,s_p.get_available_actions())); //TRM
+            ptr->children.emplace_back(std::unique_ptr<dnode>(new dnode(s_p,model.get_action_space(s_p),ptr)));
+            double q = r + discount_factor * search_tree(ptr->get_last_child());
             update_value(ptr,q);
             return q;
         }

@@ -20,7 +20,7 @@ public:
      * @param {const state &} s; given state
      * @return Return true if at least one waypoint is reached at the given state.
      */
-    bool is_waypoint_reached(const state &s) {
+    bool is_waypoint_reached(const state &s) const {
         assert(reward_model_selector != 0);
         for(auto &wp : waypoints) {
             if(wp.is_within(s.x,s.y)) {
@@ -42,7 +42,7 @@ public:
     double get_reward_value_at(
         const state &s,
         const std::shared_ptr<action> &a,
-        const state &s_p) {
+        const state &s_p) const {
         (void) a;
         (void) s_p;
         switch(reward_model_selector) {
@@ -57,23 +57,6 @@ public:
             }
         }
         return 0.; // default
-    }
-
-    /**
-     * @brief Remove elements
-     *
-     * Remove the given elements of the input vector.
-     * @param {std::vector<T> &} v; input vector
-     * @param {std::vector<unsigned> &} indices; indices of the vectors to be removed
-     */
-    template <class T>
-    void remove_elements(std::vector<T> &v, std::vector<unsigned> &indices) {
-        for (unsigned i=0; i<indices.size(); ++i) {
-            v.erase(v.begin() + indices[i]);
-            for(unsigned j=i+1; j<indices.size(); ++j) {
-                --indices[j];
-            }
-        }
     }
 
     /**
@@ -130,7 +113,6 @@ public:
                 return false;
             }
             default: { // waypoints reward model
-                std::cout << waypoints.size() << std::endl;//TRM
                 if(waypoints.size() == 0) {
                     return true;
                 }

@@ -16,7 +16,7 @@ public:
      * @param {double} y; y coordinate
      * @return Return true if the given position is within the shape.
      */
-    virtual bool is_within(double x, double y) = 0;
+    virtual bool is_within(double x, double y) const = 0;
 
     shape* clone() const {
         return do_clone(); // implemented by private virtual function
