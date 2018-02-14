@@ -12,7 +12,7 @@ template <class PLC>
 class agent {
 public:
     typedef PLC PLC_type;
-    PLC policy;
+    PLC policy; ///< Policy used by the agent
     state s; ///< Current state of the agent
     state s_p; ///< Next state of the agent
     std::shared_ptr<action> a; ///< Action selected by the policy

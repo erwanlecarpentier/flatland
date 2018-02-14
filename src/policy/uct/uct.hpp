@@ -164,7 +164,7 @@ public:
             if(is_state_already_sampled(ptr,s_p,ind)) { // go to node
                 q = r + discount_factor * search_tree(ptr->children.at(ind).get());
             } else { // leaf node, create a new node
-                ptr->children.emplace_back(s_p,model.get_action_space(s_p),ptr);
+                ptr->children.emplace_back(std::unique_ptr<dnode>(new dnode(s_p,model.get_action_space(s_p),ptr)));
                 q = r + discount_factor * evaluate(ptr->get_last_child());
             }
             update_value(ptr,q);
