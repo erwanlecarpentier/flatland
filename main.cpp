@@ -46,7 +46,7 @@ void single_run(
     agent<PLC> ag(p,&en);
     unsigned t = 0; // time
 	std::clock_t c_start = std::clock();
-    for(t=0; t<p.SIMULATION_LIMIT_TIME; ++t) {
+    for(t=0; t<p.SIMULATION_LIMIT_TIME; ++t) { // main loop
         ag.apply_policy();
         en.transition(ag.s,ag.a,ag.reward,ag.s_p);
         ag.process_reward();

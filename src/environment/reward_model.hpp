@@ -130,6 +130,7 @@ public:
                 return false;
             }
             default: { // waypoints reward model
+                std::cout << waypoints.size() << std::endl;//TRM
                 if(waypoints.size() == 0) {
                     return true;
                 }

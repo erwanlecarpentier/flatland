@@ -312,7 +312,8 @@ public:
                 unsigned nbwp = 0;
                 double wprwd = 1.;
                 if(cworld_cfg.lookupValue("nb_waypoints",nbwp)
-                && cworld_cfg.lookupValue("waypoint_reward",wprwd)) {
+                && cworld_cfg.lookupValue("waypoint_reward",wprwd)
+                && cworld_cfg.lookupValue("reward_model_selector",rwm.reward_model_selector)) {
                     rwm.waypoints.reserve(nbwp);
                     rwm.waypoint_reward = wprwd;
                 } else {
