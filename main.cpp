@@ -23,7 +23,6 @@
 #include <save.hpp>
 #include <state.hpp>
 #include <utils.hpp>
-#include <world.hpp>
 
 /**
  * @brief Single run
@@ -53,7 +52,9 @@ void single_run(
         if(prnt) {
             std::cout << t << " ";
             ag.s.print();
-            en.print(ag.s);
+        }
+        if(bckp) {
+            en.append_to_trajectory(ag.s);
         }
         ag.step();
         en.step(ag.s);
@@ -66,11 +67,11 @@ void single_run(
     if(prnt) {
         std::cout << t << " ";
         ag.s.print();
-        en.print(ag.s);
-        en.save_trajectory();
         std::cout << "Finish\n";
     }
     if(bckp) {
+        en.append_to_trajectory(ag.s);
+        en.save_trajectory();
         std::vector<double> simbackup = {
             (double) t, /* score */
             time_elapsed_ms /* computational cost */

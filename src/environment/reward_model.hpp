@@ -106,7 +106,7 @@ public:
      * Test whether it is terminal wrt state or reward model.
      * @param {const state &} s; real state of the agent
      */
-    bool is_terminal(const state &s) {
+    bool is_terminal(const state &s) const {
         (void) s;
         switch(reward_model_selector) {
             case 0: { // heatmap reward model

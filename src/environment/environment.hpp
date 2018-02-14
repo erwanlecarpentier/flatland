@@ -2,22 +2,27 @@
 #define ENVIRONMENT_HPP_
 
 #include <parameters.hpp>
-#include <world.hpp>
 #include <utils.hpp>
+#include <save.hpp>
 
 /**
  * @brief Environment
  *
- * Environment class.
+ * Environment class
  */
 class environment {
 public:
-    bool is_crash_terminal;
-    world w; ///< world
+    bool is_crash_terminal; ///< Set to true if you want the crashes to be terminal
+    double xsize; ///< Horizontal dimension of the environment
+    double ysize; ///< Vertical dimension of the environment
+    boost::ptr_vector<shape> walls; ///< Walls of the environment
+    reward_model rwm; ///< Reward model of the environment
     double misstep_probability; ///< Probability of misstep
     double state_gaussian_stddev; ///< Standard deviation of the Gaussian applied on the position
     double wall_reward;
     std::vector<std::shared_ptr<action>> action_space; ///< Full space of the actions available in the environment
+    std::vector<std::vector<double>> trajectory; ///< Matrix of the trajectory for backup
+    std::string trajectory_output_path; ///< Output path for the trajectory
 
     /**
      * @brief Default constructor
@@ -25,23 +30,38 @@ public:
      * Default constructor initialising the parameters via a 'parameters' object.
      * @param {const parameters &} p; parameters
      */
-    environment(const parameters &p) : w(p) {
+    environment(const parameters &p) {
+        p.parse_world(xsize,ysize,walls,rwm);
         p.parse_actions(action_space);
         is_crash_terminal = p.IS_CRASH_TERMINAL;
         misstep_probability = p.MISSTEP_PROBABILITY;
         state_gaussian_stddev = p.STATE_GAUSSIAN_STDDEV;
         wall_reward = p.WALL_REWARD;
+        trajectory_output_path = p.TRAJECTORY_OUTPUT_PATH;
+        initialize_backup(std::vector<std::string>{"x","y"},trajectory_output_path,",");
     }
 
     /**
-     * @brief Print environment
+     * @brief Is wall encountered
      *
-     * Print the environment including the agent's position.
-     * @param {const state &} s; state of the agent
+     * Test whether a wall is encountered at the given position
+     * @param {const state &} s; given state
+     * @return Return true if a wall is encountered.
      */
-    void print(const state &s) {
-        w.print(s);
-    }
+    bool is_wall_encountered_at(const state &s) const {
+        if(is_less_than(s.x,0.)
+        || is_less_than(s.y,0.)
+        || is_greater_than(s.x,xsize)
+        || is_greater_than(s.y,ysize)) { // 1st: border checking
+            return true;
+        }
+        for(unsigned i=0; i<walls.capacity(); ++i) { // 2nd: wall checking
+            if(walls[i].is_within(s.x, s.y)) {
+                return true;
+            }
+        }
+        return false;
+   }
 
     /**
      * @brief Is state valid
@@ -50,8 +70,8 @@ public:
      * @param {const state &} s; given state
      * @return Return true if the world value is different than -1.
      */
-    bool is_state_valid(const state &s) {
-        return !w.is_wall_encountered_at(s);
+    bool is_state_valid(const state &s) const {
+        return !is_wall_encountered_at(s);
     }
 
     /**
@@ -63,7 +83,7 @@ public:
      * @param {const std::shared_ptr<action>} s; tested action
      * @return Return true if the action is valid.
      */
-    bool is_action_valid(const state &s, const std::shared_ptr<action> &a) {
+    bool is_action_valid(const state &s, const std::shared_ptr<action> &a) const {
         state s_p = s;
         a->apply(s_p);
         return is_state_valid(s_p);
@@ -77,7 +97,7 @@ public:
      * @param {const state &} s; given state
      * @return Return true if the agent has crashed.
      */
-    bool will_crash(const state &s) {
+    bool will_crash(const state &s) const {
         for(auto &a : action_space) {
             if(is_action_valid(s,a)) {
                 return false;
@@ -93,7 +113,7 @@ public:
      * @param {const state &} s; given state
      * @return Return space of the available actions at s.
      */
-    std::vector<std::shared_ptr<action>> get_action_space(const state &s) {
+    std::vector<std::shared_ptr<action>> get_action_space(const state &s) const {
         std::vector<std::shared_ptr<action>> resulting_action_space;
         for(auto &a : action_space) {
             if(is_action_valid(s,a)) {
@@ -124,18 +144,17 @@ public:
      * given action at the given state.
      * @warning next state vector is cleared.
      * @param {const state &} s; state
-     * @param {std::shared_ptr<action>} a; copy of the action
+     * @param {const std::shared_ptr<action> &} a; copy of the action
      * @param {state &} s_p; next state
      */
     void state_transition(
         const state &s,
-        std::shared_ptr<action> a,
+        const std::shared_ptr<action> &a,
         state &s_p)
     {
         s_p = s;
         if(is_less_than(uniform_double(0.,1.),misstep_probability)) { // misstep
-            a = rand_element(get_action_space(s));
-            a->apply(s_p);
+            rand_element(get_action_space(s))->apply(s_p);
             if(!is_state_valid(s_p)) { // misstep led to a wall, state is unchanged
                 s_p = s;
             }
@@ -173,10 +192,10 @@ public:
         const std::shared_ptr<action> &a,
         const state &s_p)
     {
-        if(w.is_wall_encountered_at(s)) { //TODO maybe unify world and reward_model classes if no polymorphism
+        if(is_wall_encountered_at(s)) { //TODO maybe unify world and reward_model classes if no polymorphism
             return wall_reward;
         } else {
-            return w.rwm.get_reward_value_at(s,a,s_p);
+            return rwm.get_reward_value_at(s,a,s_p);
         }
     }
 
@@ -207,13 +226,8 @@ public:
      * @param {const state &} s; given state
      * @return Return true if at least one waypoint is reached at the given state.
      */
-    bool is_waypoint_reached(const state &s) { //TODO change this function
-        if(!w.is_wall_encountered_at(s)
-        &&  w.rwm.is_waypoint_reached(s)) {
-            return true;
-        } else {
-            return false;
-        }
+    bool is_waypoint_reached(const state &s) const {
+        return (!is_wall_encountered_at(s) &&  rwm.is_waypoint_reached(s));
     }
 
     /**
@@ -225,10 +239,10 @@ public:
      * @param {state &} s; given state
      * @return Return true if the test is terminal, else false.
      */
-    bool is_terminal(const state &s) {
+    bool is_terminal(const state &s) const {
         return (
-            (w.is_wall_encountered_at(s) && is_crash_terminal) /* Wall */
-            || w.rwm.is_terminal(s) /* Reward model says terminal eg waypoints reached*/
+            (is_wall_encountered_at(s) && is_crash_terminal) /* Wall */
+            || rwm.is_terminal(s) /* Reward model says terminal eg waypoints reached*/
             || s.is_terminal() /* State is terminal */
         );
     }
@@ -240,16 +254,26 @@ public:
      * @param {const state &} s; state of the agent
      */
     void step(const state &s) {
-        w.rwm.update_reward_model(s);
+        rwm.update_reward_model(s);
+    }
+
+    /**
+     * @brief Print environment
+     *
+     * Print the environment including the agent's position.
+     * @param {const state &} s; state of the agent
+     */
+    void append_to_trajectory(const state &s) {
+        trajectory.push_back(std::vector<double>{s.x,s.y});
     }
 
     /**
      * @brief Save trajectory
      *
-     * Save the trajectory for plotting purpose with continuous world.
+     * Save the trajectory for plotting purpose.
      */
-    void save_trajectory() {
-        w.save_trajectory();
+    void save_trajectory() const {
+        save_matrix(trajectory,trajectory_output_path,",",std::ofstream::app);
     }
 };
 
