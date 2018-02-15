@@ -16,7 +16,7 @@ public:
     double xsize; ///< Horizontal dimension of the environment
     double ysize; ///< Vertical dimension of the environment
     boost::ptr_vector<shape> walls; ///< Walls of the environment
-    reward_model rwm; ///< Reward model of the environment
+    std::unique_ptr<reward_model> rmodel; ///< Reward model of the environment
     double misstep_probability; ///< Probability of misstep
     double state_gaussian_stddev; ///< Standard deviation of the Gaussian applied on the position
     double wall_reward;
@@ -31,7 +31,8 @@ public:
      * @param {const parameters &} p; parameters
      */
     environment(const parameters &p) {
-        p.parse_world(xsize,ysize,walls,rwm);
+        p.parse_world(xsize,ysize,walls);
+        p.parse_reward_model(rmodel);
         p.parse_actions(action_space);
         is_crash_terminal = p.IS_CRASH_TERMINAL;
         misstep_probability = p.MISSTEP_PROBABILITY;
@@ -195,7 +196,7 @@ public:
         if(is_wall_encountered_at(s)) { //TODO maybe unify world and reward_model classes if no polymorphism
             return wall_reward;
         } else {
-            return rwm.get_reward_value_at(s,a,s_p);
+            return rmodel->get_reward_value_at(s,a,s_p);
         }
     }
 
@@ -218,18 +219,6 @@ public:
         r = reward_function(s,a,s_p);
     }
 
-
-    /**
-     * @brief Is waypoint reached
-     *
-     * Test if at least one waypoint is reached at the given state.
-     * @param {const state &} s; given state
-     * @return Return true if at least one waypoint is reached at the given state.
-     */
-    bool is_waypoint_reached(const state &s) const {
-        return (!is_wall_encountered_at(s) &&  rwm.is_waypoint_reached(s));
-    }
-
     /**
      * @brief Is terminal
      *
@@ -242,7 +231,7 @@ public:
     bool is_terminal(const state &s) const {
         return (
             (is_wall_encountered_at(s) && is_crash_terminal) /* Wall */
-            || rwm.is_terminal(s) /* Reward model says terminal eg waypoints reached*/
+            || rmodel->is_terminal(s) /* Reward model says terminal eg waypoints reached*/
             || s.is_terminal() /* State is terminal */
         );
     }
@@ -250,11 +239,11 @@ public:
     /**
      * @brief Step
      *
-     * Go to the next state of the environment.
+     * Go to the next state of the environment considering the current state of the agent.
      * @param {const state &} s; state of the agent
      */
     void step(const state &s) {
-        rwm.update_reward_model(s);
+        rmodel->update(s);
     }
 
     /**

@@ -8,16 +8,15 @@
  */
 class random_policy {
 public:
-    environment * envt; ///< Pointer to an environment, used for action space reduction
+    environment model; ///< Environment, used for action space reduction
 
     /**
      * @brief Constructor
      *
-     * Constructu using the given parameters
+     * Construct wrt the given parameters.
      * @param {const parameters &} p; parameters
-     * @param {environment *} en; pointer to the environment, used for action space reduction
      */
-    random_policy(const parameters &p, environment *en) : envt(en) {
+    random_policy(const parameters &p) : model(p) {
         (void) p;
     }
 
@@ -29,7 +28,7 @@ public:
      * @return Return the undertaken action at s.
      */
 	std::shared_ptr<action> operator()(const state &s) {
-        return rand_element(envt->get_action_space(s));
+        return rand_element(model.get_action_space(s));
 	}
 
     /**

@@ -13,7 +13,7 @@ class olta {
 public:
     std::vector<bool> decision_criteria_selector; ///< Vector containing the boolean values of the activation of each decision criterion
     environment * envt; ///< Pointer to an environment, used for action space reduction
-    oluct<DFTPLC> pl; ///< Embedded UCT policy
+    oluct<DFTPLC> pl; ///< Embedded OLUCT policy
     double sdm_ratio; ///< SDM ratio (State Modality test)
     double sdv_threshold; ///< VMR threshold for the VMR test
     double sdsd_threshold;  ///< Threshold for the distance
@@ -22,13 +22,10 @@ public:
     /**
      * @brief Constructor
      *
-     * Constructu using the given parameters
+     * Construct wrt the given parameters.
      * @param {const parameters &} p; parameters
-     * @param {environment *} en; pointer to the environment, used for action space reduction
      */
-    olta(const parameters &p, environment *en) :
-        pl(p,en)
-    {
+    olta(const parameters &p) : pl(p) {
         p.parse_decision_criterion(decision_criteria_selector);
         sdm_ratio = p.SDM_RATIO;
         sdv_threshold = p.SDV_THRESHOLD;

@@ -13,11 +13,10 @@ public:
     /**
      * @brief Constructor
      *
-     * Construct using the given parameters
+     * Construct wrt the given parameters.
      * @param {const parameters &} p; parameters
-     * @param {environment *} en; pointer to the environment, used for action space reduction
      */
-    todo_policy(const parameters &p, environment * en) {
+    todo_policy(const parameters &p) {
         /* TODO: set the parameters here */
     }
 

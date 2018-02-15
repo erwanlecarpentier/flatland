@@ -30,10 +30,10 @@ public:
     /**
      * @brief Constructor
      */
-    uct(const parameters &p, environment *en) :
-        model(*en),
-        default_policy(p,en)
-    {
+    uct(const parameters &p) : model(p), default_policy(p) {
+        // use the specific parameters of the given model
+        model.misstep_probability = p.MODEL_MISSTEP_PROBABILITY;
+        model.state_gaussian_stddev = p.MODEL_STATE_GAUSSIAN_STDDEV;
         global_counter = 0;
         uct_parameter = p.UCT_CST;
         budget = p.TREE_SEARCH_BUDGET;

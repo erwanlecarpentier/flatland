@@ -42,7 +42,7 @@ void single_run(
     std::vector<std::vector<double>> &backup_vector)
 {
     environment en(p);
-    agent<PLC> ag(p,&en);
+    agent<PLC> ag(p);
     unsigned t = 0; // time
 	std::clock_t c_start = std::clock();
     for(t=0; t<p.SIMULATION_LIMIT_TIME; ++t) { // main loop

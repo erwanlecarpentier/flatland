@@ -8,16 +8,13 @@
  */
 class go_straight {
 public:
-    environment * envt; ///< Pointer to an environment, used for action space reduction
-
     /**
      * @brief Constructor
      *
-     * Constructu using the given parameters
+     * Construct wrt the given parameters.
      * @param {const parameters &} p; parameters
-     * @param {environment *} en; pointer to the environment, used for action space reduction
      */
-    go_straight(const parameters &p, environment * en) : envt(en) {
+    go_straight(const parameters &p) {
         (void) p;
     }
 

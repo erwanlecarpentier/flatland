@@ -25,16 +25,15 @@ public:
     /**
      * @brief Constructor
      *
-     * Make use of the input parameters.
+     * Construct wrt the given parameters.
      * @param {const parameters &} p; parameters
-     * @param {environment *} en; pointer to the environment, used for action space reduction,
-     * termination criterion and generative model
      */
-    oluct(const parameters &p, environment *en) :
-        model(*en),
+    oluct(const parameters &p) :
+        model(p),
         root_node(state(),model.action_space), // initialise with default state
-        dflt_policy(p,en)
+        dflt_policy(p)
     {
+        // use the specific parameters of the given model
         model.misstep_probability = p.MODEL_MISSTEP_PROBABILITY;
         model.state_gaussian_stddev = p.MODEL_STATE_GAUSSIAN_STDDEV;
         budget = p.TREE_SEARCH_BUDGET;
