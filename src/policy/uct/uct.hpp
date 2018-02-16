@@ -48,17 +48,18 @@ public:
      * @param {state} s; input state
      * @return Return the sampled return.
      */
-    double sample_return(state s) {
-        if(model.is_terminal(s)) {
+    double sample_return(state s, MD &mod) {
+        if(mod.is_terminal(s)) {
             return 0.;
         }
         double total_return = 0.;
         std::shared_ptr<action> a = default_policy(s);
         for(unsigned t=0; t<horizon; ++t) {
             state s_p;
-            model.state_transition(s,a,s_p);
-            total_return += pow(discount_factor,(double)t) * model.reward_function(s,a,s_p);
-            if(model.is_terminal(s_p)) {
+            mod.state_transition(s,a,s_p);
+            total_return += pow(discount_factor,(double)t) * mod.reward_function(s,a,s_p);
+            mod.step(s_p);
+            if(mod.is_terminal(s_p)) {
                 break;
             }
             s = s_p;
@@ -106,11 +107,12 @@ public:
      * @param {dnode *} v; pointer to the decision node
      * @return Return the sampled value.
      */
-    double evaluate(dnode * v) {
+    double evaluate(dnode * v, MD &mod) {
         state s_p;
         global_counter++; // a chance node will be created
-        model.state_transition(v->s,v->create_child(),s_p);
-        double q = sample_return(s_p);
+        mod.state_transition(v->s,v->create_child(),s_p);
+        mod.step(s_p);
+        double q = sample_return(s_p, mod);
         update_value(v->children.back().get(),q);//TOCHECK that we have to do this
         return q;
     }
@@ -142,38 +144,39 @@ public:
      * @param {dnode *} v; input decision node
      * @return Return the sampled return at the given decision node
      */
-    double search_tree(dnode * v) {
-        if(model.is_terminal(v->s)) { // terminal node
+    double search_tree(dnode * v, MD &mod) {
+        if(mod.is_terminal(v->s)) { // terminal node
             return 0.;
         } else if(!v->is_fully_expanded()) { // leaf node, expand it
-            return evaluate(v);
+            return evaluate(v, mod);
         } else { // apply UCT tree policy
             cnode * ptr = select_child(v);
             state s_p;
-            model.state_transition(v->s,ptr->a,s_p);
-            double r = model.reward_function(v->s,ptr->a,s_p);
+            mod.state_transition(v->s,ptr->a,s_p);
+            double r = mod.reward_function(v->s,ptr->a,s_p);
+            mod.step(s_p);
             double q = 0.;
             unsigned ind = 0; // indice of resulting child
             if(is_state_already_sampled(ptr,s_p,ind)) { // go to node
-                q = r + discount_factor * search_tree(ptr->children.at(ind).get());
+                q = r + discount_factor * search_tree(ptr->children.at(ind).get(), mod);
             } else { // leaf node, create a new node
-                ptr->children.emplace_back(std::unique_ptr<dnode>(new dnode(s_p,model.get_action_space(s_p),ptr)));
-                q = r + discount_factor * evaluate(ptr->get_last_child());
+                ptr->children.emplace_back(std::unique_ptr<dnode>(new dnode(s_p,mod.get_action_space(s_p),ptr)));
+                q = r + discount_factor * evaluate(ptr->get_last_child(), mod);
             }
             update_value(ptr,q);
             return q;
         }
         /* // Original implementation (slower)
-        if(model.is_terminal(v->s)) { // terminal node
+        if(mod.is_terminal(v->s)) { // terminal node
             return 0.;
         } else if(v->is_leaf()) { // leaf node, expand it
             return evaluate(v->s);
         } else { // apply UCT tree policy
             cnode<state,AC> * ptr = select_child(v);
             state s_p;
-            model.state_transition(v->s,ptr->a,s_p);
-            double r = model.reward_function(v->s,ptr->a,s_p);
-            ptr->children.emplace_back(std::unique_ptr<dnode>(new dnode(s_p,model.get_action_space(s_p),ptr)));
+            mod.state_transition(v->s,ptr->a,s_p);
+            double r = mod.reward_function(v->s,ptr->a,s_p);
+            ptr->children.emplace_back(std::unique_ptr<dnode>(new dnode(s_p,mod.get_action_space(s_p),ptr)));
             double q = r + discount_factor * search_tree(ptr->get_last_child());
             update_value(ptr,q);
             return q;
@@ -189,7 +192,8 @@ public:
      */
     void build_uct_tree(dnode &root) {
         for(unsigned i=0; i<budget; ++i) {
-            search_tree(&root);
+            MD mod = model.get_copy();
+            search_tree(&root, mod);
         }
         global_counter = 0;
     }
@@ -230,6 +234,7 @@ public:
     std::shared_ptr<action> operator()(const state &s) {
         dnode root(s,model.get_action_space(s),nullptr);
         build_uct_tree(root);
+        model.step(s); // update the model
         return recommended_action(root);
     }
 

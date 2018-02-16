@@ -1,22 +1,41 @@
 import os
 import io
 import libconf
+import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import pandas as pd
 import numpy as np
 
 CURDIR = os.path.abspath(os.path.dirname(__file__))
-BLACK = '#000000';
-RED = '#d85040';
-GREEN = '#00cc66';
-LIGHTBLUE = '#6699ff';
-GREY = '#4d4d4d';
+BLACK = '#000000'
+RED = '#d85040'
+GREEN = '#00cc66'
+LIGHTBLUE = '#6699ff'
+GREY = '#4d4d4d'
+
+def plot_waypoint(i, world_config, ax) :
+	x = world_config["x_wp" + str(i)]
+	y = world_config["y_wp" + str(i)]
+	r = world_config["r_wp" + str(i)]
+	c = mpatches.Circle((x,y),r,edgecolor='none',facecolor=GREEN)
+	ax.add_patch(c)
+
+def plot_rfield(i, world_config, ax, X, Y) :
+	traj = pd.read_csv("data/rfield" + str(i) + ".csv", sep = ',')
+	x = traj["x"]
+	y = traj["y"]
+	ax.plot(x,y,color=LIGHTBLUE)
+	for j in range(0,x.size,5) :
+		sig = world_config["sigma_rf" + str(i)]
+		mag = world_config["magnitude_rf" + str(i)]
+		Z = mlab.bivariate_normal(X, Y, sig, sig, x[j], y[j])
+		ax.contour(X, Y, Z, 3, colors=(0.1, 0.2, 0.3), alpha=j/x.size)
 
 mainpath = os.path.join(CURDIR, '../config/main.cfg')
 with io.open(mainpath) as g:
 	main_config = libconf.load(g)
-cworldpath = os.path.join(CURDIR, '.'+main_config.world_path)
+cworldpath = os.path.join(CURDIR, '.' + main_config.world_path)
 with io.open(cworldpath) as f:
 	world_config = libconf.load(f)
 
@@ -29,57 +48,49 @@ ax.set_ylim([0,world_config.ysize])
 
 # Parse rectangles
 for i in range(world_config.nb_rectangles):
-	xn = "x_rect" + str(i);
-	yn = "y_rect" + str(i);
-	wn = "w_rect" + str(i);
-	hn = "h_rect" + str(i);
-	w = world_config[wn];
-	h = world_config[hn];
-	x = world_config[xn] - w / 2;
-	y = world_config[yn] - h / 2;
+	w = world_config["w_rect" + str(i)]
+	h = world_config["h_rect" + str(i)]
+	x = world_config["x_rect" + str(i)] - w / 2
+	y = world_config["y_rect" + str(i)] - h / 2
 	r = mpatches.Rectangle((x,y),w,h,edgecolor='none',facecolor=GREY)
 	ax.add_patch(r)
 
 # Parse circles
 for i in range(world_config.nb_circles):
-	xn = "x_circ" + str(i);
-	yn = "y_circ" + str(i);
-	rn = "r_circ" + str(i);
-	x = world_config[xn];
-	y = world_config[yn];
-	r = world_config[rn];
+	x = world_config["x_circ" + str(i)]
+	y = world_config["y_circ" + str(i)]
+	r = world_config["r_circ" + str(i)]
 	c = mpatches.Circle((x,y),r,edgecolor='none',facecolor=GREY)
 	ax.add_patch(c)
 
 # Plot start -------------------------------------------------------------------
 
-xs = world_config.initial_state_x;
-ys = world_config.initial_state_y;
+xs = world_config.initial_state_x
+ys = world_config.initial_state_y
 g = mpatches.Circle((xs,ys),0.1,edgecolor='none',facecolor=RED)
 ax.add_patch(g)
 
-# Plot goal --------------------------------------------------------------------
+# Plot reward ------------------------------------------------------------------
 
-for i in range(world_config.nb_waypoints):
-	xn = "x_wp" + str(i);
-	yn = "y_wp" + str(i);
-	rn = "r_wp" + str(i);
-	x = world_config[xn];
-	y = world_config[yn];
-	r = world_config[rn];
-	c = mpatches.Circle((x,y),r,edgecolor='none',facecolor=GREEN)
-	ax.add_patch(c)
+if world_config.reward_model_selector == 0 : # Heatmap reward model
+	xgrid = np.arange(0.0, world_config.xsize, 0.01)
+	ygrid = np.arange(0.0, world_config.ysize, 0.01)
+	X, Y = np.meshgrid(xgrid, ygrid)
+	for i in range(world_config.nb_rfield) :
+		plot_rfield(i, world_config, ax, X, Y)
+else: # Waypoints reward model
+	for i in range(world_config.nb_waypoints) :
+		plot_waypoint(i, world_config, ax)
 
 # Plot trajectory --------------------------------------------------------------
 
-traj_path = "data/trajectory.csv";
-data = pd.read_csv(traj_path,sep = ',');
-x = data["x"];
-y = data["y"];
+data = pd.read_csv("data/trajectory.csv", sep = ',')
+x = data["x"]
+y = data["y"]
 lbsize = 24
 ax.tick_params(axis='x', labelsize=lbsize)
 ax.tick_params(axis='y', labelsize=lbsize)
-ax.plot(x,y,color=RED);
+ax.plot(x,y,color=RED)
 
 plt.show()
 

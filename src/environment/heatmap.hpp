@@ -1,7 +1,8 @@
 #ifndef HEATMAP_HPP_
 #define HEATMAP_HPP_
 
-#include<gaussian_reward_field.hpp>
+#include <gaussian_reward_field.hpp>
+#include <save.hpp>
 
 /**
  * @brief Heatmap reward model
@@ -9,13 +10,18 @@
 class heatmap : public reward_model {
 public:
     std::vector<gaussian_reward_field> rfield; ///< Reward field container
+    std::vector<std::vector<std::vector<double>>> trajectories; ///< Trajectories
+    std::vector<std::string> trajectories_output_paths;
 
     /**
      * @brief Constructor
      */
     heatmap(std::vector<gaussian_reward_field> _rfield) : rfield(_rfield) {
-        //
+        trajectories.resize(rfield.size());
+        trajectories_output_paths.reserve(rfield.size());
     }
+
+    reward_model * duplicate() const override DUPLICATE_DEFAULT_BODY
 
     /**
      * @brief Reward value
@@ -62,6 +68,30 @@ public:
     bool is_terminal(const state &s) const {
         (void) s;
         return false; // no termination criterion with this reward model
+    }
+
+    /**
+     * @brief Reward backup
+     *
+     * If necessary, for reward backup.
+     */
+    void reward_backup() override {
+        for(unsigned i = 0; i < rfield.size(); ++i) {
+            trajectories[i].emplace_back(std::vector<double>{rfield[i].x,rfield[i].y});
+        }
+    }
+
+    /**
+     * @brief Save reward backup
+     *
+     * If necessary, for reward backup.
+     */
+    void save_reward_backup() const override {
+        for(unsigned i = 0; i < rfield.size(); ++i) {
+            std::string path = "data/rfield" + std::to_string(i) + ".csv";
+            initialize_backup(std::vector<std::string>{"x","y"},path,",");
+            save_matrix(trajectories[i],path,",",std::ofstream::app);
+        }
     }
 };
 

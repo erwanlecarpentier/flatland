@@ -1,0 +1,59 @@
+clear
+[3J[H[2Jg++ -std=c++11 -Wall -Wextra -I./src -I./src/environment -I./src/policy -I./src/utils -O2 -g main.cpp -o exe -s -lm -lconfig++
+In file included from main.cpp:22:0:
+./src/policy/uct/uct.hpp: In instantiation of ‘double uct<MD, PL>::search_tree(dnode*, MD&) [with MD = environment; PL = go_straight]’:
+./src/policy/uct/uct.hpp:196:24:   required from ‘void uct<MD, PL>::build_uct_tree(dnode&) [with MD = environment; PL = go_straight]’
+./src/policy/uct/uct.hpp:236:23:   required from ‘std::shared_ptr<action> uct<MD, PL>::operator()(const state&) [with MD = environment; PL = go_straight]’
+./src/agent.hpp:38:11:   required from ‘void agent<PLC>::apply_policy() [with PLC = uct<environment, go_straight>]’
+main.cpp:49:9:   required from ‘void single_run(const parameters&, bool, bool, std::vector<std::vector<double> >&) [with PLC = uct<environment, go_straight>]’
+main.cpp:113:87:   required from here
+./src/policy/uct/uct.hpp:164:51: error: no matching function for call to ‘uct<environment, go_straight>::evaluate(dnode*)’
+                 q = r + discount_factor * evaluate(ptr->get_last_child());
+                                           ~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+./src/policy/uct/uct.hpp:110:12: note: candidate: double uct<MD, PL>::evaluate(dnode*, MD&) [with MD = environment; PL = go_straight]
+     double evaluate(dnode * v, MD &mod) {
+            ^~~~~~~~
+./src/policy/uct/uct.hpp:110:12: note:   candidate expects 2 arguments, 1 provided
+./src/policy/uct/uct.hpp: In instantiation of ‘double uct<MD, PL>::search_tree(dnode*, MD&) [with MD = environment; PL = random_policy]’:
+./src/policy/uct/uct.hpp:196:24:   required from ‘void uct<MD, PL>::build_uct_tree(dnode&) [with MD = environment; PL = random_policy]’
+./src/policy/uct/uct.hpp:236:23:   required from ‘std::shared_ptr<action> uct<MD, PL>::operator()(const state&) [with MD = environment; PL = random_policy]’
+./src/agent.hpp:38:11:   required from ‘void agent<PLC>::apply_policy() [with PLC = uct<environment, random_policy>]’
+main.cpp:49:9:   required from ‘void single_run(const parameters&, bool, bool, std::vector<std::vector<double> >&) [with PLC = uct<environment, random_policy>]’
+main.cpp:117:89:   required from here
+./src/policy/uct/uct.hpp:164:51: error: no matching function for call to ‘uct<environment, random_policy>::evaluate(dnode*)’
+                 q = r + discount_factor * evaluate(ptr->get_last_child());
+                                           ~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+./src/policy/uct/uct.hpp:110:12: note: candidate: double uct<MD, PL>::evaluate(dnode*, MD&) [with MD = environment; PL = random_policy]
+     double evaluate(dnode * v, MD &mod) {
+            ^~~~~~~~
+./src/policy/uct/uct.hpp:110:12: note:   candidate expects 2 arguments, 1 provided
+./src/policy/uct/uct.hpp: In instantiation of ‘double uct<MD, PL>::evaluate(dnode*, MD&) [with MD = environment; PL = go_straight]’:
+./src/policy/uct/uct.hpp:151:28:   required from ‘double uct<MD, PL>::search_tree(dnode*, MD&) [with MD = environment; PL = go_straight]’
+./src/policy/uct/uct.hpp:196:24:   required from ‘void uct<MD, PL>::build_uct_tree(dnode&) [with MD = environment; PL = go_straight]’
+./src/policy/uct/uct.hpp:236:23:   required from ‘std::shared_ptr<action> uct<MD, PL>::operator()(const state&) [with MD = environment; PL = go_straight]’
+./src/agent.hpp:38:11:   required from ‘void agent<PLC>::apply_policy() [with PLC = uct<environment, go_straight>]’
+main.cpp:49:9:   required from ‘void single_run(const parameters&, bool, bool, std::vector<std::vector<double> >&) [with PLC = uct<environment, go_straight>]’
+main.cpp:113:87:   required from here
+./src/policy/uct/uct.hpp:115:33: error: no matching function for call to ‘uct<environment, go_straight>::sample_return(state&)’
+         double q = sample_return(s_p);
+                    ~~~~~~~~~~~~~^~~~~
+./src/policy/uct/uct.hpp:51:12: note: candidate: double uct<MD, PL>::sample_return(state, MD&) [with MD = environment; PL = go_straight]
+     double sample_return(state s, MD &mod) {
+            ^~~~~~~~~~~~~
+./src/policy/uct/uct.hpp:51:12: note:   candidate expects 2 arguments, 1 provided
+./src/policy/uct/uct.hpp: In instantiation of ‘double uct<MD, PL>::evaluate(dnode*, MD&) [with MD = environment; PL = random_policy]’:
+./src/policy/uct/uct.hpp:151:28:   required from ‘double uct<MD, PL>::search_tree(dnode*, MD&) [with MD = environment; PL = random_policy]’
+./src/policy/uct/uct.hpp:196:24:   required from ‘void uct<MD, PL>::build_uct_tree(dnode&) [with MD = environment; PL = random_policy]’
+./src/policy/uct/uct.hpp:236:23:   required from ‘std::shared_ptr<action> uct<MD, PL>::operator()(const state&) [with MD = environment; PL = random_policy]’
+./src/agent.hpp:38:11:   required from ‘void agent<PLC>::apply_policy() [with PLC = uct<environment, random_policy>]’
+main.cpp:49:9:   required from ‘void single_run(const parameters&, bool, bool, std::vector<std::vector<double> >&) [with PLC = uct<environment, random_policy>]’
+main.cpp:117:89:   required from here
+./src/policy/uct/uct.hpp:115:33: error: no matching function for call to ‘uct<environment, random_policy>::sample_return(state&)’
+         double q = sample_return(s_p);
+                    ~~~~~~~~~~~~~^~~~~
+./src/policy/uct/uct.hpp:51:12: note: candidate: double uct<MD, PL>::sample_return(state, MD&) [with MD = environment; PL = random_policy]
+     double sample_return(state s, MD &mod) {
+            ^~~~~~~~~~~~~
+./src/policy/uct/uct.hpp:51:12: note:   candidate expects 2 arguments, 1 provided
+Makefile:18: recipe for target 'compile' failed
+make: *** [compile] Error 1

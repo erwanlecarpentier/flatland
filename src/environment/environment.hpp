@@ -39,7 +39,35 @@ public:
         state_gaussian_stddev = p.STATE_GAUSSIAN_STDDEV;
         wall_reward = p.WALL_REWARD;
         trajectory_output_path = p.TRAJECTORY_OUTPUT_PATH;
-        initialize_backup(std::vector<std::string>{"x","y"},trajectory_output_path,",");
+    }
+
+    /**
+     * @brief Copy constructor
+     *
+     * Construct a copy of the environment pointed by the input pointer.
+     * @note The saved trajectory and its output path are not copied.
+     * @param {environment *} en; input environment pointer
+     */
+    environment(const environment & en) {
+        is_crash_terminal = en.is_crash_terminal;
+        xsize = en.xsize;
+        ysize = en.ysize;
+        walls = en.walls;
+        rmodel = std::unique_ptr<reward_model>(en.rmodel->duplicate());
+        misstep_probability = en.misstep_probability;
+        state_gaussian_stddev = en.state_gaussian_stddev;
+        wall_reward = en.wall_reward;
+        action_space = en.action_space;
+    }
+
+    /**
+     * @brief Get copy
+     *
+     * Get a copy of this environment.
+     * @return Return a copy of the environment.
+     */
+    environment get_copy() {
+        return environment(*this);
     }
 
     /**
@@ -252,7 +280,7 @@ public:
      * Print the environment including the agent's position.
      * @param {const state &} s; state of the agent
      */
-    void append_to_trajectory(const state &s) {
+    void trajectory_backup(const state &s) {
         trajectory.push_back(std::vector<double>{s.x,s.y});
     }
 
@@ -262,6 +290,7 @@ public:
      * Save the trajectory for plotting purpose.
      */
     void save_trajectory() const {
+        initialize_backup(std::vector<std::string>{"x","y"},trajectory_output_path,",");
         save_matrix(trajectory,trajectory_output_path,",",std::ofstream::app);
     }
 };

@@ -292,6 +292,7 @@ public:
         //TODO: update the model inside the tree for wp -> probably adding table of reached wp in state
         build_oluct_tree(s);
         unsigned indice = 0;
+        model.step(s); // update the model
         return get_recommended_action(root_node,indice);
 	}
 

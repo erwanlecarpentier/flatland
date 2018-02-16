@@ -45,7 +45,7 @@ void single_run(
     agent<PLC> ag(p);
     unsigned t = 0; // time
 	std::clock_t c_start = std::clock();
-    for(t=0; t<p.SIMULATION_LIMIT_TIME; ++t) { // main loop
+    for(t = 0; t < p.SIMULATION_LIMIT_TIME; ++t) { // main loop
         ag.apply_policy();
         en.transition(ag.s,ag.a,ag.reward,ag.s_p);
         ag.process_reward();
@@ -54,7 +54,8 @@ void single_run(
             ag.s.print();
         }
         if(bckp) {
-            en.append_to_trajectory(ag.s);
+            en.trajectory_backup(ag.s);
+            en.rmodel->reward_backup();
         }
         ag.step();
         en.step(ag.s);
@@ -70,8 +71,10 @@ void single_run(
         std::cout << "Finish\n";
     }
     if(bckp) {
-        en.append_to_trajectory(ag.s);
+        en.trajectory_backup(ag.s);
+        en.rmodel->reward_backup();
         en.save_trajectory();
+        en.rmodel->save_reward_backup();
         std::vector<double> simbackup = {
             (double) t, /* score */
             time_elapsed_ms /* computational cost */

@@ -40,7 +40,7 @@ public:
      * @param {const state &} s; input state
      */
     double get_value(const state &s) const {
-        return magnitude * exp(-.5 * (pow(x - s.x,2.) + pow(y - s.y,2.)) / pow(sigma,2.) ) / (2.50662827463 * sigma);
+        return magnitude * exp(-.5 * (pow(x - s.x,2.) + pow(y - s.y,2.)) / pow(sigma,2.) );
     }
 
     /**
@@ -51,6 +51,9 @@ public:
     void step() {
         x += vx;
         y += vy;
+        double mag = .01;
+        x += uniform_double(-mag,mag);
+        y += uniform_double(-mag,mag);
     }
 };
 

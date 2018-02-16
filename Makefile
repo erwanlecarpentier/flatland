@@ -1,7 +1,7 @@
 CCC=g++
 INCLUDE = -I./src -I./src/environment -I./src/policy -I./src/utils
 CCFLAGS=-std=c++11 -Wall -Wextra ${INCLUDE} -O2 -g
-LDFLAGS=-lm -lconfig++
+LDFLAGS=-s -lm -lconfig++
 EXEC=exe
 
 all : clean compile run trajectory
@@ -11,7 +11,10 @@ fast : run trajectory
 clean :
 	rm -f ${EXEC}
 
-compile : main.cpp
+clear :
+	clear
+
+compile : clear clear main.cpp
 	${CCC} ${CCFLAGS} main.cpp -o ${EXEC} ${LDFLAGS}
 
 run :

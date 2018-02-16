@@ -30,6 +30,8 @@ public:
         return false;
     }
 
+    reward_model * duplicate() const override DUPLICATE_DEFAULT_BODY
+
     /**
      * @brief Reward value
      *
@@ -96,6 +98,24 @@ public:
             return true;
         }
         return false;
+    }
+
+    /**
+     * @brief Reward backup
+     *
+     * If necessary, for reward backup.
+     */
+    void reward_backup() override {
+        // Nothing to backup
+    }
+
+    /**
+     * @brief Save reward backup
+     *
+     * If necessary, for reward backup.
+     */
+    void save_reward_backup() const override {
+        // Nothing to backup
     }
 };
 
