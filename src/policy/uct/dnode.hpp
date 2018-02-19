@@ -10,22 +10,18 @@ class dnode {
 public:
     state s; ///< Labelling state
     std::vector<std::shared_ptr<action>> actions; ///< Available actions, iteratively removed
-    cnode * parent; ///< Pointer to parent node
     std::vector<std::unique_ptr<cnode>> children; ///< Child nodes
-    //unsigned nvis; ///< Number of visits//TRM?
 
     /**
      * @brief Constructor
      */
     dnode(
         state _s,
-        std::vector<std::shared_ptr<action>> _actions,
-        cnode * _parent) :
+        std::vector<std::shared_ptr<action>> _actions) :
         s(_s),
-        actions(_actions),
-        parent(_parent)
+        actions(_actions)
     {
-        //nvis = 0;//TRM?
+        //
     }
 
     /**
@@ -40,9 +36,7 @@ public:
         unsigned indice = rand_indice(actions);
         std::shared_ptr<action> sampled_action = actions.at(indice);
         actions.erase(actions.begin() + indice);
-        children.emplace_back(
-            std::unique_ptr<cnode>(new cnode(s,sampled_action))
-        );
+        children.emplace_back(std::unique_ptr<cnode>(new cnode(s,sampled_action)));
         return sampled_action;
     }
 

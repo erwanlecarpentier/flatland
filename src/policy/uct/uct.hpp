@@ -23,8 +23,10 @@ public:
     PL default_policy; ///< Default policy
     double discount_factor; ///< Discount factor
     double uct_parameter; ///< UCT parameter
+    double terminal_state_value = 0.; ///< Terminal state value
     unsigned budget; ///< Budget ie number of expanded nodes in the tree
-    unsigned global_counter; ///< Global counter of number of visits / nodes expansions
+    unsigned nb_cnodes; ///< Number of expanded nodes
+    unsigned nb_calls; ///< Number of calls to the generative model
     unsigned horizon; ///< Horizon for the default policy simulation
 
     /**
@@ -34,11 +36,28 @@ public:
         // use the specific parameters of the given model
         model.misstep_probability = p.MODEL_MISSTEP_PROBABILITY;
         model.state_gaussian_stddev = p.MODEL_STATE_GAUSSIAN_STDDEV;
-        global_counter = 0;
+        nb_cnodes = 0;
+        nb_calls = 0;
         uct_parameter = p.UCT_CST;
         budget = p.TREE_SEARCH_BUDGET;
         discount_factor = p.DISCOUNT_FACTOR;
         horizon = p.DEFAULT_POLICY_HORIZON;
+    }
+
+    /**
+     * @brief Generative model
+     *
+     * Perform a call to the generative model.
+     * Increment the number of calls.
+     * @param {const state &} s; state
+     * @param {std::shared_ptr<action>} a; copy of the action
+     * @param {state &} s_p; next state
+     */
+    state generative_model(const state &s, std::shared_ptr<action> a, MD &mod) {
+        ++nb_calls;
+        state s_p;
+        mod.state_transition(s,a,s_p);
+        return s_p;
     }
 
     /**
@@ -48,15 +67,15 @@ public:
      * @param {state} s; input state
      * @return Return the sampled return.
      */
-    double sample_return(state s, MD &mod) {
-        if(mod.is_terminal(s)) {
-            return 0.;
+    double sample_return(cnode * ptr, MD &mod) {
+        if(mod.is_terminal(ptr->s)) {
+            return terminal_state_value;
         }
         double total_return = 0.;
-        std::shared_ptr<action> a = default_policy(s);
+        state s = ptr->s;
+        std::shared_ptr<action> a = ptr->a;
         for(unsigned t=0; t<horizon; ++t) {
-            state s_p;
-            mod.state_transition(s,a,s_p);
+            state s_p = generative_model(s,a,mod);
             total_return += pow(discount_factor,(double)t) * mod.reward_function(s,a,s_p);
             mod.step(s_p);
             if(mod.is_terminal(s_p)) {
@@ -93,7 +112,7 @@ public:
             children_uct_scores.emplace_back(
                 c->get_value()
                 + 2 * uct_parameter *
-                sqrt(log((double) global_counter) / ((double) c->sampled_returns.size()))
+                sqrt(log((double) nb_cnodes) / ((double) c->sampled_returns.size()))
             );
         }
         return v->children.at(argmax(children_uct_scores)).get();
@@ -108,12 +127,10 @@ public:
      * @return Return the sampled value.
      */
     double evaluate(dnode * v, MD &mod) {
-        state s_p;
-        global_counter++; // a chance node will be created
-        mod.state_transition(v->s,v->create_child(),s_p);
-        mod.step(s_p);
-        double q = sample_return(s_p, mod);
-        update_value(v->children.back().get(),q);//TOCHECK that we have to do this
+        nb_cnodes++; // a chance node will be created
+        v->create_child();
+        double q = sample_return(v->children.back().get(),mod);
+        update_value(v->children.back().get(),q);
         return q;
     }
 
@@ -146,13 +163,12 @@ public:
      */
     double search_tree(dnode * v, MD &mod) {
         if(mod.is_terminal(v->s)) { // terminal node
-            return 0.;
+            return terminal_state_value;
         } else if(!v->is_fully_expanded()) { // leaf node, expand it
             return evaluate(v, mod);
         } else { // apply UCT tree policy
             cnode * ptr = select_child(v);
-            state s_p;
-            mod.state_transition(v->s,ptr->a,s_p);
+            state s_p = generative_model(v->s,ptr->a,mod);
             double r = mod.reward_function(v->s,ptr->a,s_p);
             mod.step(s_p);
             double q = 0.;
@@ -160,7 +176,7 @@ public:
             if(is_state_already_sampled(ptr,s_p,ind)) { // go to node
                 q = r + discount_factor * search_tree(ptr->children.at(ind).get(), mod);
             } else { // leaf node, create a new node
-                ptr->children.emplace_back(std::unique_ptr<dnode>(new dnode(s_p,mod.get_action_space(s_p),ptr)));
+                ptr->children.emplace_back(std::unique_ptr<dnode>(new dnode(s_p,mod.get_action_space(s_p))));
                 q = r + discount_factor * evaluate(ptr->get_last_child(), mod);
             }
             update_value(ptr,q);
@@ -173,10 +189,9 @@ public:
             return evaluate(v->s);
         } else { // apply UCT tree policy
             cnode<state,AC> * ptr = select_child(v);
-            state s_p;
-            mod.state_transition(v->s,ptr->a,s_p);
+            state s_p = generative_model(v->s,ptr->a,mod);
             double r = mod.reward_function(v->s,ptr->a,s_p);
-            ptr->children.emplace_back(std::unique_ptr<dnode>(new dnode(s_p,mod.get_action_space(s_p),ptr)));
+            ptr->children.emplace_back(std::unique_ptr<dnode>(new dnode(s_p,mod.get_action_space(s_p))));
             double q = r + discount_factor * search_tree(ptr->get_last_child());
             update_value(ptr,q);
             return q;
@@ -195,7 +210,7 @@ public:
             MD mod = model.get_copy();
             search_tree(&root, mod);
         }
-        global_counter = 0;
+        nb_cnodes = 0;
     }
 
     /**
@@ -232,7 +247,7 @@ public:
      * @return Return the undertaken action at s.
      */
     std::shared_ptr<action> operator()(const state &s) {
-        dnode root(s,model.get_action_space(s),nullptr);
+        dnode root(s,model.get_action_space(s));
         build_uct_tree(root);
         model.step(s); // update the model
         return recommended_action(root);
@@ -264,7 +279,7 @@ public:
      * @return Return a vector containing the values to be saved.
      */
     std::vector<double> get_backup() const {
-        return std::vector<double>{(double)global_counter};
+        return std::vector<double>{(double)nb_calls};
     }
 };
 

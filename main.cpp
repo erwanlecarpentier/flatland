@@ -44,6 +44,7 @@ void single_run(
     environment en(p);
     agent<PLC> ag(p);
     unsigned t = 0; // time
+    double real_return = 0.; // total collected reward
 	std::clock_t c_start = std::clock();
     for(t = 0; t < p.SIMULATION_LIMIT_TIME; ++t) { // main loop
         ag.apply_policy();
@@ -54,6 +55,7 @@ void single_run(
             ag.s.print();
         }
         if(bckp) {
+            real_return += ag.reward;
             en.trajectory_backup(ag.s);
             en.rmodel->reward_backup();
         }
@@ -77,11 +79,16 @@ void single_run(
         en.rmodel->save_reward_backup();
         std::vector<double> simbackup = {
             (double) t, /* score */
+            real_return, /* collected reward */
             time_elapsed_ms /* computational cost */
         };
         std::vector<double> agbackup = ag.policy.get_backup(); // agent backup
         simbackup.insert(simbackup.end(),agbackup.begin(),agbackup.end());
         backup_vector.push_back(simbackup);
+        std::cout << "time            : " << t << std::endl;
+        std::cout << "achieved return : " << real_return << std::endl;
+        std::cout << "time elapsed_ms : " << time_elapsed_ms << std::endl;
+        std::cout << "agent backup 0  : " << agbackup.at(0) << std::endl;
     }
 }
 
@@ -170,6 +177,7 @@ void run(
     std::vector<std::vector<double>> backup_vector; // backup container
     std::vector<std::string> names = { // set backup variables names
         "score",
+        "real_return",
         "computational_cost",
         "nb_calls"
     };

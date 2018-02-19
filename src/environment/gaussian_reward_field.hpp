@@ -51,9 +51,11 @@ public:
     void step() {
         x += vx;
         y += vy;
+        /*
         double mag = .01;
         x += uniform_double(-mag,mag);
         y += uniform_double(-mag,mag);
+        */
     }
 };
 

@@ -258,7 +258,7 @@ public:
      */
     bool is_terminal(const state &s) const {
         return (
-            (is_wall_encountered_at(s) && is_crash_terminal) /* Wall */
+            (is_wall_encountered_at(s) && is_crash_terminal) /* Crash */
             || rmodel->is_terminal(s) /* Reward model says terminal eg waypoints reached*/
             || s.is_terminal() /* State is terminal */
         );

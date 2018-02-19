@@ -12,7 +12,6 @@ public:
     std::shared_ptr<action> a; ///< Labelling action
     std::vector<std::unique_ptr<dnode>> children; ///< Child nodes
     std::vector<double> sampled_returns; ///< Sampled returns
-    //unsigned nvis; ///< Number of visits //TRM?
 
     /**
      * @brief Constructor
@@ -23,7 +22,7 @@ public:
         s(_s),
         a(_a)
     {
-        //nvis = 0;//TRM?
+        //
     }
 
     dnode * get_last_child() const {
