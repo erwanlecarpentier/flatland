@@ -6,15 +6,15 @@
 #include<memory>
 #include<numeric>
 
-#include<uct/cnode.hpp>
-#include<uct/dnode.hpp>
+#include<mcts/cnode.hpp>
+#include<mcts/dnode.hpp>
 #include<utils.hpp>
 
 /**
- * @brief UCT algorithm class
+ * @brief MCTS algorithm class
  */
 template <class MD, class PL>
-class uct {
+class mcts {
 public:
     typedef MD MD_type;
     typedef PL PL_type;
@@ -34,7 +34,7 @@ public:
     /**
      * @brief Constructor
      */
-    uct(const parameters &p) : model(p), default_policy(p) {
+    mcts(const parameters &p) : model(p), default_policy(p) {
         // use the specific parameters of the given model
         model.misstep_probability = p.MODEL_MISSTEP_PROBABILITY;
         model.state_gaussian_stddev = p.MODEL_STATE_GAUSSIAN_STDDEV;
@@ -218,7 +218,7 @@ public:
             return terminal_state_value;
         } else if(!v->is_fully_expanded()) { // leaf node, expand it
             return evaluate(v, mod);
-        } else { // apply UCT tree policy
+        } else { // apply tree policy
             cnode * ptr = select_child(v);
             state s_p = generative_model(v->s,ptr->a,mod);
             double r = mod.reward_function(v->s,ptr->a,s_p);
@@ -243,7 +243,7 @@ public:
             return 0.;
         } else if(v->is_leaf()) { // leaf node, expand it
             return evaluate(v->s);
-        } else { // apply UCT tree policy
+        } else { // apply tree policy
             cnode<state,AC> * ptr = select_child(v);
             state s_p = generative_model(v->s,ptr->a,mod);
             double r = mod.reward_function(v->s,ptr->a,s_p);
@@ -258,12 +258,12 @@ public:
     }
 
     /**
-     * @brief Build UCT tree
+     * @brief Build tree
      *
      * Build a tree at the input root node.
      * @param {dnode &} root; reference to the input root node
      */
-    void build_uct_tree(dnode &root) {
+    void build_tree(dnode &root) {
         for(unsigned i=0; i<budget; ++i) {
             MD mod = model.get_copy();
             search_tree(&root, mod);
@@ -298,7 +298,7 @@ public:
     }
 
     /**
-     * @brief UCT policy operator
+     * @brief MCTS policy operator
      *
      * Policy operator for the undertaken action at given state.
      * @param {const state &} s; current state of the agent
@@ -306,7 +306,7 @@ public:
      */
     std::shared_ptr<action> operator()(const state &s) {
         dnode root(s,model.get_action_space(s));
-        build_uct_tree(root);
+        build_tree(root);
         model.step(s); // update the model
         return recommended_action(root);
     }
@@ -327,7 +327,7 @@ public:
         (void) s;
         (void) a;
         (void) s_p;
-        /* No reward processing for UCT policy */
+        /* No reward processing for MCTS policy */
     }
 
     /**

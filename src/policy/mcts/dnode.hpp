@@ -1,7 +1,7 @@
 #ifndef DNODE_HPP_
 #define DNODE_HPP_
 
-#include<uct/cnode.hpp>
+#include<mcts/cnode.hpp>
 
 /**
  * @brief Decision node class

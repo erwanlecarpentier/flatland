@@ -44,7 +44,7 @@ public:
         uct_cst = p.UCT_CST;
         discount_factor = p.DISCOUNT_FACTOR;
         horizon = p.DEFAULT_POLICY_HORIZON;
-        is_model_dynamic = p.IS_MODEL_DYNAMIC; //TODO set this
+        is_model_dynamic = p.IS_MODEL_DYNAMIC;
     }
 
     /**

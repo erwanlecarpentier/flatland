@@ -19,7 +19,7 @@
 #include <go_straight.hpp>
 #include <oluct.hpp>
 #include <olta.hpp>
-#include <uct/uct.hpp>
+#include <mcts/mcts.hpp>
 #include <save.hpp>
 #include <state.hpp>
 #include <utils.hpp>
@@ -117,11 +117,11 @@ void run_switch(
         case 1: { // UCT policy
             switch(p.DEFAULT_POLICY_SELECTOR) {
                 case 0: { // go-straight policy
-                    single_run<uct<environment,go_straight>>(p,prnt,bckp,backup_vector);
+                    single_run<mcts<environment,go_straight>>(p,prnt,bckp,backup_vector);
                     break;
                 }
                 default: { // random policy
-                    single_run<uct<environment,random_policy>>(p,prnt,bckp,backup_vector);
+                    single_run<mcts<environment,random_policy>>(p,prnt,bckp,backup_vector);
                 }
             }
             break;
