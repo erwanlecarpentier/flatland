@@ -209,9 +209,9 @@ void test(char * n) {
 }
 
 void test() {
-    //parameters p("config/main.cfg");
-    //run(1,p,"data/test.csv",true,true);
-
+    parameters p("config/main.cfg");
+    run(1,p,"data/test.csv",true,true);
+    /*
     unsigned nbsim = 1000;
     std::string cfg_path = "config/main.cfg";
     std::string bkp_path;
@@ -224,6 +224,7 @@ void test() {
     p.IS_MODEL_DYNAMIC = false;
     bkp_path = "data/uct_sta.csv";
     run(nbsim,p,bkp_path.c_str(),false,true);
+    */
 }
 
 /**

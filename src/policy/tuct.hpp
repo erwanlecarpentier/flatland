@@ -1,12 +1,14 @@
-#ifndef TODO_POLICY_HPP_
-#define TODO_POLICY_HPP_
+#ifndef TUCT_HPP_
+#define TUCT_HPP_
 
 #include <environment.hpp>
+#include <uct/uct.hpp>
 
 /**
- * @brief TODO policy
+ * @brief TUCT policy
  */
-class todo_policy {
+template <class MD, class PL>
+class tuct : public uct<MD,PL> {
 public:
     /**
      * @brief Constructor
@@ -14,7 +16,8 @@ public:
      * Construct wrt the given parameters.
      * @param {const parameters &} p; parameters
      */
-    todo_policy(const parameters &p) {
+    tuct(const parameters &p) : uct<MD,PL>(p) {
+        (void) p;
         /* TODO: set the parameters here */
     }
 
@@ -26,7 +29,9 @@ public:
      * @return Return the undertaken action at s.
      */
 	std::shared_ptr<action> operator()(const state &s) {
-        /* TODO: define the policy here */
+        (void) s;
+        //TODO
+        return std::shared_ptr<action> (nullptr);//TRM
 	}
 
     /**
@@ -42,7 +47,9 @@ public:
         const std::shared_ptr<action> & a,
         const state & s_p)
     {
-        /* TODO: define the reward use here */
+        (void) s;
+        (void) a;
+        (void) s_p;
     }
 
     /**
@@ -56,4 +63,4 @@ public:
     }
 };
 
-#endif // TODO_POLICY_HPP_
+#endif // TUCT_HPP_

@@ -50,6 +50,7 @@ public:
     bool IS_MODEL_DYNAMIC;
     unsigned TREE_SEARCH_BUDGET;
     unsigned DEFAULT_POLICY_HORIZON;
+    unsigned MCTS_STRATEGY_SWITCH;
     double UCT_CST;
     double DISCOUNT_FACTOR;
     double SDM_RATIO;
@@ -406,6 +407,7 @@ public:
         && cfg.lookupValue("default_policy_selector",DEFAULT_POLICY_SELECTOR)
         && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)
         && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)
+        && cfg.lookupValue("mcts_strategy_switch",MCTS_STRATEGY_SWITCH)
         && cfg.lookupValue("uct_cst",UCT_CST)
         && cfg.lookupValue("discount_factor",DISCOUNT_FACTOR)
         && cfg.lookupValue("sdm_ratio",SDM_RATIO)

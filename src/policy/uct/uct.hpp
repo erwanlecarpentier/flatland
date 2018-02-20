@@ -28,6 +28,7 @@ public:
     unsigned nb_cnodes; ///< Number of expanded nodes
     unsigned nb_calls; ///< Number of calls to the generative model
     unsigned horizon; ///< Horizon for the default policy simulation
+    unsigned mcts_strategy_switch; ///< Strategy switch for MCTS algorithm
     bool is_model_dynamic; ///< Is the model dynamic
 
     /**
@@ -44,6 +45,7 @@ public:
         discount_factor = p.DISCOUNT_FACTOR;
         horizon = p.DEFAULT_POLICY_HORIZON;
         is_model_dynamic = p.IS_MODEL_DYNAMIC;
+        mcts_strategy_switch = p.MCTS_STRATEGY_SWITCH;
     }
 
     /**
@@ -103,14 +105,26 @@ public:
     }
 
     /**
-     * @brief Select child
+     * @brief MCTS strategy
      *
-     * Select child of a decision node wrt the UCT tree policy.
+     * Select child of a decision node wrt the MCTS strategy.
      * The node must be fully expanded.
      * @param {dnode *} v; decision node
      * @return Return to the select child, which is a chance node.
      */
-    cnode * select_child(dnode * v) const {
+    cnode * mcts_strategy(dnode * v) const {
+        return v->children.at(rand_indice(v->children)).get();
+    }
+
+    /**
+     * @brief UCT strategy
+     *
+     * Select child of a decision node wrt the UCT strategy.
+     * The node must be fully expanded.
+     * @param {dnode *} v; decision node
+     * @return Return to the select child, which is a chance node.
+     */
+    cnode * uct_strategy(dnode * v) const {
         std::vector<double> children_uct_scores;
         for(auto &c : v->children) {
             children_uct_scores.emplace_back(
@@ -120,6 +134,40 @@ public:
             );
         }
         return v->children.at(argmax(children_uct_scores)).get();
+    }
+
+    /**
+     * @brief TUCT strategy
+     *
+     * Select child of a decision node wrt the TUCT strategy.
+     * The node must be fully expanded.
+     * @param {dnode *} v; decision node
+     * @return Return to the select child, which is a chance node.
+     */
+    cnode * tuct_strategy(dnode * v) const {
+        //TODO
+    }
+
+    /**
+     * @brief Select child
+     *
+     * Select child of a decision node wrt one of the implemented strategies.
+     * The node must be fully expanded.
+     * @param {dnode *} v; decision node
+     * @return Return to the select child, which is a chance node.
+     */
+    cnode * select_child(dnode * v) const {
+        switch(mcts_strategy_switch) {
+            case 0: { // UCT
+                return uct_strategy(v);
+            }
+            case 1: { // TUCT
+                return tuct_strategy(v);
+            }
+            default: { // Vanilla MCTS
+                return mcts_strategy(v);
+            }
+        }
     }
 
     /**
@@ -184,7 +232,7 @@ public:
             } else { // leaf node, create a new node
                 ptr->children.emplace_back(std::unique_ptr<dnode>(
                     new dnode(s_p,mod.get_action_space(s_p),ptr->depth+1)
-                );
+                ));
                 q = r + discount_factor * evaluate(ptr->get_last_child(), mod);
             }
             update_value(ptr,q);
