@@ -11,15 +11,18 @@ public:
     state s; ///< Labelling state
     std::vector<std::shared_ptr<action>> actions; ///< Available actions, iteratively removed
     std::vector<std::unique_ptr<cnode>> children; ///< Child nodes
+    double depth; ///< Depth
 
     /**
      * @brief Constructor
      */
     dnode(
         state _s,
-        std::vector<std::shared_ptr<action>> _actions) :
+        std::vector<std::shared_ptr<action>> _actions,
+        double _depth = 0) :
         s(_s),
-        actions(_actions)
+        actions(_actions),
+        depth(_depth)
     {
         //
     }
@@ -36,7 +39,7 @@ public:
         unsigned indice = rand_indice(actions);
         std::shared_ptr<action> sampled_action = actions.at(indice);
         actions.erase(actions.begin() + indice);
-        children.emplace_back(std::unique_ptr<cnode>(new cnode(s,sampled_action)));
+        children.emplace_back(std::unique_ptr<cnode>(new cnode(s,sampled_action,depth)));
         return sampled_action;
     }
 

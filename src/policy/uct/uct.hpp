@@ -182,7 +182,9 @@ public:
             if(is_state_already_sampled(ptr,s_p,ind)) { // go to node
                 q = r + discount_factor * search_tree(ptr->children.at(ind).get(), mod);
             } else { // leaf node, create a new node
-                ptr->children.emplace_back(std::unique_ptr<dnode>(new dnode(s_p,mod.get_action_space(s_p))));
+                ptr->children.emplace_back(std::unique_ptr<dnode>(
+                    new dnode(s_p,mod.get_action_space(s_p),ptr->depth+1)
+                );
                 q = r + discount_factor * evaluate(ptr->get_last_child(), mod);
             }
             update_value(ptr,q);
@@ -197,7 +199,9 @@ public:
             cnode<state,AC> * ptr = select_child(v);
             state s_p = generative_model(v->s,ptr->a,mod);
             double r = mod.reward_function(v->s,ptr->a,s_p);
-            ptr->children.emplace_back(std::unique_ptr<dnode>(new dnode(s_p,mod.get_action_space(s_p))));
+            ptr->children.emplace_back(std::unique_ptr<dnode>(
+                new dnode(s_p,mod.get_action_space(s_p),ptr->depth+1)
+            );
             double q = r + discount_factor * search_tree(ptr->get_last_child());
             update_value(ptr,q);
             return q;

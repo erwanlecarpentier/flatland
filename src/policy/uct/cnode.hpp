@@ -12,15 +12,18 @@ public:
     std::shared_ptr<action> a; ///< Labelling action
     std::vector<std::unique_ptr<dnode>> children; ///< Child nodes
     std::vector<double> sampled_returns; ///< Sampled returns
+    double depth; ///< Depth
 
     /**
      * @brief Constructor
      */
     cnode(
         state _s,
-        std::shared_ptr<action> _a) :
+        std::shared_ptr<action> _a,
+        double _depth = 0) :
         s(_s),
-        a(_a)
+        a(_a),
+        depth(_depth)
     {
         //
     }
