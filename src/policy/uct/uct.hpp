@@ -28,6 +28,7 @@ public:
     unsigned nb_cnodes; ///< Number of expanded nodes
     unsigned nb_calls; ///< Number of calls to the generative model
     unsigned horizon; ///< Horizon for the default policy simulation
+    bool is_model_dynamic; ///< Is the model dynamic
 
     /**
      * @brief Constructor
@@ -42,6 +43,7 @@ public:
         budget = p.TREE_SEARCH_BUDGET;
         discount_factor = p.DISCOUNT_FACTOR;
         horizon = p.DEFAULT_POLICY_HORIZON;
+        is_model_dynamic = p.IS_MODEL_DYNAMIC;
     }
 
     /**
@@ -77,7 +79,9 @@ public:
         for(unsigned t=0; t<horizon; ++t) {
             state s_p = generative_model(s,a,mod);
             total_return += pow(discount_factor,(double)t) * mod.reward_function(s,a,s_p);
-            mod.step(s_p);
+            if(is_model_dynamic) {
+                mod.step(s_p);
+            }
             if(mod.is_terminal(s_p)) {
                 break;
             }
@@ -170,7 +174,9 @@ public:
             cnode * ptr = select_child(v);
             state s_p = generative_model(v->s,ptr->a,mod);
             double r = mod.reward_function(v->s,ptr->a,s_p);
-            mod.step(s_p);
+            if(is_model_dynamic) {
+                mod.step(s_p);
+            }
             double q = 0.;
             unsigned ind = 0; // indice of resulting child
             if(is_state_already_sampled(ptr,s_p,ind)) { // go to node

@@ -47,6 +47,7 @@ public:
     double WALL_REWARD;
     double GOAL_REWARD;
     // Policy parameters:
+    bool IS_MODEL_DYNAMIC;
     unsigned TREE_SEARCH_BUDGET;
     unsigned DEFAULT_POLICY_HORIZON;
     double UCT_CST;
@@ -397,6 +398,7 @@ public:
         && cfg.lookupValue("misstep_probability",MISSTEP_PROBABILITY)
         && cfg.lookupValue("state_gaussian_stddev",STATE_GAUSSIAN_STDDEV)
         && cfg.lookupValue("wall_reward",WALL_REWARD)
+        && cfg.lookupValue("is_model_dynamic",IS_MODEL_DYNAMIC)
         && cfg.lookupValue("model_misstep_probability",MODEL_MISSTEP_PROBABILITY)
         && cfg.lookupValue("model_state_gaussian_stddev",MODEL_STATE_GAUSSIAN_STDDEV)
         && cfg.lookupValue("action_definition_selector",ACTIONS_SELECTOR)

@@ -12,6 +12,8 @@ template <class PL>
 class oluct {
 public:
     typedef PL PL_type;
+
+    PL dflt_policy; ///< Default policy
     environment model; ///< Copy of the environment, used for action space reduction, termination criterion and generative model, also its attributes may be changed according to the used configuration
     node root_node; ///< Root node of the tree
     double uct_cst; ///< UCT constant within UCT formula
@@ -20,7 +22,7 @@ public:
     unsigned budget; ///< Algorithm budget (number of expanded nodes)
     unsigned expd_counter; ///< Counter of the number of expanded nodes
     unsigned nb_calls; ///< Number of calls to the generative model
-    PL dflt_policy; ///< Default policy
+    bool is_model_dynamic; ///< Is the model dynamic
 
     /**
      * @brief Constructor
@@ -29,9 +31,9 @@ public:
      * @param {const parameters &} p; parameters
      */
     oluct(const parameters &p) :
+        dflt_policy(p),
         model(p),
-        root_node(state(),model.action_space), // initialise with default state
-        dflt_policy(p)
+        root_node(state(),model.action_space) // initialise with default state
     {
         // use the specific parameters of the given model
         model.misstep_probability = p.MODEL_MISSTEP_PROBABILITY;
@@ -42,6 +44,7 @@ public:
         uct_cst = p.UCT_CST;
         discount_factor = p.DISCOUNT_FACTOR;
         horizon = p.DEFAULT_POLICY_HORIZON;
+        is_model_dynamic = p.IS_MODEL_DYNAMIC; //TODO set this
     }
 
     /**

@@ -44,7 +44,7 @@ void single_run(
     environment en(p);
     agent<PLC> ag(p);
     unsigned t = 0; // time
-    double real_return = 0.; // total collected reward
+    double achieved_return = 0.; // total collected reward
 	std::clock_t c_start = std::clock();
     for(t = 0; t < p.SIMULATION_LIMIT_TIME; ++t) { // main loop
         ag.apply_policy();
@@ -55,7 +55,7 @@ void single_run(
             ag.s.print();
         }
         if(bckp) {
-            real_return += ag.reward;
+            achieved_return += ag.reward;
             en.trajectory_backup(ag.s);
             en.rmodel->reward_backup();
         }
@@ -79,14 +79,14 @@ void single_run(
         en.rmodel->save_reward_backup();
         std::vector<double> simbackup = {
             (double) t, /* score */
-            real_return, /* collected reward */
+            achieved_return, /* collected reward */
             time_elapsed_ms /* computational cost */
         };
         std::vector<double> agbackup = ag.policy.get_backup(); // agent backup
         simbackup.insert(simbackup.end(),agbackup.begin(),agbackup.end());
         backup_vector.push_back(simbackup);
         std::cout << "time            : " << t << std::endl;
-        std::cout << "achieved return : " << real_return << std::endl;
+        std::cout << "achieved return : " << achieved_return << std::endl;
         std::cout << "time elapsed_ms : " << time_elapsed_ms << std::endl;
         std::cout << "agent backup 0  : " << agbackup.at(0) << std::endl;
     }
@@ -177,7 +177,7 @@ void run(
     std::vector<std::vector<double>> backup_vector; // backup container
     std::vector<std::string> names = { // set backup variables names
         "score",
-        "real_return",
+        "achieved_return",
         "computational_cost",
         "nb_calls"
     };
@@ -208,6 +208,24 @@ void test(char * n) {
     }
 }
 
+void test() {
+    //parameters p("config/main.cfg");
+    //run(1,p,"data/test.csv",true,true);
+
+    unsigned nbsim = 1000;
+    std::string cfg_path = "config/main.cfg";
+    std::string bkp_path;
+    parameters p(cfg_path.c_str());
+
+    p.IS_MODEL_DYNAMIC = true;
+    bkp_path = "data/uct_dyn.csv";
+    run(nbsim,p,bkp_path.c_str(),false,true);
+
+    p.IS_MODEL_DYNAMIC = false;
+    bkp_path = "data/uct_sta.csv";
+    run(nbsim,p,bkp_path.c_str(),false,true);
+}
+
 /**
  * @brief Main function
  */
@@ -218,8 +236,7 @@ int main(int argc, char* argv[]) {
         if(argc == 2) { // run test method with given path as input
             test(argv[1]);
         } else { // run single simulation
-            parameters p("config/main.cfg");
-            run(1,p,"data/test.csv",true,true);
+            test();
         }
         std::clock_t c_end = std::clock();
         double time_elapsed_ms = 1000. * (c_end - c_start) / CLOCKS_PER_SEC;
@@ -231,4 +248,5 @@ int main(int argc, char* argv[]) {
     catch(...) {
         std::cerr << "Error in main(): unknown exception caught" << std::endl;
     }
+    return 0;
 }
