@@ -56,12 +56,12 @@ public:
      * @param {node &} v; tested node
      * @return Return 'true' if the node is considered terminal.
      */
-    bool is_node_terminal(node &v) {
+    bool is_node_terminal(node &v, environment &md) {
         if(v.is_root()) {
-            return model.is_terminal(v.get_state());
+            return md.is_terminal(v.get_state());
         } else {
             for(auto &s: v.get_sampled_states()) {
-                if(!model.is_terminal(s)) {
+                if(!md.is_terminal(s)) {
                     return false;
                 }
             }
@@ -75,15 +75,17 @@ public:
      * Perform a call to the generative model.
      * @param {const state &} s; state
      * @param {std::shared_ptr<action>} a; copy of the action
-     * @param {state &} s_p; next state
+     * @return Return next state
      */
-    void generative_model(
+    state generative_model(
         const state &s,
         std::shared_ptr<action> a,
-        state &s_p)
+        environment &md)
     {
-        model.state_transition(s,a,s_p);
         ++nb_calls;
+        state s_p;
+        md.state_transition(s,a,s_p);
+        return s_p;
     }
 
     /**
@@ -92,14 +94,15 @@ public:
      * Sample a new state w.r.t. to the incoming action and the parents state and add it to
      * the node.
      * @param {node *} v; pointer to the node
+     * @return Return sampled state
      */
-    void sample_new_state(node * v) {
+    state sample_new_state(node * v, environment &md) {
         assert(!v->is_root());
         std::shared_ptr<action> a = v->get_incoming_action();
         state s = (v->parent)->get_state_or_last();
-        state s_p;
-        generative_model(s,a,s_p);
+        state s_p = generative_model(s,a,md);
         v->add_to_states(s_p);
+        return s_p;
     }
 
     /**
@@ -109,15 +112,14 @@ public:
      * @param {node &} v; reference on the expanded node
      * @return Return a pointer to the created leaf node
      */
-    node * expand(node &v) {
+    node * expand(node &v, environment &md) {
         std::shared_ptr<action> nodes_action = v.get_next_expansion_action();
         state nodes_state = v.get_state_or_last();
-        state new_state;
-        generative_model(nodes_state,nodes_action,new_state);
+        state new_state = generative_model(nodes_state,nodes_action,md);
         v.create_child(
             nodes_action,
             new_state,
-            model.action_space //TODO: warning - stochastic case
+            md.action_space //TODO: warning - stochastic case
         );
         return v.get_last_child();
     }
@@ -129,7 +131,7 @@ public:
      * @param {node &} v; parent node
      * @return Return the selected child according to the UCT formula
      */
-    node * uct_child(node &v) {
+    node * uct_child(node &v) const {
         std::vector<double> uct_scores;
         for(auto &c : v.children) {
             assert(c.get_visits_count() != 0 && expd_counter > 0);
@@ -138,8 +140,7 @@ public:
                 sqrt(log((double) expd_counter)/ ((double) c.get_visits_count()))
             );
         }
-        unsigned ind = argmax(uct_scores);
-        return &v.children.at(ind);
+        return &v.children.at(argmax(uct_scores));
     }
 
     /**
@@ -150,16 +151,18 @@ public:
      * @param {node &} v;
      * @return Return a pointer to the created leaf node or to the current node if terminal.
      */
-    node * tree_policy(node &v) {
-        if(is_node_terminal(v)) { // terminal
-            sample_new_state(&v);
+    node * tree_policy(node &v, environment &md) {
+        if(is_node_terminal(v,md)) { // terminal
+            sample_new_state(&v,md);
             return &v;
         } else if(!v.is_fully_expanded()) { // expand node
-            return expand(v);
+            return expand(v,md);
         } else { // apply UCT tree policy
             node * v_p = uct_child(v);
-            sample_new_state(v_p);
-            return tree_policy(*v_p);
+            if(is_model_dynamic) {
+                md.step(sample_new_state(v_p,md));
+            }
+            return tree_policy(*v_p,md);
         }
     }
 
@@ -171,20 +174,22 @@ public:
      * @param {node *} ptr; pointer to the input node
      * @return Return the sampled total return.
      */
-    double default_policy(node * ptr) {
+    double default_policy(node * ptr, environment &md) {
         state s = ptr->get_last_sampled_state();
-        if(is_node_terminal(*ptr)) {
+        if(is_node_terminal(*ptr,md)) {
             std::shared_ptr<action> a(new navigation_action()); // default action
-            return model.reward_function(s,a,s);
+            return md.reward_function(s,a,s);
         }
         double total_return = 0.;
         std::shared_ptr<action> a = dflt_policy(s);
         for(unsigned t=0; t<horizon; ++t) {
-            state s_p;
-            generative_model(s,a,s_p);
-            total_return += pow(discount_factor,(double)t) * model.reward_function(s,a,s_p);
-            if(model.is_terminal(s)) { // Termination criterion
+            state s_p = generative_model(s,a,md);
+            total_return += pow(discount_factor,(double)t) * md.reward_function(s,a,s_p);
+            if(md.is_terminal(s_p)) { // Termination criterion
                 break;
+            }
+            if(is_model_dynamic) {
+                md.step(s_p);
             }
             s = s_p;
             a = dflt_policy(s);
@@ -205,7 +210,7 @@ public:
         ptr->increment_visits_count();
         ptr->add_to_value(total_return);
         total_return *= discount_factor; // apply the discount for the parent node
-        total_return += model.reward_function( // add the reward of the transition
+        total_return += model.reward_function( // add the reward of the transition //TODO replace this like mcts algorithm implementation (recursive calls, no backup)
             ptr->parent->get_state_or_last(),
             ptr->get_incoming_action(),
             ptr->get_last_sampled_state()
@@ -244,8 +249,9 @@ public:
         root_node.shuffle_action_space();
         expd_counter = 0;
         for(unsigned i=0; i<budget; ++i) {
-            node *ptr = tree_policy(root_node);
-            double total_return = default_policy(ptr);
+            environment cp = model.get_copy();
+            node *ptr = tree_policy(root_node,cp);
+            double total_return = default_policy(ptr,cp);
             backup(total_return,ptr);
             ++expd_counter;
         }
@@ -291,11 +297,9 @@ public:
      * @return Return the undertaken action at s.
      */
 	std::shared_ptr<action> operator()(const state &s) {
-        model.step(s);
-        //TODO: update the model inside the tree for wp -> probably adding table of reached wp in state
         build_oluct_tree(s);
-        unsigned indice = 0;
         model.step(s); // update the model
+        unsigned indice = 0;
         return get_recommended_action(root_node,indice);
 	}
 

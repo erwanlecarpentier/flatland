@@ -146,6 +146,8 @@ public:
      */
     cnode * tuct_strategy(dnode * v) const {
         //TODO
+        (void) v;
+        return nullptr;
     }
 
     /**
