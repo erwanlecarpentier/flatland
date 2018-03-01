@@ -1,5 +1,5 @@
-#ifndef UCT_HPP_
-#define UCT_HPP_
+#ifndef MCTS_HPP_
+#define MCTS_HPP_
 
 #include<cassert>
 #include<vector>
@@ -19,28 +19,31 @@ public:
     typedef MD MD_type;
     typedef PL PL_type;
 
-    MD model; ///< Generative model
     PL default_policy; ///< Default policy
+    MD model; ///< Generative model
+    bool is_model_dynamic; ///< Is the model dynamic
     double discount_factor; ///< Discount factor
     double uct_parameter; ///< UCT parameter
+    double lipschitz_q; ///< Lipschitz constant for Q-values
     double terminal_state_value = 0.; ///< Terminal state value
     unsigned budget; ///< Budget ie number of expanded nodes in the tree
     unsigned nb_cnodes; ///< Number of expanded nodes
     unsigned nb_calls; ///< Number of calls to the generative model
     unsigned horizon; ///< Horizon for the default policy simulation
     unsigned mcts_strategy_switch; ///< Strategy switch for MCTS algorithm
-    bool is_model_dynamic; ///< Is the model dynamic
 
     /**
      * @brief Constructor
      */
-    mcts(const parameters &p) : model(p), default_policy(p) {
+    mcts(const parameters &p) : default_policy(p), model(p) {
         // use the specific parameters of the given model
         model.misstep_probability = p.MODEL_MISSTEP_PROBABILITY;
         model.state_gaussian_stddev = p.MODEL_STATE_GAUSSIAN_STDDEV;
+        model.is_crash_terminal = true; //TODO: ste this for all Tree Search algorithms
         nb_cnodes = 0;
         nb_calls = 0;
         uct_parameter = p.UCT_CST;
+        lipschitz_q = p.LIPSCHITZ_Q;
         budget = p.TREE_SEARCH_BUDGET;
         discount_factor = p.DISCOUNT_FACTOR;
         horizon = p.DEFAULT_POLICY_HORIZON;
@@ -117,6 +120,25 @@ public:
     }
 
     /**
+     * @brief UCT scores
+     *
+     * Compute the UCT scores of the given vector of chance nodes.
+     * @param {const std::vector<std::unique_ptr<cnode>> &} cv; input vector
+     * @return Return a vector containing the scores of the given vector of chance nodes.
+     */
+    std::vector<double> uct_scores(const std::vector<std::unique_ptr<cnode>> &cv) const {
+        std::vector<double> scores;
+        for(auto &c : cv) {
+            scores.emplace_back(
+                c->get_value()
+                + 2 * uct_parameter *
+                sqrt(log((double) nb_cnodes) / ((double) c->sampled_returns.size()))
+            );
+        }
+        return scores;
+    }
+
+    /**
      * @brief UCT strategy
      *
      * Select child of a decision node wrt the UCT strategy.
@@ -125,15 +147,7 @@ public:
      * @return Return to the select child, which is a chance node.
      */
     cnode * uct_strategy(dnode * v) const {
-        std::vector<double> children_uct_scores;
-        for(auto &c : v->children) {
-            children_uct_scores.emplace_back(
-                c->get_value()
-                + 2 * uct_parameter *
-                sqrt(log((double) nb_cnodes) / ((double) c->sampled_returns.size()))
-            );
-        }
-        return v->children.at(argmax(children_uct_scores)).get();
+        return v->children.at(argmax(uct_scores(v->children))).get();
     }
 
     /**
@@ -145,9 +159,24 @@ public:
      * @return Return to the select child, which is a chance node.
      */
     cnode * tuct_strategy(dnode * v) const {
-        //TODO
-        (void) v;
-        return nullptr;
+        std::vector<double> scores = uct_scores(v->children);
+        unsigned maxind = argmax(scores);
+        double delta = v->depth * lipschitz_q;
+        if(are_equal(delta,0.)) {
+            return v->children.at(maxind).get();
+        } else {
+            double deltamin = scores[maxind] - delta;
+            std::vector<double> weights(scores.size(),0.);
+            weights[maxind] = 2 * delta; // maximum weight
+            for(unsigned i = 0; i < scores.size(); ++i) {
+                if(i != maxind) {
+                    if(is_greater_than(scores[i] + delta, deltamin)) {
+                        weights[i] = scores[i] + delta - deltamin;
+                    }
+                }
+            }
+            return v->children.at(pick_weighted_indice(weights)).get();
+        }
     }
 
     /**
@@ -282,8 +311,8 @@ public:
      */
     unsigned argmax_value(const dnode &v) const {
         std::vector<double> values;
-        for(auto &ch: v.children) {
-            values.emplace_back(ch->get_value());
+        for(auto &c: v.children) {
+            values.emplace_back(c->get_value());
         }
         return argmax(values);
     }
@@ -343,4 +372,4 @@ public:
     }
 };
 
-#endif // UCT_HPP_
+#endif // MCTS_HPP_

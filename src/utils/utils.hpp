@@ -172,8 +172,8 @@ inline unsigned argmin(const std::vector<T> &v) {
 /**
  * @brief Uniformly distributed integer
  *
- * Generate a uniformly distributed integer
- * @return Return the sample
+ * Generate a uniformly distributed integer.
+ * @return Return the sample.
  */
 int uniform_integer(int int_min, int int_max) {
     std::random_device rd;
@@ -185,8 +185,8 @@ int uniform_integer(int int_min, int int_max) {
 /**
  * @brief Uniformly distributed double
  *
- * Generate a uniformly distributed double
- * @return Return the sample
+ * Generate a uniformly distributed double.
+ * @return Return the sample.
  */
 double uniform_double(double double_min, double double_max) {
     std::random_device rd;
@@ -198,8 +198,8 @@ double uniform_double(double double_min, double double_max) {
 /**
  * @brief Normally distributed double
  *
- * Generate a normally distributed double
- * @return Return the sample
+ * Generate a normally distributed double.
+ * @return Return the sample.
  */
 double normal_double(double mean, double stddev) {
     std::random_device rd;
@@ -209,11 +209,32 @@ double normal_double(double mean, double stddev) {
 }
 
 /**
+ * @brief Pick weighted indice
+ *
+ * Given a vector of weights, pick an indice of this vector with probability equal to its
+ * associated weights.
+ * @return Return picked indice.
+ */
+unsigned pick_weighted_indice(const std::vector<double> &weights) {
+	double t = uniform_double(0.,std::accumulate(weights.begin(),weights.end(),0.0));
+	double c = 0.;
+	for(unsigned i = 0; i < weights.size(); ++i) {
+        c += weights[i];
+		if(is_greater_than(c,t)) {
+			return i;
+		}
+	}
+	assert(are_equal(std::accumulate(weights.begin(),weights.end(),0.0),t));
+	return weights.size() - 1;
+}
+
+/**
  * @brief Sigmoid function
  *
  * @param {const double} x; point to evaluate the sigmoid
  * @param {const double} x_max; point the sigmoid is 0.99
  * @param {const double} x_middle; point the sigmoid is 0.5
+ * @return Return the result of the sigmoid.
  */
 inline double sigmoid(const double x, const double x_max, const double x_middle = 0.) {
     return 1./(1. + exp(-(x-x_middle)/(x_max*.217622180186)));

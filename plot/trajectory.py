@@ -21,16 +21,17 @@ def plot_waypoint(i, world_config, ax) :
 	c = mpatches.Circle((x,y),r,edgecolor='none',facecolor=GREEN)
 	ax.add_patch(c)
 
-def plot_rfield(i, world_config, ax, X, Y) :
+def plot_rfield(i, world_config, ax) :
 	traj = pd.read_csv("data/rfield" + str(i) + ".csv", sep = ',')
 	x = traj["x"]
 	y = traj["y"]
 	ax.plot(x,y,color=LIGHTBLUE)
-	for j in range(0,x.size,5) :
+	for j in range(0,x.size,1) :
 		sig = world_config["sigma_rf" + str(i)]
 		mag = world_config["magnitude_rf" + str(i)]
-		Z = mlab.bivariate_normal(X, Y, sig, sig, x[j], y[j])
-		ax.contour(X, Y, Z, 3, colors=(0.1, 0.2, 0.3), alpha=j/x.size)
+		a = (j+10)/((x.size+10)*1.5)
+		c = mpatches.Circle((x[j],y[j]),3.*sig, fc='none', ec=LIGHTBLUE,alpha=a)
+		ax.add_patch(c)
 
 mainpath = os.path.join(CURDIR, '../config/main.cfg')
 with io.open(mainpath) as g:
@@ -67,17 +68,14 @@ for i in range(world_config.nb_circles):
 
 xs = world_config.initial_state_x
 ys = world_config.initial_state_y
-g = mpatches.Circle((xs,ys),0.1,edgecolor='none',facecolor=RED)
+g = mpatches.Circle((xs,ys),0.02,edgecolor='none',facecolor=RED)
 ax.add_patch(g)
 
 # Plot reward ------------------------------------------------------------------
 
 if world_config.reward_model_selector == 0 : # Heatmap reward model
-	xgrid = np.arange(0.0, world_config.xsize, 0.01)
-	ygrid = np.arange(0.0, world_config.ysize, 0.01)
-	X, Y = np.meshgrid(xgrid, ygrid)
 	for i in range(world_config.nb_rfield) :
-		plot_rfield(i, world_config, ax, X, Y)
+		plot_rfield(i, world_config, ax)
 else: # Waypoints reward model
 	for i in range(world_config.nb_waypoints) :
 		plot_waypoint(i, world_config, ax)

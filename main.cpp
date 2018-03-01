@@ -212,7 +212,7 @@ void test() {
     parameters p("config/main.cfg");
     run(1,p,"data/test.csv",true,true);
     /*
-    unsigned nbsim = 1000;
+    unsigned nbsim = 500;
     std::string cfg_path = "config/main.cfg";
     std::string bkp_path;
     parameters p(cfg_path.c_str());

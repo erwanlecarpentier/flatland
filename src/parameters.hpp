@@ -52,6 +52,7 @@ public:
     unsigned DEFAULT_POLICY_HORIZON;
     unsigned MCTS_STRATEGY_SWITCH;
     double UCT_CST;
+    double LIPSCHITZ_Q;
     double DISCOUNT_FACTOR;
     double SDM_RATIO;
     double SDV_THRESHOLD;
@@ -409,6 +410,7 @@ public:
         && cfg.lookupValue("default_policy_horizon",DEFAULT_POLICY_HORIZON)
         && cfg.lookupValue("mcts_strategy_switch",MCTS_STRATEGY_SWITCH)
         && cfg.lookupValue("uct_cst",UCT_CST)
+        && cfg.lookupValue("lipschitz_q",LIPSCHITZ_Q)
         && cfg.lookupValue("discount_factor",DISCOUNT_FACTOR)
         && cfg.lookupValue("sdm_ratio",SDM_RATIO)
         && cfg.lookupValue("sdv_threshold",SDV_THRESHOLD)

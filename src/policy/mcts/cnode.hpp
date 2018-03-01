@@ -40,7 +40,7 @@ public:
      * @return Return the value of the node.
      */
     double get_value() const {
-        return (1. / (double) sampled_returns.size()) * std::accumulate(sampled_returns.begin(),sampled_returns.end(),0.0);
+        return std::accumulate(sampled_returns.begin(),sampled_returns.end(),0.0) / ((double) sampled_returns.size());
     }
 };
 
