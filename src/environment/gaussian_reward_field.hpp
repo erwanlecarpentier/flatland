@@ -24,13 +24,17 @@ public:
         double _vx,
         double _vy,
         double _sigma,
-        double _magnitude
+        double _magnitude,
+        unsigned _tbirth,
+        unsigned _tdeath
     ) : x(_x),
         y(_y),
         vx(_vx),
         vy(_vy),
         sigma(_sigma),
-        magnitude(_magnitude)
+        magnitude(_magnitude),
+        tbirth(_tbirth),
+        tdeath(_tdeath)
     {
         //
     }
@@ -42,6 +46,9 @@ public:
      * @param {const state &} s; input state
      */
     double get_value(const state &s) const {
+        if(is_less_than(s.t,tbirth) || is_less_than(tdeath,s.t)) {
+            return 0.;
+        }
         return magnitude * exp(-.5 * (pow(x - s.x,2.) + pow(y - s.y,2.)) / pow(sigma,2.) );
     }
 
@@ -53,11 +60,6 @@ public:
     void step() {
         x += vx;
         y += vy;
-        /*
-        double mag = .01;
-        x += uniform_double(-mag,mag);
-        y += uniform_double(-mag,mag);
-        */
     }
 };
 

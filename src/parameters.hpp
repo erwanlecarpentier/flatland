@@ -273,28 +273,23 @@ public:
             throw wrong_syntax_configuration_file_exception();
         }
         for(unsigned i=0; i<nbr; ++i) { // parse rectangle walls
-            std::string xn = "x_rect" + std::to_string(i);
-            std::string yn = "y_rect" + std::to_string(i);
-            std::string hn = "h_rect" + std::to_string(i);
-            std::string wn = "w_rect" + std::to_string(i);
+            std::string indice(std::to_string(i));
             double x = 0., y = 0., h = 0., w = 0.;
-            if(world_cfg.lookupValue(xn,x)
-            && world_cfg.lookupValue(yn,y)
-            && world_cfg.lookupValue(hn,h)
-            && world_cfg.lookupValue(wn,w)) {
+            if(world_cfg.lookupValue("x_rect" + indice,x)
+            && world_cfg.lookupValue("y_rect" + indice,y)
+            && world_cfg.lookupValue("h_rect" + indice,h)
+            && world_cfg.lookupValue("w_rect" + indice,w)) {
                 elements.push_back(new rectangle(std::tuple<double,double>{x,y},w,h));
             } else {
                 throw wrong_syntax_configuration_file_exception();
             }
         }
         for(unsigned i=0; i<nbc; ++i) { // parse circle walls
-            std::string xn = "x_circ" + std::to_string(i);
-            std::string yn = "y_circ" + std::to_string(i);
-            std::string rn = "r_circ"  + std::to_string(i);
+            std::string indice(std::to_string(i));
             double x = 0., y = 0., r = 0.;
-            if(world_cfg.lookupValue(xn,x)
-            && world_cfg.lookupValue(yn,y)
-            && world_cfg.lookupValue(rn,r)) {
+            if(world_cfg.lookupValue("x_circ" + indice,x)
+            && world_cfg.lookupValue("y_circ" + indice,y)
+            && world_cfg.lookupValue("r_circ"  + indice,r)) {
                 elements.push_back(new circle(std::tuple<double,double>{x,y},r));
             } else {
                 throw wrong_syntax_configuration_file_exception();
@@ -330,14 +325,17 @@ public:
                 }
                 for(unsigned i=0; i<nb; ++i) { // parse reward fields
                     double x = 0., y = 0., vx = 0., vy = 0., s = 0., m = 0.;
+                    unsigned tb = 0, td = 0;
                     std::string indice(std::to_string(i));
                     if(world_cfg.lookupValue("x_rf" + indice,x)
                     && world_cfg.lookupValue("y_rf" + indice,y)
                     && world_cfg.lookupValue("vx_rf" + indice,vx)
                     && world_cfg.lookupValue("vy_rf" + indice,vy)
                     && world_cfg.lookupValue("sigma_rf" + indice,s)
-                    && world_cfg.lookupValue("magnitude_rf" + indice,m)) {
-                        rfield.emplace_back(gaussian_reward_field(x,y,vx,vy,s,m));
+                    && world_cfg.lookupValue("magnitude_rf" + indice,m)
+                    && world_cfg.lookupValue("tbirth_rf" + indice,tb)
+                    && world_cfg.lookupValue("tdeath_rf" + indice,td)) {
+                        rfield.emplace_back(gaussian_reward_field(x,y,vx,vy,s,m,tb,td));
                     } else {
                         throw wrong_syntax_configuration_file_exception();
                     }

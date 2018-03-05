@@ -25,13 +25,19 @@ def plot_rfield(i, world_config, ax) :
 	traj = pd.read_csv("data/rfield" + str(i) + ".csv", sep = ',')
 	x = traj["x"]
 	y = traj["y"]
-	#ax.plot(x,y,color=LIGHTBLUE)
-	for j in range(0,x.size,1) :
-		sig = world_config["sigma_rf" + str(i)]
-		mag = world_config["magnitude_rf" + str(i)]
-		a = (j+5)/((x.size+5)*1.5)
+	tb = world_config["tbirth_rf" + str(i)]
+	td = world_config["tdeath_rf" + str(i)]
+	sig = world_config["sigma_rf" + str(i)]
+	mag = world_config["magnitude_rf" + str(i)]
+	#ax.plot(x,y,color=LIGHTBLUE) # trajectory
+	for j in range(0,td,1) :
+		a = (j+5)/((td+5)*1.5)
 		c = mpatches.Circle((x[j],y[j]),3.*sig, fc='none', ec=LIGHTBLUE,alpha=a)
 		ax.add_patch(c)
+		if (j == 0):
+			ax.annotate('t = %d' %tb, xy=(x[j],y[j]))
+		if (j == td-1):
+			ax.annotate('t = %d' %td, xy=(x[j],y[j]))
 
 mainpath = os.path.join(CURDIR, '../config/main.cfg')
 with io.open(mainpath) as g:
@@ -89,6 +95,9 @@ lbsize = 24
 ax.tick_params(axis='x', labelsize=lbsize)
 ax.tick_params(axis='y', labelsize=lbsize)
 ax.plot(x,y,color=RED)
+ax.annotate('Start t = 0', xy=(x[0],y[0]), xytext=(x[0]+0.02,y[0]+0.02), color=RED)
+eot = x.size - 1
+ax.annotate('End t = %d' %eot, xy=(x[eot],y[eot]), xytext=(x[eot]+0.02,y[eot]+0.02), color=RED)
 
 plt.show()
 
