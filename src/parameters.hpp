@@ -329,20 +329,15 @@ public:
                     throw wrong_syntax_configuration_file_exception();
                 }
                 for(unsigned i=0; i<nb; ++i) { // parse reward fields
-                    std::string xname = "x_rf" + std::to_string(i);
-                    std::string yname = "y_rf" + std::to_string(i);
-                    std::string vxname = "vx_rf" + std::to_string(i);
-                    std::string vyname = "vy_rf" + std::to_string(i);
-                    std::string sigmaname = "sigma_rf" + std::to_string(i);
-                    std::string magnitudename = "magnitude_rf" + std::to_string(i);
-                    double x = 0., y = 0., vx = 0., vy = 0., sigma = 0., magnitude = 0.;
-                    if(world_cfg.lookupValue(xname,x)
-                    && world_cfg.lookupValue(yname,y)
-                    && world_cfg.lookupValue(vxname,vx)
-                    && world_cfg.lookupValue(vyname,vy)
-                    && world_cfg.lookupValue(sigmaname,sigma)
-                    && world_cfg.lookupValue(magnitudename,magnitude)) {
-                        rfield.emplace_back(gaussian_reward_field(x,y,vx,vy,sigma,magnitude));
+                    double x = 0., y = 0., vx = 0., vy = 0., s = 0., m = 0.;
+                    std::string indice(std::to_string(i));
+                    if(world_cfg.lookupValue("x_rf" + indice,x)
+                    && world_cfg.lookupValue("y_rf" + indice,y)
+                    && world_cfg.lookupValue("vx_rf" + indice,vx)
+                    && world_cfg.lookupValue("vy_rf" + indice,vy)
+                    && world_cfg.lookupValue("sigma_rf" + indice,s)
+                    && world_cfg.lookupValue("magnitude_rf" + indice,m)) {
+                        rfield.emplace_back(gaussian_reward_field(x,y,vx,vy,s,m));
                     } else {
                         throw wrong_syntax_configuration_file_exception();
                     }
@@ -361,13 +356,11 @@ public:
                     throw wrong_syntax_configuration_file_exception();
                 }
                 for(unsigned i=0; i<nb; ++i) { // parse waypoints
-                    std::string xname = "x_wp" + std::to_string(i);
-                    std::string yname = "y_wp" + std::to_string(i);
-                    std::string rname = "r_wp" + std::to_string(i);
+                    std::string indice(std::to_string(i));
                     double x = 0., y = 0., r = 0.;
-                    if(world_cfg.lookupValue(xname,x)
-                    && world_cfg.lookupValue(yname,y)
-                    && world_cfg.lookupValue(rname,r)) {
+                    if(world_cfg.lookupValue("x_wp" + indice,x)
+                    && world_cfg.lookupValue("y_wp" + indice,y)
+                    && world_cfg.lookupValue("r_wp" + indice,r)) {
                         wp.emplace_back(circle(std::tuple<double,double>{x,y},r));
                     } else {
                         throw wrong_syntax_configuration_file_exception();

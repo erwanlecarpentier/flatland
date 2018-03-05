@@ -55,6 +55,7 @@ public:
      * @param {state &} s; modified state
      */
     void apply(state &s) override {
+        ++s.t;
         s.x += dx;
         s.y += dy;
         s.v = _v;

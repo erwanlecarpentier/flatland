@@ -12,6 +12,8 @@ public:
     double vy; ///< Velocity on y axis
     double sigma; ///< Standard deviation
     double magnitude; ///< Magnitude
+    double tbirth; ///< Birth date
+    double tdeath; ///< Death date
 
     /**
      * @brief Constructor

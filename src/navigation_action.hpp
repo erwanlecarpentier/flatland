@@ -34,6 +34,7 @@ public:
      * @param {state &} s; modified state
      */
     void apply(state &s) override {
+        ++s.t;
         s.v *= fv;
         if(is_greater_than(s.v,vmax)) { // above maximum velocity
             s.v = vmax;

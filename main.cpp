@@ -24,6 +24,28 @@
 #include <state.hpp>
 #include <utils.hpp>
 
+template <class PLC>
+void backup(
+    environment &en,
+    agent<PLC> &ag,
+    double achieved_return,
+    double time_elapsed_ms,
+    std::vector<std::vector<double>> &backup_vector)
+{
+    en.trajectory_backup(ag.s);
+    en.rmodel->reward_backup();
+    en.save_trajectory();
+    en.rmodel->save_reward_backup();
+    std::vector<double> simbackup = {
+        (double) ag.s.t, /* time */
+        achieved_return, /* total collected reward */
+        time_elapsed_ms /* computational cost */
+    };
+    std::vector<double> agbackup = ag.policy.get_backup(); // agent backup
+    simbackup.insert(simbackup.end(),agbackup.begin(),agbackup.end());
+    backup_vector.push_back(simbackup);
+}
+
 /**
  * @brief Single run
  *
@@ -43,15 +65,13 @@ void single_run(
 {
     environment en(p);
     agent<PLC> ag(p);
-    unsigned t = 0; // time
     double achieved_return = 0.; // total collected reward
 	std::clock_t c_start = std::clock();
-    for(t = 0; t < p.SIMULATION_LIMIT_TIME; ++t) { // main loop
+    for(unsigned t = 0; t < p.SIMULATION_LIMIT_TIME; ++t) { // main loop
         ag.apply_policy();
         en.transition(ag.s,ag.a,ag.reward,ag.s_p);
         ag.process_reward();
         if(prnt) {
-            std::cout << t << " ";
             ag.s.print();
         }
         if(bckp) {
@@ -68,27 +88,14 @@ void single_run(
     std::clock_t c_end = std::clock();
     double time_elapsed_ms = 1000. * (c_end - c_start) / CLOCKS_PER_SEC;
     if(prnt) {
-        std::cout << t << " ";
         ag.s.print();
+        std::cout << "time            : " << ag.s.t << std::endl;
+        std::cout << "achieved return : " << achieved_return << std::endl;
+        std::cout << "time elapsed_ms : " << time_elapsed_ms << std::endl;
         std::cout << "Finish\n";
     }
     if(bckp) {
-        en.trajectory_backup(ag.s);
-        en.rmodel->reward_backup();
-        en.save_trajectory();
-        en.rmodel->save_reward_backup();
-        std::vector<double> simbackup = {
-            (double) t, /* score */
-            achieved_return, /* collected reward */
-            time_elapsed_ms /* computational cost */
-        };
-        std::vector<double> agbackup = ag.policy.get_backup(); // agent backup
-        simbackup.insert(simbackup.end(),agbackup.begin(),agbackup.end());
-        backup_vector.push_back(simbackup);
-        std::cout << "time            : " << t << std::endl;
-        std::cout << "achieved return : " << achieved_return << std::endl;
-        std::cout << "time elapsed_ms : " << time_elapsed_ms << std::endl;
-        std::cout << "agent backup 0  : " << agbackup.at(0) << std::endl;
+        backup(en,ag,achieved_return,time_elapsed_ms,backup_vector);
     }
 }
 
@@ -211,20 +218,61 @@ void test(char * n) {
 void test() {
     parameters p("config/main.cfg");
     run(1,p,"data/test.csv",true,true);
-    /*
-    unsigned nbsim = 500;
+/*
+    unsigned nbsim = 1000;
     std::string cfg_path = "config/main.cfg";
     std::string bkp_path;
     parameters p(cfg_path.c_str());
+    p.POLICY_SELECTOR = 1; // MCTS UCT TUCT
 
+    // UCT DYN
     p.IS_MODEL_DYNAMIC = true;
+    p.MCTS_STRATEGY_SWITCH = 0;
     bkp_path = "data/uct_dyn.csv";
     run(nbsim,p,bkp_path.c_str(),false,true);
 
+    // MCTS DYN
+    p.MCTS_STRATEGY_SWITCH = 4;
+    bkp_path = "data/mcts_dyn.csv";
+    run(nbsim,p,bkp_path.c_str(),false,true);
+
+    // MCTS STA
     p.IS_MODEL_DYNAMIC = false;
+    bkp_path = "data/mcts_sta.csv";
+    run(nbsim,p,bkp_path.c_str(),false,true);
+
+    // UCT STA
+    p.MCTS_STRATEGY_SWITCH = 0;
     bkp_path = "data/uct_sta.csv";
     run(nbsim,p,bkp_path.c_str(),false,true);
-    */
+
+    //// TUCT STA
+    p.IS_MODEL_DYNAMIC = false;
+    p.MCTS_STRATEGY_SWITCH = 1;
+    p.LIPSCHITZ_Q = 0.01;
+    bkp_path = "data/tuct001_sta.csv";
+    run(nbsim,p,bkp_path.c_str(),false,true);
+
+    p.LIPSCHITZ_Q = 0.1;
+    bkp_path = "data/tuct01_sta.csv";
+    run(nbsim,p,bkp_path.c_str(),false,true);
+
+    p.LIPSCHITZ_Q = 1.0;
+    bkp_path = "data/tuct1_sta.csv";
+    run(nbsim,p,bkp_path.c_str(),false,true);
+
+    p.LIPSCHITZ_Q = 5.0;
+    bkp_path = "data/tuct5_sta.csv";
+    run(nbsim,p,bkp_path.c_str(),false,true);
+
+    p.LIPSCHITZ_Q = 10;
+    bkp_path = "data/tuct10_sta.csv";
+    run(nbsim,p,bkp_path.c_str(),false,true);
+
+    p.LIPSCHITZ_Q = 100;
+    bkp_path = "data/tuct100_sta.csv";
+    run(nbsim,p,bkp_path.c_str(),false,true);
+*/
 }
 
 /**

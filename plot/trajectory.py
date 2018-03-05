@@ -25,11 +25,11 @@ def plot_rfield(i, world_config, ax) :
 	traj = pd.read_csv("data/rfield" + str(i) + ".csv", sep = ',')
 	x = traj["x"]
 	y = traj["y"]
-	ax.plot(x,y,color=LIGHTBLUE)
+	#ax.plot(x,y,color=LIGHTBLUE)
 	for j in range(0,x.size,1) :
 		sig = world_config["sigma_rf" + str(i)]
 		mag = world_config["magnitude_rf" + str(i)]
-		a = (j+10)/((x.size+10)*1.5)
+		a = (j+5)/((x.size+5)*1.5)
 		c = mpatches.Circle((x[j],y[j]),3.*sig, fc='none', ec=LIGHTBLUE,alpha=a)
 		ax.add_patch(c)
 
