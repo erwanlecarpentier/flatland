@@ -40,26 +40,41 @@ public:
     }
 
     /**
+     * @brief Is alive
+     *
+     * Test if alive.
+     * @param {unsigned} time; time
+     * @return Return true if the Gaussian reward field is alive.
+     */
+    bool is_alive(unsigned time) const {
+        return tbirth <= time && time <= tdeath;
+    }
+
+    /**
      * @brief Get value
      *
      * Get the value of the gaussian field at the position of the input state.
      * @param {const state &} s; input state
      */
     double get_value(const state &s) const {
-        if(is_less_than(s.t,tbirth) || is_less_than(tdeath,s.t)) {
+        if(is_alive(s.t)) {
+            return magnitude * exp(-.5 * (pow(x - s.x,2.) + pow(y - s.y,2.)) / pow(sigma,2.) );
+        } else {
             return 0.;
         }
-        return magnitude * exp(-.5 * (pow(x - s.x,2.) + pow(y - s.y,2.)) / pow(sigma,2.) );
     }
 
     /**
      * @brief Step
      *
      * Forward evolution step.
+     * @param {const state &} s; input state
      */
-    void step() {
-        x += vx;
-        y += vy;
+    void step(const state &s) {
+        if(is_alive(s.t)) {
+            x += vx;
+            y += vy;
+        }
     }
 };
 

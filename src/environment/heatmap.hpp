@@ -55,7 +55,7 @@ public:
     void update(const state &s) {
         (void) s;
         for(auto &elt : rfield) {
-            elt.step();
+            elt.step(s);
         }
     }
 
