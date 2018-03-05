@@ -16,8 +16,8 @@ clean :
 clear :
 	clear
 
-compile : clear clear main.cpp
-	${CCC} ${CCFLAGS} main.cpp -o ${EXEC} ${LDFLAGS}
+compile : clear clear demo/main.cpp
+	${CCC} ${CCFLAGS} demo/main.cpp -o ${EXEC} ${LDFLAGS}
 
 run :
 	./${EXEC}

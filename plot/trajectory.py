@@ -34,7 +34,7 @@ def plot_rfield(i, world_config, ax) :
 	#ax.plot(x,y,color=LIGHTBLUE) # trajectory
 	for j in range(tb,td,1) :
 		a = (j-tb+5)/((td-tb+5)*1.5)
-		c = mpatches.Circle((x[j],y[j]),3.*sig, fc='none', ec=LIGHTBLUE,alpha=a)
+		c = mpatches.Circle((x[j],y[j]),3.*sig, fc='none', ec=LIGHTBLUE, alpha=a)
 		ax.add_patch(c)
 		if (j == tb):
 			ax.plot([x[j]],[y[j]],'x',color=LIGHTBLUE)

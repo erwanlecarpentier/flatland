@@ -200,25 +200,7 @@ void run(
     }
 }
 
-void test(char * n) {
-    std::vector<double> mp_range = {.0, .05, .1, .15, .2, .25, .3, .35, .4, .45, .5};
-    std::string name(n);
-    unsigned nbsim = 100;
-    for(auto &mp : mp_range) { // for every misstep probability
-        std::string cfg_path = "config/backup/discrete/" + name + ".cfg";
-        std::string bkp_path = "data/" + name + std::to_string((int)(mp*100.)) + ".csv";
-        std::cout << "Output: " << bkp_path << std::endl;
-        parameters p(cfg_path.c_str());
-        p.MISSTEP_PROBABILITY = mp;
-        p.MODEL_MISSTEP_PROBABILITY = mp;
-        run(nbsim,p,bkp_path.c_str(),false,true);
-    }
-}
-
 void test() {
-    parameters p("config/main.cfg");
-    run(1,p,"data/test.csv",true,true);
-/*
     unsigned nbsim = 1000;
     std::string cfg_path = "config/main.cfg";
     std::string bkp_path;
@@ -247,7 +229,6 @@ void test() {
     run(nbsim,p,bkp_path.c_str(),false,true);
 
     //// TUCT STA
-    p.IS_MODEL_DYNAMIC = false;
     p.MCTS_STRATEGY_SWITCH = 1;
     p.LIPSCHITZ_Q = 0.01;
     bkp_path = "data/tuct001_sta.csv";
@@ -261,10 +242,6 @@ void test() {
     bkp_path = "data/tuct1_sta.csv";
     run(nbsim,p,bkp_path.c_str(),false,true);
 
-    p.LIPSCHITZ_Q = 5.0;
-    bkp_path = "data/tuct5_sta.csv";
-    run(nbsim,p,bkp_path.c_str(),false,true);
-
     p.LIPSCHITZ_Q = 10;
     bkp_path = "data/tuct10_sta.csv";
     run(nbsim,p,bkp_path.c_str(),false,true);
@@ -272,21 +249,20 @@ void test() {
     p.LIPSCHITZ_Q = 100;
     bkp_path = "data/tuct100_sta.csv";
     run(nbsim,p,bkp_path.c_str(),false,true);
-*/
 }
 
 /**
  * @brief Main function
  */
-int main(int argc, char* argv[]) {
+int main() {
     try {
         std::clock_t c_start = std::clock();
         srand(time(NULL));
-        if(argc == 2) { // run test method with given path as input
-            test(argv[1]);
-        } else { // run single simulation
-            test();
-        }
+
+        parameters p("config/main.cfg");
+        run(1,p,"data/test.csv",true,true);
+        //test();
+
         std::clock_t c_end = std::clock();
         double time_elapsed_ms = 1000. * (c_end - c_start) / CLOCKS_PER_SEC;
         std::cout << "Program run in " << time_elapsed_ms << "ms" << std::endl;
