@@ -305,9 +305,9 @@ public:
     /**
      * @brief Argmax value
      *
-     * Get the indice of the child with the maximum value of an input decision node.
+     * Get the indice of the child with the maximum value.
      * @param {const dnode &} v; input decision node
-     * @return Return the indice of the child with the maximum value
+     * @return Return the indice of the child with the maximum value.
      */
     unsigned argmax_value(const dnode &v) const {
         std::vector<double> values;
@@ -318,6 +318,21 @@ public:
     }
 
     /**
+     * @brief Argmax visit counter
+     *
+     * Get the indice of the child with the maximum number of visits.
+     * @param {const dnode &} v; input decision node
+     * @return Return the indice of the child with the maximum number of visits.
+     */
+    unsigned argmax_nb_visits(const dnode &v) const {
+        std::vector<double> nb_visits;
+        for(auto &c: v.children) {
+            nb_visits.emplace_back(c->get_nb_visits());
+        }
+        return argmax(nb_visits);
+    }
+
+    /**
      * @brief Recommended action
      *
      * Get the recommended action from an input decision node.
@@ -325,6 +340,7 @@ public:
      * @return Return the recommended action at the input decision node.
      */
     std::shared_ptr<action> recommended_action(const dnode &v) {
+        //return v.children.at(argmax_nb_visits(v))->a;
         return v.children.at(argmax_value(v))->a;
     }
 
