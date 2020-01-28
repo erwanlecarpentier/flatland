@@ -13,10 +13,7 @@ fast : run trajectory
 clean :
 	rm -f ${EXEC}
 
-clear :
-	clear
-
-compile : clear clear demo/main.cpp
+compile : demo/main.cpp
 	${CCC} ${CCFLAGS} demo/main.cpp -o ${EXEC} ${LDFLAGS}
 
 run :

@@ -18,7 +18,7 @@ public:
     boost::ptr_vector<shape> walls; ///< Walls of the environment
     std::unique_ptr<reward_model> rmodel; ///< Reward model of the environment
     double misstep_probability; ///< Probability of misstep
-    double state_gaussian_stddev; ///< Standard deviation of the Gaussian applied on the position
+    double state_gaussian_stddev; ///< Standard deviation of the Gaussian noise applied on the position
     double wall_reward;
     std::vector<std::shared_ptr<action>> action_space; ///< Full space of the actions available in the environment
     std::vector<std::vector<double>> trajectory; ///< Matrix of the trajectory for backup

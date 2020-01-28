@@ -1,14 +1,14 @@
 #ifndef MCTS_HPP_
 #define MCTS_HPP_
 
-#include<cassert>
-#include<vector>
-#include<memory>
-#include<numeric>
+#include <cassert>
+#include <vector>
+#include <memory>
+#include <numeric>
 
-#include<mcts/cnode.hpp>
-#include<mcts/dnode.hpp>
-#include<utils.hpp>
+#include <mcts/cnode.hpp>
+#include <mcts/dnode.hpp>
+#include <utils.hpp>
 
 /**
  * @brief MCTS algorithm class
@@ -132,7 +132,7 @@ public:
             scores.emplace_back(
                 c->get_value()
                 + 2 * uct_parameter *
-                sqrt(log((double) nb_cnodes) / ((double) c->sampled_returns.size()))
+                sqrt(log((double) nb_cnodes) / ((double) c->get_nb_visits()))
             );
         }
         return scores;
@@ -325,7 +325,7 @@ public:
      * @return Return the indice of the child with the maximum number of visits.
      */
     unsigned argmax_nb_visits(const dnode &v) const {
-        std::vector<double> nb_visits;
+        std::vector<unsigned> nb_visits;
         for(auto &c: v.children) {
             nb_visits.emplace_back(c->get_nb_visits());
         }
@@ -340,8 +340,8 @@ public:
      * @return Return the recommended action at the input decision node.
      */
     std::shared_ptr<action> recommended_action(const dnode &v) {
-        //return v.children.at(argmax_nb_visits(v))->a;
-        return v.children.at(argmax_value(v))->a;
+        //return v.children.at(argmax_nb_visits(v))->a; // higher number of visits
+        return v.children.at(argmax_value(v))->a; // higher value
     }
 
     /**

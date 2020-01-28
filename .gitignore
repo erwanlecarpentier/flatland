@@ -1,0 +1,13 @@
+exe
+todo.txt
+*.sh
+
+outdated/
+
+data/*.csv
+data/backup/
+demo/test.cpp
+config/backup/
+plot/graph.py
+test.py
+

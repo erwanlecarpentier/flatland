@@ -85,6 +85,99 @@ public:
     }
 
     /**
+     * @brief Parse cartesian actions
+     *
+     * @param {libconfig::Config &} cfg; configuration
+     * @param {std::vector<std::shared_ptr<action>> &} action_space; resulting action space
+     */
+    void parse_cartesian_actions(
+        libconfig::Config &cfg,
+        std::vector<std::shared_ptr<action>> &action_space) const
+    {
+        unsigned nbac = 0;
+        assert(cfg.lookupValue("nb_actions",nbac));
+        for(unsigned i=0; i<nbac; ++i) {
+            std::string rname = "a" + std::to_string(i) + "x";
+            std::string cname = "a" + std::to_string(i) + "y";
+            double rval = 0., cval = 0.;
+            if(cfg.lookupValue(rname,rval)
+            && cfg.lookupValue(cname,cval)) {
+                action_space.emplace_back(
+                    std::shared_ptr<action>(new cartesian_action(rval,cval))
+                );
+            } else { // Error in action names syntax
+                throw action_names_configuration_file_exception();
+            }
+        }
+    }
+
+    /**
+     * @brief Parse polar actions
+     *
+     * Parse polar actions, turned to cartesian actions.
+     * @param {libconfig::Config &} cfg; configuration
+     * @param {std::vector<std::shared_ptr<action>> &} action_space; resulting action space
+     */
+    void parse_polar_actions(
+        libconfig::Config &cfg,
+        std::vector<std::shared_ptr<action>> &action_space) const
+    {
+        unsigned nbac = 0;
+        assert(cfg.lookupValue("nb_actions",nbac));
+        for(unsigned i=0; i<nbac; ++i) {
+            std::string mname = "a" + std::to_string(i) + "m";
+            std::string aname = "a" + std::to_string(i) + "a";
+            double mgn = 0., ang = 0.;
+            if(cfg.lookupValue(mname,mgn)
+            && cfg.lookupValue(aname,ang)) {
+                action_space.emplace_back(
+                    std::shared_ptr<action>(
+                        new cartesian_action(
+                            mgn * cos(TO_RAD * ang),
+                            mgn * sin(TO_RAD * ang)
+                        )
+                    )
+                );
+            } else { // Error in action names syntax
+                throw action_names_configuration_file_exception();
+            }
+        }
+    }
+
+    /**
+     * @brief Parse navigation actions
+     *
+     * @param {libconfig::Config &} cfg; configuration
+     * @param {std::vector<std::shared_ptr<action>> &} action_space; resulting action space
+     */
+    void parse_navigation_actions(
+        libconfig::Config &cfg,
+        std::vector<std::shared_ptr<action>> &action_space) const
+    {
+        unsigned nb_dtheta = 0, nb_fvelocity = 0;
+        double vmax = 1., vmin = 0.;
+        assert(cfg.lookupValue("nb_dtheta",nb_dtheta));
+        assert(cfg.lookupValue("nb_fvelocity",nb_fvelocity));
+        assert(cfg.lookupValue("min_velocity",vmin));
+        assert(cfg.lookupValue("max_velocity",vmax));
+        for(unsigned i=0; i<nb_dtheta; ++i) {
+            for(unsigned j=0; j<nb_fvelocity; ++j) {
+                std::string dt_name = "dtheta" + std::to_string(i);
+                std::string fv_name = "fvelocity" + std::to_string(j);
+                double dt = 0., fv = 0.;
+                if(cfg.lookupValue(dt_name,dt)
+                && cfg.lookupValue(fv_name,fv)) {
+                    action_space.emplace_back(
+                        std::shared_ptr<action>(new navigation_action(fv,vmax,vmin,TO_RAD * dt))
+                    );
+                } else { // Error in action names syntax
+                    throw action_names_configuration_file_exception();
+                }
+            }
+        }
+    }
+
+    /**
      * @brief Parse actions
      *
      * Parse the actions given as parameters
@@ -99,69 +192,20 @@ public:
             display_libconfig_parse_exception(e);
         }
         switch(ACTIONS_SELECTOR) {
-            case 0: { // Polar actions, turned to cartesian actions
-                unsigned nbac = 0;
-                assert(cfg.lookupValue("nb_actions",nbac));
-                for(unsigned i=0; i<nbac; ++i) {
-                    std::string mname = "a" + std::to_string(i) + "m";
-                    std::string aname = "a" + std::to_string(i) + "a";
-                    double mgn = 0., ang = 0.;
-                    if(cfg.lookupValue(mname,mgn)
-                    && cfg.lookupValue(aname,ang)) {
-                        action_space.emplace_back(
-                            std::shared_ptr<action>(
-                                new cartesian_action(
-                                    mgn * cos(TO_RAD * ang),
-                                    mgn * sin(TO_RAD * ang)
-                                )
-                            )
-                        );
-                    } else { // Error in action names syntax
-                        throw action_names_configuration_file_exception();
-                    }
-                }
+            case 0: { // Cartesian actions
+                parse_cartesian_actions(cfg,action_space);
                 break;
             }
-            case 1: { // Navigation actions
-                unsigned nb_dtheta = 0, nb_fvelocity = 0;
-                double vmax = 1., vmin = 0.;
-                assert(cfg.lookupValue("nb_dtheta",nb_dtheta));
-                assert(cfg.lookupValue("nb_fvelocity",nb_fvelocity));
-                assert(cfg.lookupValue("min_velocity",vmin));
-                assert(cfg.lookupValue("max_velocity",vmax));
-                for(unsigned i=0; i<nb_dtheta; ++i) {
-                    for(unsigned j=0; j<nb_fvelocity; ++j) {
-                        std::string dt_name = "dtheta" + std::to_string(i);
-                        std::string fv_name = "fvelocity" + std::to_string(j);
-                        double dt = 0., fv = 0.;
-                        if(cfg.lookupValue(dt_name,dt)
-                        && cfg.lookupValue(fv_name,fv)) {
-                            action_space.emplace_back(
-                                std::shared_ptr<action>(new navigation_action(fv,vmax,vmin,TO_RAD * dt))
-                            );
-                        } else { // Error in action names syntax
-                            throw action_names_configuration_file_exception();
-                        }
-                    }
-                }
+            case 1: { // Polar actions
+                parse_polar_actions(cfg,action_space);
+                break;
+            }
+            case 2: { // Navigation actions
+                parse_navigation_actions(cfg,action_space);
                 break;
             }
             default: { // Cartesian actions
-                unsigned nbac = 0;
-                assert(cfg.lookupValue("nb_actions",nbac));
-                for(unsigned i=0; i<nbac; ++i) {
-                    std::string rname = "a" + std::to_string(i) + "x";
-                    std::string cname = "a" + std::to_string(i) + "y";
-                    double rval = 0., cval = 0.;
-                    if(cfg.lookupValue(rname,rval)
-                    && cfg.lookupValue(cname,cval)) {
-                        action_space.emplace_back(
-                            std::shared_ptr<action>(new cartesian_action(rval,cval))
-                        );
-                    } else { // Error in action names syntax
-                        throw action_names_configuration_file_exception();
-                    }
-                }
+                parse_cartesian_actions(cfg,action_space);
             }
         }
     }
@@ -394,7 +438,7 @@ public:
         && cfg.lookupValue("is_model_dynamic",IS_MODEL_DYNAMIC)
         && cfg.lookupValue("model_misstep_probability",MODEL_MISSTEP_PROBABILITY)
         && cfg.lookupValue("model_state_gaussian_stddev",MODEL_STATE_GAUSSIAN_STDDEV)
-        && cfg.lookupValue("action_definition_selector",ACTIONS_SELECTOR)
+        && cfg.lookupValue("actions_selector",ACTIONS_SELECTOR)
         && cfg.lookupValue("policy_selector",POLICY_SELECTOR)
         && cfg.lookupValue("default_policy_selector",DEFAULT_POLICY_SELECTOR)
         && cfg.lookupValue("tree_search_budget",TREE_SEARCH_BUDGET)

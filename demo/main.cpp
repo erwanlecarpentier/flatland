@@ -206,7 +206,7 @@ void test() {
     std::string bkp_path;
     parameters p(cfg_path.c_str());
     p.POLICY_SELECTOR = 1; // MCTS UCT TUCT
-
+/*
     // UCT DYN
     p.IS_MODEL_DYNAMIC = true;
     p.MCTS_STRATEGY_SWITCH = 0;
@@ -227,27 +227,28 @@ void test() {
     p.MCTS_STRATEGY_SWITCH = 0;
     bkp_path = "data/uct_sta.csv";
     run(nbsim,p,bkp_path.c_str(),false,true);
-
+*/
     //// TUCT STA
+    p.IS_MODEL_DYNAMIC = false;
     p.MCTS_STRATEGY_SWITCH = 1;
     p.LIPSCHITZ_Q = 0.01;
-    bkp_path = "data/tuct001_sta.csv";
+    bkp_path = "data/tuct001_sta_randeval.csv";
     run(nbsim,p,bkp_path.c_str(),false,true);
 
     p.LIPSCHITZ_Q = 0.1;
-    bkp_path = "data/tuct01_sta.csv";
+    bkp_path = "data/tuct01_sta_randeval.csv";
     run(nbsim,p,bkp_path.c_str(),false,true);
 
     p.LIPSCHITZ_Q = 1.0;
-    bkp_path = "data/tuct1_sta.csv";
+    bkp_path = "data/tuct1_sta_randeval.csv";
     run(nbsim,p,bkp_path.c_str(),false,true);
 
     p.LIPSCHITZ_Q = 10;
-    bkp_path = "data/tuct10_sta.csv";
+    bkp_path = "data/tuct10_sta_randeval.csv";
     run(nbsim,p,bkp_path.c_str(),false,true);
 
     p.LIPSCHITZ_Q = 100;
-    bkp_path = "data/tuct100_sta.csv";
+    bkp_path = "data/tuct100_sta_randeval.csv";
     run(nbsim,p,bkp_path.c_str(),false,true);
 }
 
@@ -259,9 +260,9 @@ int main() {
         std::clock_t c_start = std::clock();
         srand(time(NULL));
 
-        //parameters p("config/main.cfg");
-        //run(1,p,"data/test.csv",true,true);
-        test();
+        parameters p("config/main.cfg");
+        run(1,p,"data/test.csv");
+        //test();
 
         std::clock_t c_end = std::clock();
         double time_elapsed_ms = 1000. * (c_end - c_start) / CLOCKS_PER_SEC;
